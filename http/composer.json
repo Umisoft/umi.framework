@@ -1,0 +1,21 @@
+{
+	"name": "umi/http",
+	"description": "UMI.Framework HTTP package",
+	"type": "library",
+	"license": "BSD-3-Clause",
+	"minimum-stability": "stable",
+	"homepage": "http://umi-framework.ru/",
+	"autoload": {
+		"psr-4": {
+			"umi\\http": "."
+		}
+	},
+	"require": {
+		"php": ">=5.4.0",
+		"umi/toolkit": "dev-master"
+	},
+	"repositories": [{
+		"type": "git",
+		"url": "git@gl.umisoft.ru:umisoft/umi-toolkit.git"
+	}]
+}

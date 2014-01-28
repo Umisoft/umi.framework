@@ -1,29 +1,21 @@
 {
-	"name": "umi/orm",
-    "description": "UMI.Framework Object Relation Mapper package",
+	"name": "umi/syntax",
+    "description": "UMI.Framework Syntax parsing package",
 	"type": "library",
     "license": "BSD-3-Clause",
 	"minimum-stability": "stable",
 	"homepage": "http://umi-framework.ru/",
 	"autoload": {
 		"psr-4": {
-			"umi\\orm": "."
+			"umi\\syntax": "."
 		}
 	},
 	"require": {
 		"php": ">=5.4.0",
-		"umi/dbal": "dev-master",
-		"umi/spl": "dev-master",
 		"umi/toolkit": "dev-master",
 		"umi/i18n": "dev-master"
 	},
 	"repositories": [{
-		"type": "git",
-		"url": "git@gl.umisoft.ru:umisoft/umi-dbal.git"
-	},{
-		"type": "git",
-		"url": "git@gl.umisoft.ru:umisoft/umi-spl.git"
-	},{
 		"type": "git",
 		"url": "git@gl.umisoft.ru:umisoft/umi-toolkit.git"
 	},{

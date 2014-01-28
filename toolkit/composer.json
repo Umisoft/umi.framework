@@ -1,0 +1,33 @@
+{
+	"name": "umi/toolkit",
+	"description": "UMI.Framework Toolkit package",
+	"type": "library",
+	"license": "BSD-3-Clause",
+	"minimum-stability": "stable",
+	"homepage": "http://umi-framework.ru/",
+	"autoload": {
+		"psr-4": {
+			"umi\\toolkit": "."
+		}
+	},
+	"require": {
+		"php": ">=5.4.0",
+		"umi/event": "1.0.*",
+		"umi/i18n": "1.0.*",
+		"umi/log": "1.0.*",
+		"umi/spl": "1.0.*"
+	},
+	"repositories": [{
+		"type": "git",
+		"url": "http://gl.umisoft.ru/umisoft/umi-orm.git"
+	},{
+		"type": "git",
+		"url": "http://gl.umisoft.ru/umisoft/umi-i18n.git"
+	},{
+		"type": "git",
+		"url": "http://gl.umisoft.ru/umisoft/umi-log.git"
+	},{
+		"type": "git",
+		"url": "http://gl.umisoft.ru/umisoft/umi-spl.git"
+	}]
+}
