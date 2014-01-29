@@ -13,9 +13,5 @@
 	"require": {
 		"php": ">=5.4.0",
 		"umi/orm": "dev-master"
-	},
-	"repositories": [{
-		"type": "git",
-		"url": "git@gl.umisoft.ru:umisoft/umi-orm.git"
-	}]
+	}
 }

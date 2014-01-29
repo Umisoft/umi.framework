@@ -15,9 +15,5 @@
 		"umi/toolkit": "dev-master",
 		"umi/log": "dev-master",
 		"umi/spl": "dev-master"
-	},
-	"repositories": [{
-		"type": "git",
-		"url": "git@gl.umisoft.ru:umisoft/umi-toolkit.git"
-	}]
+	}
 }

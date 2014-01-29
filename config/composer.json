@@ -15,15 +15,5 @@
 		"umi/i18n": "dev-master",
 		"umi/spl": "dev-master",
 		"umi/toolkit": "dev-master"
-	},
-	"repositories": [{
-		"type": "git",
-		"url": "git@gl.umisoft.ru:umisoft/umi-i18n.git"
-	}, {
-		"type": "git",
-		"url": "git@gl.umisoft.ru:umisoft/umi-spl.git"
-	}, {
-		"type": "git",
-		"url": "git@gl.umisoft.ru:umisoft/umi-toolkit.git"
-	}]
+	}
 }

@@ -16,18 +16,5 @@
 		"umi/i18n": "dev-master",
 		"umi/log": "dev-master",
 		"umi/spl": "dev-master"
-	},
-	"repositories": [{
-		"type": "git",
-		"url": "http://gl.umisoft.ru/umisoft/umi-event.git"
-	},{
-		"type": "git",
-		"url": "git@gl.umisoft.ru:umisoft/umi-i18n.git"
-	},{
-		"type": "git",
-		"url": "git@gl.umisoft.ru:umisoft/umi-log.git"
-	},{
-		"type": "git",
-		"url": "git@gl.umisoft.ru:umisoft/umi-spl.git"
-	}]
+	}
 }

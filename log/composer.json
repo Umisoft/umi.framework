@@ -14,9 +14,5 @@
 		"php": ">=5.4.0",
 		"psr/log": "1.0",
 		"umi/toolkit": "dev-master"
-	},
-	"repositories": [{
-		"type": "git",
-		"url": "git@gl.umisoft.ru:umisoft/umi-toolkit.git"
-	}]
+	}
 }
