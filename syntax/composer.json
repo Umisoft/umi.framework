@@ -7,7 +7,7 @@
 	"homepage": "http://umi-framework.ru/",
 	"autoload": {
 		"psr-4": {
-			"umi\\syntax": "."
+			"umi\\syntax\\": "."
 		}
 	},
 	"require": {
