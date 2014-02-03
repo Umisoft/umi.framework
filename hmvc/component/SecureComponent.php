@@ -9,19 +9,19 @@
 
 namespace umi\hmvc\component;
 
-use umi\hmvc\acl\IACLResource;
+use umi\acl\IAclResource;
 
 /**
  * Класс компонента, доступ к которому может контролироваться через ACL.
  */
-class SecureComponent extends Component implements IACLResource
+class SecureComponent extends Component implements IAclResource
 {
-    const ACL_RESOURCE_PREFIX = 'component.';
+    const ACL_RESOURCE_PREFIX = 'component:';
 
     /**
      * {@inheritdoc}
      */
-    public function getACLResourceName()
+    public function getAclResourceName()
     {
         return self::ACL_RESOURCE_PREFIX . $this->name;
     }

@@ -7,19 +7,17 @@
  * @license   http://umi-framework.ru/license/bsd-3 BSD-3 License
  */
 
-namespace umi\hmvc\acl;
+namespace umi\acl;
 
 /**
  * Интерфейс объекта (ресурса), доступ к которому контролируется через ACL.
  */
-interface IACLResource
+interface IAclResource
 {
     /**
      * Возвращает имя ресурса.
      * @return string
      */
-    public function getACLResourceName();
-
-    /*public function configureACLAssertion(IACLAssertion $assertion);*/
+    public function getAclResourceName();
 }
  

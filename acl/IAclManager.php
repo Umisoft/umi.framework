@@ -7,7 +7,7 @@
  * @license   http://umi-framework.ru/license/bsd-3 BSD-3 License
  */
 
-namespace umi\acl\manager;
+namespace umi\acl;
 
 use umi\acl\exception\NonexistentEntityException;
 use umi\acl\exception\RuntimeException;
@@ -15,7 +15,7 @@ use umi\acl\exception\RuntimeException;
 /**
  * ACL-менеджер.
  */
-interface IACLManager
+interface IAclManager
 {
 
     /**
@@ -62,20 +62,20 @@ interface IACLManager
      * @param string $roleName имя роли
      * @param string $resourceName имя ресурса
      * @param string $operationName имя операции
-     * @param callable $assertion дополнительная динамическая проверка разрешения
-     * @return $this
+     * @param array $assertions список дополнительных проверок
+     * @return self
      */
-    public function allow($roleName, $resourceName = self::RESOURCE_ALL, $operationName = self::OPERATION_ALL, callable $assertion = null);
+    public function allow($roleName, $resourceName = self::RESOURCE_ALL, $operationName = self::OPERATION_ALL, array $assertions = []);
 
     /**
      * Проверяет разрешение на операцию над ресурсом для роли.
-     * @param string $roleName имя роли
-     * @param string $resourceName имя ресурса
+     * @param IAclRoleProvider|string $role провайдер ролей или имя роли
+     * @param IAclResource|string $resource ресурс или имя ресурса
      * @param string $operationName имя операции
      * @throws NonexistentEntityException если роль, ресурс или операция не существуют
      * @return bool
      */
-    public function isAllowed($roleName, $resourceName = self::RESOURCE_ALL, $operationName = self::OPERATION_ALL);
+    public function isAllowed($role, $resource = self::RESOURCE_ALL, $operationName = self::OPERATION_ALL);
 
 }
  

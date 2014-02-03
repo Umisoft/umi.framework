@@ -11,12 +11,11 @@ namespace umi\acl;
 
 use umi\acl\exception\RuntimeException;
 use umi\acl\exception\UnexpectedValueException;
-use umi\acl\manager\IACLManager;
 
 /**
  * Фабрика для сущностей ACL.
  */
-interface IACLFactory
+interface IAclFactory
 {
     /**
      * Опция для конфигурации ролей
@@ -36,8 +35,8 @@ interface IACLFactory
      * @param array $config конфигурация менеджера
      * @throws UnexpectedValueException при неверном формате конфигурации
      * @throws RuntimeException при ошибках конфигурирования
-     * @return IACLManager
+     * @return IAclManager
      */
-    public function createACLManager(array $config = []);
+    public function createAclManager(array $config = []);
 }
  

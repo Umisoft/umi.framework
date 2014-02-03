@@ -12,14 +12,14 @@ namespace umi\acl;
 /**
  * Интерфейс для внедрения поддержки ACL-менеджера.
  */
-interface IACLAware
+interface IAclAware
 {
 
     /**
      * Устанавливает фабрику сущностей ACL.
-     * @param IACLFactory $aclFactory
+     * @param IAclFactory $aclFactory
      * @return self
      */
-    public function setACLFactory(IACLFactory $aclFactory);
+    public function setAclFactory(IAclFactory $aclFactory);
 }
  

@@ -10,9 +10,10 @@
 namespace umi\hmvc\dispatcher;
 
 use Exception;
+use umi\acl\IAclManager;
+use umi\acl\IAclResource;
 use umi\hmvc\component\IComponent;
 use umi\hmvc\controller\IController;
-use umi\hmvc\dispatcher\http\IHTTPComponentResponse;
 use umi\hmvc\exception\RuntimeException;
 use umi\hmvc\macros\IMacros;
 use umi\hmvc\view\IView;
@@ -72,6 +73,15 @@ interface IDispatcher
      * @return IDispatchContext
      */
     public function getCurrentContext();
+
+    /**
+     * Проверяет наличие разрешений на ресурс
+     * @param IComponent $component компонент, которому принадлежит ресурс.
+     * @param IAclResource|string $resource ресурс или имя ресурса
+     * @param string $operationName имя операции над ресурсом
+     * @return bool
+     */
+    public function checkPermissions(IComponent $component, $resource, $operationName = IAclManager::OPERATION_ALL);
 
 }
  

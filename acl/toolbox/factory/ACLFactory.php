@@ -10,57 +10,57 @@
 namespace umi\acl\toolbox\factory;
 
 use umi\acl\exception\UnexpectedValueException;
-use umi\acl\IACLFactory;
-use umi\acl\manager\IACLManager;
+use umi\acl\IAclFactory;
+use umi\acl\IAclManager;
 use umi\toolkit\factory\IFactory;
 use umi\toolkit\factory\TFactory;
 
 /**
  * Фабрика для сущностей ACL.
  */
-class ACLFactory implements IACLFactory, IFactory
+class AclFactory implements IAclFactory, IFactory
 {
     use TFactory;
 
     /**
      * @var string $aclManagerClass класс менеджера ACL
      */
-    public $aclManagerClass = 'umi\acl\manager\ACLManager';
+    public $aclManagerClass = 'umi\acl\AclManager';
 
     /**
      * {@inheritdoc}
      */
-    public function createACLManager(array $config = [])
+    public function createAclManager(array $config = [])
     {
         /**
-         * @var IACLManager $aclManager
+         * @var IAclManager $aclManager
          */
         $aclManager = $this->getPrototype(
             $this->aclManagerClass,
-            ['umi\acl\manager\IACLManager']
+            ['umi\acl\IAclManager']
         )
             ->createInstance();
 
-        return $this->configureACLManager($aclManager, $config);
+        return $this->configureAclManager($aclManager, $config);
     }
 
     /**
      * Конфигурирует ACL-менеджер.
-     * @param IACLManager $aclManager
+     * @param IAclManager $aclManager
      * @param array $config
      * @throws UnexpectedValueException при неверно заданной конфигурации
-     * @return IACLManager
+     * @return IAclManager
      */
-    protected function configureACLManager(IACLManager $aclManager, array $config)
+    protected function configureAclManager(IAclManager $aclManager, array $config)
     {
         if (isset($config[self::OPTION_ROLES])) {
-            $this->configureACLRoles($aclManager, $config[self::OPTION_ROLES]);
+            $this->configureAclRoles($aclManager, $config[self::OPTION_ROLES]);
         }
         if (isset($config[self::OPTION_RESOURCES])) {
-            $this->configureACLResources($aclManager, $config[self::OPTION_RESOURCES]);
+            $this->configureAclResources($aclManager, $config[self::OPTION_RESOURCES]);
         }
         if (isset($config[self::OPTION_RULES])) {
-            $this->configureACLRules($aclManager, $config[self::OPTION_RULES]);
+            $this->configureAclRules($aclManager, $config[self::OPTION_RULES]);
         }
 
         return $aclManager;
@@ -68,11 +68,11 @@ class ACLFactory implements IACLFactory, IFactory
 
     /**
      * Конфигурирует роли.
-     * @param IACLManager $aclManager
+     * @param IAclManager $aclManager
      * @param array $rolesConfig
      * @throws UnexpectedValueException
      */
-    private function configureACLRoles(IACLManager $aclManager, $rolesConfig)
+    private function configureAclRoles(IAclManager $aclManager, $rolesConfig)
     {
         if (!is_array($rolesConfig)) {
             throw new UnexpectedValueException(
@@ -99,11 +99,11 @@ class ACLFactory implements IACLFactory, IFactory
 
     /**
      * Конфигурирует ресурсы и операции над ними.
-     * @param IACLManager $aclManager
+     * @param IAclManager $aclManager
      * @param array $resourcesConfig
      * @throws UnexpectedValueException
      */
-    private function configureACLResources(IACLManager $aclManager, $resourcesConfig)
+    private function configureAclResources(IAclManager $aclManager, $resourcesConfig)
     {
         if (!is_array($resourcesConfig)) {
             throw new UnexpectedValueException(
@@ -120,11 +120,11 @@ class ACLFactory implements IACLFactory, IFactory
 
     /**
      * Конфигурирует разрешения на операции над ресурсами для ролей.
-     * @param IACLManager $aclManager
+     * @param IAclManager $aclManager
      * @param array $rulesConfig
      * @throws UnexpectedValueException
      */
-    private function configureACLRules(IACLManager $aclManager, $rulesConfig)
+    private function configureAclRules(IAclManager $aclManager, $rulesConfig)
     {
         if (!is_array($rulesConfig)) {
             throw new UnexpectedValueException(
@@ -145,6 +145,10 @@ class ACLFactory implements IACLFactory, IFactory
                 );
             }
 
+            if (empty($resources)) {
+                $resources = [IAclManager::RESOURCE_ALL => []];
+            }
+
             foreach ($resources as $resourceName => $operations) {
                 if (!is_array($operations)) {
                     throw new UnexpectedValueException(
@@ -158,7 +162,25 @@ class ACLFactory implements IACLFactory, IFactory
                     );
                 }
 
-                $aclManager->allow($roleName, $resourceName, $operations);
+                if (empty($operations)) {
+                    $operations = [IAclManager::OPERATION_ALL => []];
+                }
+
+                foreach ($operations as $operationName => $assertions) {
+                    if (!is_array($assertions)) {
+                        throw new UnexpectedValueException(
+                            $this->translate(
+                                'Assertions for operation "{operation}", for role "{role}" and for resource "{resource}" should be an array.',
+                                [
+                                    'operation' => $operationName,
+                                    'role' => $roleName,
+                                    'resource' => $resourceName
+                                ]
+                            )
+                        );
+                    }
+                    $aclManager->allow($roleName, $resourceName, $operationName, $assertions);
+                }
             }
         }
     }

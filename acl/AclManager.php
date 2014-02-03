@@ -7,17 +7,18 @@
  * @license   http://umi-framework.ru/license/bsd-3 BSD-3 License
  */
 
-namespace umi\acl\manager;
+namespace umi\acl;
 
 use umi\acl\exception\AlreadyExistentEntityException;
 use umi\acl\exception\NonexistentEntityException;
+use umi\acl\exception\RuntimeException;
 use umi\i18n\ILocalizable;
 use umi\i18n\TLocalizable;
 
 /**
  * ACL-менеджер.
  */
-class ACLManager implements IACLManager, ILocalizable
+class AclManager implements IAclManager, ILocalizable
 {
     use TLocalizable;
 
@@ -107,8 +108,9 @@ class ACLManager implements IACLManager, ILocalizable
     /**
      * {@inheritdoc}
      */
-    public function allow($roleName, $resourceName = self::RESOURCE_ALL, $operationName = self::OPERATION_ALL, callable $assertion = null)
+    public function allow($roleName, $resourceName = self::RESOURCE_ALL, $operationName = self::OPERATION_ALL, array $assertions = [])
     {
+
         if (!$this->hasRole($roleName)) {
             throw new NonexistentEntityException(
                 $this->translate(
@@ -118,7 +120,7 @@ class ACLManager implements IACLManager, ILocalizable
             );
         }
 
-        if ($this->hasResource($resourceName)) {
+        if (!$this->hasResource($resourceName)) {
             throw new NonexistentEntityException(
                 $this->translate(
                     'Cannot set rule. Resource "{name}" is unknown.',
@@ -134,7 +136,7 @@ class ACLManager implements IACLManager, ILocalizable
             $this->rules[$roleName][$resourceName] = [];
         }
 
-        $this->rules[$roleName][$resourceName][$operationName] = $assertion ?: true;
+        $this->rules[$roleName][$resourceName][$operationName] = $assertions;
 
         return $this;
     }
@@ -142,16 +144,15 @@ class ACLManager implements IACLManager, ILocalizable
     /**
      * {@inheritdoc}
      */
-    public function isAllowed($roleName, $resourceName = self::RESOURCE_ALL, $operationName = self::OPERATION_ALL)
+    public function isAllowed($role, $resource = self::RESOURCE_ALL, $operationName = self::OPERATION_ALL)
     {
-        if (!$this->hasRole($roleName)) {
-            throw new NonexistentEntityException(
-                $this->translate(
-                    'Cannot check permission. Role "{name}" is unknown.',
-                    ['name' => $roleName]
-                )
-            );
+        if ($role instanceof IAclRoleProvider) {
+            $roleNames = $role->getRoleNames();
+        } else {
+            $roleNames = [$role];
         }
+
+        $resourceName = $resource instanceof IAclResource ? $resource->getAclResourceName() : $resource;
 
         if (!$this->hasResource($resourceName)) {
             throw new NonexistentEntityException(
@@ -162,7 +163,42 @@ class ACLManager implements IACLManager, ILocalizable
             );
         }
 
-        return $this->hasPermission($roleName, $resourceName, $operationName);
+        foreach ($roleNames as $roleName) {
+            if (!$this->hasRole($roleName)) {
+                throw new NonexistentEntityException(
+                    $this->translate(
+                        'Cannot check permission. Role "{name}" is unknown.',
+                        ['name' => $roleName]
+                    )
+                );
+            }
+
+            $result = $this->getPermission($roleName, $resourceName, $operationName);
+
+            if (is_array($result)) {
+
+                if (!$resource instanceof IAclAssertionResolver) {
+                    throw new RuntimeException(
+                        $this->translate(
+                            'Cannot check permission for role "{roleName}" for resource "{resourceName}".
+                            Resource should be instance of IAclAssertionResolver',
+                            [
+                                'roleName' => $roleName,
+                                'resourceName' => $resourceName
+                            ]
+                        )
+                    );
+                }
+
+                $result = $resource->isAllowed($role, $operationName, $result);
+            }
+
+            if ($result === true) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -170,36 +206,32 @@ class ACLManager implements IACLManager, ILocalizable
      * @param string $roleName имя роли
      * @param string $resourceName имя ресурса
      * @param string $operationName имя операции
-     * @return bool
+     * @return bool|array bool в случае явно заданных разрешений, либо список дополнительных правил
      */
-    protected function hasPermission($roleName, $resourceName, $operationName)
+    protected function getPermission($roleName, $resourceName, $operationName)
     {
-
         if (isset($this->rules[$roleName][self::RESOURCE_ALL])) {
+
             if (isset($this->rules[$roleName][self::RESOURCE_ALL][self::OPERATION_ALL])) {
-                $assertion = $this->rules[$roleName][self::RESOURCE_ALL][self::OPERATION_ALL];
+                $assertions = $this->rules[$roleName][self::RESOURCE_ALL][self::OPERATION_ALL];
             } elseif ($this->rules[$roleName][self::RESOURCE_ALL][$operationName]) {
-                $assertion = $this->rules[$roleName][self::RESOURCE_ALL][$operationName];
+                $assertions = $this->rules[$roleName][self::RESOURCE_ALL][$operationName];
             }
 
-            if (isset($assertion) && $assertion !== true) {
-                return $assertion($this, $roleName, $resourceName, $operationName);
-            }
+        } elseif (isset($this->rules[$roleName][$resourceName][self::OPERATION_ALL])) {
+            $assertions = $this->rules[$roleName][$resourceName][self::OPERATION_ALL];
+        } elseif (isset($this->rules[$roleName][$resourceName][$operationName])) {
+            $assertions = $this->rules[$roleName][$resourceName][$operationName];
         }
 
-        if (isset($this->rules[$roleName][$resourceName][$operationName])) {
-
-            $assertion = $this->rules[$roleName][$resourceName][$operationName];
-            if ($assertion !== true) {
-                return $assertion($this, $roleName, $resourceName, $operationName);
-            }
-
-            return true;
+        if (isset($assertions)) {
+            return $assertions ?: true;
         }
 
         foreach ($this->roles[$roleName] as $parentRoleName) {
-            if ($this->hasPermission($parentRoleName, $resourceName, $operationName)) {
-                return true;
+            $assertions = $this->getPermission($parentRoleName, $resourceName, $operationName);
+            if ($assertions !== false) {
+                return $assertions ?: true;
             }
         }
 

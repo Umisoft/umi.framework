@@ -733,7 +733,7 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
 
     /**
      * Возвращает имя свойства и его локаль по полному имени свойства
-     * @param $fullPropName полное имя свойства
+     * @param string $fullPropName полное имя свойства
      * @return array
      */
     protected function splitFullPropName($fullPropName)
@@ -764,7 +764,7 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
      * Возвращает значение локализуемого свойства. <br/>
      * Если поле локализовано, и значение в текущей локали отсутствует, возвращается значение дефолтной локали.
      * @param ILocalizedProperty $property
-     * @param $localeId идентификатор локали
+     * @param string $localeId идентификатор локали
      * @return mixed
      */
     protected function getLocalizedValue(ILocalizedProperty $property, $localeId)

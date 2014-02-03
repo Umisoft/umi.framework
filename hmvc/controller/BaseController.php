@@ -8,6 +8,7 @@
 
 namespace umi\hmvc\controller;
 
+use umi\acl\IAclManager;
 use umi\hmvc\component\IComponent;
 use umi\hmvc\dispatcher\http\HTTPComponentResponse;
 use umi\hmvc\dispatcher\http\IHTTPComponentResponse;
@@ -136,6 +137,11 @@ abstract class BaseController implements IController, ILocalizable
     public function getRequestVar($name, $default = null, $containerType = IRequest::GET)
     {
         return $this->getRequest()->getVar($containerType, $name, $default);
+    }
+
+    protected function isAllowed($resource, $operationName = IAclManager::OPERATION_ALL)
+    {
+        return $this->getContext()->getDispatcher()->checkPermissions($this->getComponent(), $resource, $operationName);
     }
 
     /**

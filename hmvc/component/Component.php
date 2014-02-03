@@ -9,9 +9,9 @@
 
 namespace umi\hmvc\component;
 
-use umi\acl\IACLAware;
-use umi\acl\manager\IACLManager;
-use umi\acl\TACLAware;
+use umi\acl\IAclAware;
+use umi\acl\IAclManager;
+use umi\acl\TAclAware;
 use umi\hmvc\controller\IControllerFactory;
 use umi\hmvc\exception\OutOfBoundsException;
 use umi\hmvc\IMVCEntityFactoryAware;
@@ -30,13 +30,13 @@ use umi\spl\config\TConfigSupport;
 /**
  * Реализация MVC компонента системы.
  */
-class Component implements IComponent, IMVCEntityFactoryAware, IRouteAware, ILocalizable, IACLAware
+class Component implements IComponent, IMVCEntityFactoryAware, IRouteAware, ILocalizable, IAclAware
 {
     use TMVCEntityFactoryAware;
     use TRouteAware;
     use TLocalizable;
     use TConfigSupport;
-    use TACLAware;
+    use TAclAware;
 
     /**
      * @var string $path иерархический путь компонента
@@ -75,7 +75,7 @@ class Component implements IComponent, IMVCEntityFactoryAware, IRouteAware, ILoc
      */
     private $viewRenderer;
     /**
-     * @var IACLManager $aclManager менеджер ACL
+     * @var IAclManager $aclManager менеджер ACL
      */
     private $aclManager;
 
@@ -201,14 +201,14 @@ class Component implements IComponent, IMVCEntityFactoryAware, IRouteAware, ILoc
     /**
      * {@inheritdoc}
      */
-    public function getACLManager()
+    public function getAclManager()
     {
         if (!$this->aclManager) {
 
             $config = isset($this->options[self::OPTION_ACL]) ? $this->options[self::OPTION_ACL] : [];
             $config = $this->configToArray($config, true);
 
-            $this->aclManager = $this->getACLFactory()->createACLManager($config);
+            $this->aclManager = $this->getAclFactory()->createAclManager($config);
         }
 
         return $this->aclManager;

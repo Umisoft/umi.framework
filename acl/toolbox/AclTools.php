@@ -9,15 +9,15 @@
 
 namespace umi\acl\toolbox;
 
-use umi\acl\IACLAware;
-use umi\acl\IACLFactory;
+use umi\acl\IAclAware;
+use umi\acl\IAclFactory;
 use umi\toolkit\toolbox\IToolbox;
 use umi\toolkit\toolbox\TToolbox;
 
 /**
  * Инструменты для создания ACL.
  */
-class ACLTools implements IToolbox
+class AclTools implements IToolbox
 {
     /**
      * Имя набора инструментов
@@ -29,7 +29,7 @@ class ACLTools implements IToolbox
     /**
      * @var string $aclManagerClass класс менеджера ACL
      */
-    public $aclFactoryClass = 'umi\acl\toolbox\factory\ACLFactory';
+    public $aclFactoryClass = 'umi\acl\toolbox\factory\AclFactory';
 
     /**
      * Конструктор.
@@ -39,7 +39,7 @@ class ACLTools implements IToolbox
         $this->registerFactory(
             'acl',
             $this->aclFactoryClass,
-            ['umi\acl\IACLFactory']
+            ['umi\acl\IAclFactory']
         );
     }
 
@@ -48,16 +48,16 @@ class ACLTools implements IToolbox
      */
     public function injectDependencies($object)
     {
-        if ($object instanceof IACLAware) {
-            $object->setACLFactory($this->getACLFactory());
+        if ($object instanceof IAclAware) {
+            $object->setAclFactory($this->getAclFactory());
         }
     }
 
     /**
      * Возвращает фабрику сущностей ACL
-     * @return IACLFactory
+     * @return IAclFactory
      */
-    protected function getACLFactory()
+    protected function getAclFactory()
     {
         return $this->getFactory('acl');
     }

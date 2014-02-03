@@ -9,7 +9,7 @@
 
 namespace umi\hmvc\component;
 
-use umi\acl\manager\IACLManager;
+use umi\acl\IAclManager;
 use umi\hmvc\controller\IController;
 use umi\hmvc\exception\OutOfBoundsException;
 use umi\hmvc\exception\RuntimeException;
@@ -150,8 +150,8 @@ interface IComponent
 
     /**
      * Возвращает ACL-менеджер компонента.
-     * @return IACLManager
+     * @return IAclManager
      */
-    public function getACLManager();
+    public function getAclManager();
 
 }

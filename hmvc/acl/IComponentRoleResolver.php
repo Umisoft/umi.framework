@@ -9,13 +9,13 @@
 
 namespace umi\hmvc\acl;
 
-use umi\acl\manager\IACLManager;
+use umi\hmvc\component\IComponent;
 
 /**
- * Interface IACLAssertion
+ * Интерфейс разрешения списка ролей для компонента.
  */
-interface IACLAssertion
+interface IComponentRoleResolver
 {
-    public function __invoke(IACLManager $aclManager, $roleName, $resourceName, $operationName);
+    public function getRoleNames(IComponent $component);
 }
  

@@ -13,9 +13,9 @@ namespace umi\acl\toolbox;
  * Конфигурация для регистрации набора инструментов.
  */
 return [
-    'name'  => ACLTools::NAME,
-    'class' => __NAMESPACE__ . '\ACLTools',
+    'name'  => AclTools::NAME,
+    'class' => __NAMESPACE__ . '\AclTools',
     'awareInterfaces' => [
-        'umi\acl\IACLAware'
+        'umi\acl\IAclAware'
     ]
 ];

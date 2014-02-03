@@ -14,19 +14,19 @@ use umi\acl\exception\RequiredDependencyException;
 /**
  * Трейт для внедрения поддержки ACL.
  */
-trait TACLAware
+trait TAclAware
 {
     /**
-     * @var IACLFactory $_aclFactory
+     * @var IAclFactory $_aclFactory
      */
     private $_aclFactory;
 
     /**
      * Устанавливает фабрику сущностей ACL.
-     * @param IACLFactory $aclFactory
+     * @param IAclFactory $aclFactory
      * @return self
      */
-    public function setACLFactory(IACLFactory $aclFactory)
+    public function setAclFactory(IAclFactory $aclFactory)
     {
         $this->_aclFactory = $aclFactory;
 
@@ -36,9 +36,9 @@ trait TACLAware
     /**
      * Возвращает фабрику сущностей ACL.
      * @throws RequiredDependencyException если фабрика не была внедрена
-     * @return IACLFactory
+     * @return IAclFactory
      */
-    protected function getACLFactory()
+    protected function getAclFactory()
     {
         if (!$this->_aclFactory) {
             throw new RequiredDependencyException(sprintf(

@@ -12,6 +12,7 @@ namespace umi\hmvc\view\extension;
 use Twig_Extension;
 use Twig_SimpleFunction;
 use umi\hmvc\dispatcher\IDispatcher;
+use umi\hmvc\view\helper\IsAllowedHelper;
 use umi\hmvc\view\helper\UrlHelper;
 
 /**
@@ -27,15 +28,23 @@ class ViewTwigExtension extends Twig_Extension
      * @var string $urlFunctionName имя функции для генерации URL
      */
     public $urlFunctionName = 'url';
+    /**
+     * @var string $isAllowedFunctionName имя функции для проверки прав
+     */
+    public $isAllowedFunctionName = 'isAllowed';
 
     /**
      * @var IDispatcher $dispatcher диспетчер для вызова макроса
      */
     protected $dispatcher;
     /**
-     * @var UrlHelper $URLHelper
+     * @var UrlHelper $urlHelper
      */
-    private $URLHelper;
+    private $urlHelper;
+    /**
+     * @var IsAllowedHelper $isAllowedHelper
+     */
+    private $isAllowedHelper;
 
     /**
      * Конструктор.
@@ -68,7 +77,11 @@ class ViewTwigExtension extends Twig_Extension
 
             new Twig_SimpleFunction(
                 $this->urlFunctionName,
-                $this->getURLHelper()
+                $this->getUrlHelper()
+            ),
+            new Twig_SimpleFunction(
+                $this->isAllowedFunctionName,
+                $this->getIsAllowedHelper()
             )
         ];
     }
@@ -77,12 +90,24 @@ class ViewTwigExtension extends Twig_Extension
      * Возвращает помощник вида для генерации URL.
      * @return callable
      */
-    protected function getURLHelper()
+    protected function getUrlHelper()
     {
-        if (!$this->URLHelper) {
-            $this->URLHelper = new UrlHelper($this->dispatcher);
+        if (!$this->urlHelper) {
+            $this->urlHelper = new UrlHelper($this->dispatcher);
         }
-        return $this->URLHelper;
+        return $this->urlHelper;
+    }
+
+    /**
+     * Возвращает помощник вида для проверки прав.
+     * @return callable
+     */
+    protected function getIsAllowedHelper()
+    {
+        if (!$this->isAllowedHelper) {
+            $this->isAllowedHelper = new IsAllowedHelper($this->dispatcher);
+        }
+        return $this->isAllowedHelper;
     }
 
     /**

@@ -9,19 +9,20 @@
 
 namespace umi\hmvc\controller;
 
-use umi\hmvc\acl\IACLResource;
+use umi\acl\IAclResource;
+use umi\authentication\TAuthenticationAware;
 
 /**
  * Базовый класс контроллера, доступ к которому может контролироваться через ACL.
  */
-abstract class BaseSecureController extends BaseController implements IACLResource
+abstract class BaseSecureController extends BaseController implements IAclResource
 {
-    const ACL_RESOURCE_PREFIX = 'controller.';
+    const ACL_RESOURCE_PREFIX = 'controller:';
 
     /**
      * {@inheritdoc}
      */
-    public function getACLResourceName()
+    public function getAclResourceName()
     {
         return self::ACL_RESOURCE_PREFIX . $this->name;
     }

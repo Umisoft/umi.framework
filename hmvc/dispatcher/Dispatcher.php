@@ -12,10 +12,13 @@ namespace umi\hmvc\dispatcher;
 use Exception;
 use SplDoublyLinkedList;
 use SplStack;
+use umi\acl\IAclManager;
+use umi\acl\IAclResource;
+use umi\acl\IAclRoleProvider;
 use umi\authentication\IAuthenticationAware;
 use umi\authentication\TAuthenticationAware;
-use umi\hmvc\acl\IACLResource;
-use umi\hmvc\acl\IACLRoleProvider;
+use umi\hmvc\acl\ComponentRoleProvider;
+use umi\hmvc\acl\IComponentRoleResolver;
 use umi\hmvc\component\IComponent;
 use umi\hmvc\dispatcher\http\IHTTPComponentResponse;
 use umi\hmvc\controller\IController;
@@ -164,6 +167,27 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
         }
 
         return $this->currentContext;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function checkPermissions(IComponent $component, $resource, $operationName = IAclManager::OPERATION_ALL)
+    {
+        $authManager = $this->getDefaultAuthManager();
+        if (!$authManager->isAuthenticated()) {
+            return false;
+        }
+
+        $identity = $authManager->getStorage()->getIdentity();
+
+        if (!$identity instanceof IComponentRoleResolver) {
+            return false;
+        }
+        $roleProvider = new ComponentRoleProvider($component, $identity);
+
+        $aclManager = $component->getAclManager();
+        return $aclManager->isAllowed($roleProvider, $resource, $operationName);
     }
 
     /**
@@ -343,37 +367,6 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
         }
 
         throw $e;
-    }
-
-    /**
-     * Проверяет наличие разрешений на ресурс
-     * @param IComponent $component компонент, которому принадлежит ресурс.
-     * @param IACLResource $resource ресурс
-     * @return bool
-     */
-    protected function checkPermissions(IComponent $component, IACLResource $resource)
-    {
-        $authManager = $this->getDefaultAuthManager();
-        if (!$authManager->isAuthenticated()) {
-            return false;
-        }
-
-        $identity = $authManager->getStorage()->getIdentity();
-
-        if (!$identity instanceof IACLRoleProvider) {
-            return false;
-        }
-
-        $aclManager = $component->getACLManager();
-
-        foreach ($identity->getRoles($component) as $roleName) {
-            if ($aclManager->isAllowed($roleName, $resource->getACLResourceName(), 'execute')) {
-                return true;
-            }
-        }
-
-        return false;
-
     }
 
     /**
