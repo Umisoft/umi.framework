@@ -81,7 +81,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
 
         $callStack = $this->createCallStack();
 
-        $routePath = rtrim(parse_url($request->getRequestURI(), PHP_URL_PATH), '/');
+        $routePath = parse_url($request->getRequestURI(), PHP_URL_PATH);
 
         try {
             $response = $this->processRequest($component, $routePath, $callStack);
