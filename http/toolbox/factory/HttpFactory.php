@@ -10,6 +10,7 @@
 namespace umi\http\toolbox\factory;
 
 use umi\http\IHttpFactory;
+use umi\http\Request;
 use umi\toolkit\factory\IFactory;
 use umi\toolkit\factory\TFactory;
 
@@ -24,22 +25,22 @@ class HttpFactory implements IHttpFactory, IFactory
     /**
      * @var string $requestClass имя класса HTTP запроса
      */
-    public $requestClass = 'umi\http\request\Request';
+    public $requestClass = 'umi\http\Request';
     /**
      * @var string $responseClass имя класса HTTP ответа
      */
-    public $responseClass = 'umi\http\response\Response';
+    public $responseClass = 'umi\http\Response';
 
     /**
      * {@inheritdoc}
      */
-    public function getRequest()
+    public function createRequest()
     {
-        return $this->getPrototype(
-                $this->requestClass,
-                ['umi\http\request\IRequest']
-            )
-            ->createInstance();
+        /**
+         * @var Request $requestClass
+         */
+        $requestClass = $this->requestClass;
+        return $requestClass::createFromGlobals();
     }
 
     /**
@@ -47,10 +48,6 @@ class HttpFactory implements IHttpFactory, IFactory
      */
     public function createResponse()
     {
-        return $this->getPrototype(
-                $this->responseClass,
-                ['umi\http\response\IResponse']
-            )
-            ->createInstance();
+        return new $this->responseClass;
     }
 }

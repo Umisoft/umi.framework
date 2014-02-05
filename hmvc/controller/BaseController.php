@@ -9,23 +9,26 @@
 namespace umi\hmvc\controller;
 
 use umi\acl\IAclManager;
+use umi\acl\IAclResource;
 use umi\hmvc\component\IComponent;
-use umi\hmvc\dispatcher\http\HTTPComponentResponse;
-use umi\hmvc\dispatcher\http\IHTTPComponentResponse;
 use umi\hmvc\dispatcher\IDispatchContext;
 use umi\hmvc\exception\RequiredDependencyException;
 use umi\hmvc\view\IView;
 use umi\hmvc\view\View;
-use umi\http\request\IRequest;
+use umi\http\IHttpAware;
+use umi\http\Request;
+use umi\http\Response;
+use umi\http\THttpAware;
 use umi\i18n\ILocalizable;
 use umi\i18n\TLocalizable;
 
 /**
  * Базовый класс контроллера.
  */
-abstract class BaseController implements IController, ILocalizable
+abstract class BaseController implements IController, ILocalizable, IHttpAware
 {
     use TLocalizable;
+    use THttpAware;
 
     /**
      * @var string $name имя контроллера
@@ -36,7 +39,7 @@ abstract class BaseController implements IController, ILocalizable
      */
     private $context;
     /**
-     * @var IRequest $request
+     * @var Request $request
      */
     private $request;
 
@@ -50,7 +53,7 @@ abstract class BaseController implements IController, ILocalizable
         return $this;
     }
 
-    public function setRequest(IRequest $request)
+    public function setRequest(Request $request)
     {
         $this->request = $request;
 
@@ -93,7 +96,7 @@ abstract class BaseController implements IController, ILocalizable
     /**
      * Возвращает HTTP-запрос.
      * @throws RequiredDependencyException если запрос не был установлен
-     * @return IRequest
+     * @return Request
      */
     protected function getRequest()
     {
@@ -128,17 +131,69 @@ abstract class BaseController implements IController, ILocalizable
     }
 
     /**
-     * Возвращает переменную из параметров запроса.
+     * Возвращает значение параметра из GET-параметров запроса.
      * @param string $name имя параметра
-     * @param mixed $default значение по умолчанию
-     * @param string $containerType тип контейнера параметров
+     * @param null $default значение по умолчанию
      * @return mixed
      */
-    public function getRequestVar($name, $default = null, $containerType = IRequest::GET)
+    protected function getQueryVar($name, $default = null)
     {
-        return $this->getRequest()->getVar($containerType, $name, $default);
+        return $this->getRequest()->query->get($name, $default);
     }
 
+    /**
+     * Возвращает значения всех GET-параметров запроса.
+     * @return array
+     */
+    protected function getAllQueryVars()
+    {
+        return $this->getRequest()->query->all();
+    }
+
+    /**
+     * Возвращает значение параметра из POST-параметров запроса.
+     * @param string $name имя параметра
+     * @param null $default значение по умолчанию
+     * @return mixed
+     */
+    protected function getPostVar($name, $default = null)
+    {
+        return $this->getRequest()->request->get($name, $default);
+    }
+
+    /**
+     * Возвращает значения всех GET-параметров запроса.
+     * @return array
+     */
+    protected function getAllPostVars()
+    {
+        return $this->getRequest()->request->all();
+    }
+
+    /**
+     * Проверяет, что реальный метод запроса POST
+     * @return bool
+     */
+    protected function isRequestMethodPost()
+    {
+        return $this->getRequest()->getRealMethod() == 'POST';
+    }
+
+    /**
+     * Проверяет, что реальный метод запроса GET
+     * @return bool
+     */
+    protected function isRequestMethodGet()
+    {
+        return $this->getRequest()->getRealMethod() == 'GET';
+    }
+
+    /**
+     * Проверяет права текущего пользователя на выполнение операции над ресурсом
+     * @param IAclResource|string $resource имя ресурса или ресурс
+     * @param string $operationName имя операции
+     * @return bool
+     */
     protected function isAllowed($resource, $operationName = IAclManager::OPERATION_ALL)
     {
         return $this->getContext()->getDispatcher()->checkPermissions($this->getComponent(), $resource, $operationName);
@@ -150,9 +205,9 @@ abstract class BaseController implements IController, ILocalizable
      * @param array $params параметры маршрута
      * @param bool $useQuery использовать ли GET-параметры HTTP-запроса при построении URL
      * @param int $code код ответа
-     * @return IHTTPComponentResponse
+     * @return Response
      */
-    protected function redirectToRoute($routeName, array $params = [], $useQuery = false, $code = 301)
+    protected function redirectToRoute($routeName, array $params = [], $useQuery = false, $code = Response::HTTP_MOVED_PERMANENTLY)
     {
 
         $baseUrl = $this->getContext()->getBaseUrl();
@@ -160,8 +215,7 @@ abstract class BaseController implements IController, ILocalizable
         $url = $baseUrl . $this->getComponent()->getRouter()->assemble($routeName, $params) ? : '/';
 
         if ($useQuery) {
-            $getParams = $this->getRequest()->getParams(IRequest::GET)->toArray();
-            if($getParams) {
+            if($getParams = $this->getAllQueryVars()) {
                 $url .= '?' . http_build_query($getParams);
             }
         }
@@ -170,64 +224,49 @@ abstract class BaseController implements IController, ILocalizable
     }
 
     /**
-     * Создает HTTP ответ компонента.
+     * Создает результат работы контроллера.
      * @param string $content содержимое ответа
      * @param int $code код ответа
-     * @return IHTTPComponentResponse
+     * @return Response
      */
-    protected function createPlainResponse($content, $code = 200)
+    protected function createResponse($content, $code = Response::HTTP_OK)
     {
-        return $this->createHTTPComponentResponse()
-            ->setCode($code)
+        return $this->createHttpResponse()
+            ->setStatusCode($code)
             ->setContent($content);
     }
 
     /**
-     * Создает HTTP ответ компонента с содержимым, требующим отображения.
-
+     * Создает шаблонизируемый результат работы контроллера.
      * Этот ответ пройдет через View слой компонента.
-
      * @param string $templateName имя шаблона
      * @param array $variables переменные
-     * @return IHTTPComponentResponse
+     * @return Response
      */
-    protected function createDisplayResponse($templateName, array $variables = [])
+    protected function createViewResponse($templateName, array $variables = [])
     {
-        return $this->createHTTPComponentResponse()
-            ->setContent(
-                new View($this, $this->getContext(), $templateName, $variables)
-            );
+        return $this->createResponse(new View($this, $this->getContext(), $templateName, $variables));
     }
 
     /**
      * Устанавливает в ответ заголовок переадресации.
      * @param string $url URL для переадресации
      * @param int $code HTTP статус переадресации
-     * @return IHTTPComponentResponse HTTP ответ
+     * @return Response
      */
-    protected function createRedirectResponse($url, $code = 301)
+    protected function createRedirectResponse($url, $code = Response::HTTP_SEE_OTHER)
     {
-        $response = $this->createHTTPComponentResponse();
-        $response->setCode($code)
-             ->getHeaders()
-                ->setHeader('Location', $url);
+        $response = $this->createHttpResponse();
+        $response
+            ->setStatusCode($code)
+            ->headers->set('Location', $url);
 
         return $response;
     }
 
     /**
-     * Возвращает HTTP ответ компонента.
-     * @throws RequiredDependencyException если фабрика не была внедрена
-     * @return IHTTPComponentResponse
-     */
-    protected function createHTTPComponentResponse()
-    {
-        return new HTTPComponentResponse($this->getComponent());
-    }
-
-    /**
-     * Вызывает макрос своего компонента.
-     * @param string $macrosURI имя макроса
+     * Вызывает макрос.
+     * @param string $macrosURI путь к макросу
      * @param array $params параметры вызова макроса
      * @return string|IView
      */

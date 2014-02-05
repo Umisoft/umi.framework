@@ -17,7 +17,7 @@ use umi\hmvc\controller\IController;
 use umi\hmvc\exception\RuntimeException;
 use umi\hmvc\macros\IMacros;
 use umi\hmvc\view\IView;
-use umi\http\request\IRequest;
+use umi\http\Request;
 
 /**
  * Диспетчер MVC-компонентов.
@@ -32,16 +32,16 @@ interface IDispatcher
 
     /**
      * Возвращает текущий HTTP-запрос.
-     * @return IRequest
+     * @return Request
      */
     public function getCurrentRequest();
 
     /**
      * Обрабатывает http-запрос с помощью указанного MVC-компонента.
      * @param IComponent $component начальный компонент
-     * @param IRequest $request
+     * @param Request $request
      */
-    public function dispatchRequest(IComponent $component, IRequest $request);
+    public function dispatchRequest(IComponent $component, Request $request);
 
     /**
      * Обрабатывает ошибку рендеринга.

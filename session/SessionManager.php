@@ -10,7 +10,7 @@
 namespace umi\session;
 
 use umi\event\TEventObservant;
-use umi\http\request\IRequest;
+use umi\http\Request;
 use umi\session\exception\RuntimeException;
 use umi\session\TSessionAware;
 
@@ -31,11 +31,11 @@ class SessionManager implements ISessionManager, ISessionAware
 
     /**
      * Конструктор.
-     * @param IRequest $request
+     * @param Request $request
      */
-    public function __construct(IRequest $request)
+    public function __construct(Request $request)
     {
-        $needSession = (bool) $request->getVar(IRequest::COOKIE, $this->getName(), false);
+        $needSession = (bool) $request->cookies->get($this->getName(), false);
 
         switch (true) {
             case session_status() === PHP_SESSION_ACTIVE:

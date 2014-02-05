@@ -10,11 +10,9 @@
 namespace umi\http;
 
 use umi\http\exception\RequiredDependencyException;
-use umi\http\request\IRequest;
-use umi\http\response\IResponse;
 
 /**
- * Трейт для внедрения поддер
+ * Трейт для использования HTTP-компонента.
  */
 trait THttpAware
 {
@@ -33,18 +31,18 @@ trait THttpAware
     }
 
     /**
-     * Возвращает HTTP запрос к серверу.
-     * @return IRequest
+     * Создает HTTP-запрос к серверу из глобальных переменных.
+     * @return Request
      */
-    protected final function getHttpRequest()
+    protected final function createHttpRequest()
     {
         return $this->getHttpFactory()
-            ->getRequest();
+            ->createRequest();
     }
 
     /**
-     * Создает HTTP ответ к серверу.
-     * @return IResponse
+     * Создает HTTP-ответ к серверу.
+     * @return Response
      */
     protected final function createHttpResponse()
     {

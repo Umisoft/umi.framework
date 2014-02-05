@@ -14,13 +14,11 @@ use SplDoublyLinkedList;
 use SplStack;
 use umi\acl\IAclManager;
 use umi\acl\IAclResource;
-use umi\acl\IAclRoleProvider;
 use umi\authentication\IAuthenticationAware;
 use umi\authentication\TAuthenticationAware;
 use umi\hmvc\acl\ComponentRoleProvider;
 use umi\hmvc\acl\IComponentRoleResolver;
 use umi\hmvc\component\IComponent;
-use umi\hmvc\dispatcher\http\IHTTPComponentResponse;
 use umi\hmvc\controller\IController;
 use umi\hmvc\exception\http\HttpForbidden;
 use umi\hmvc\exception\http\HttpNotFound;
@@ -30,7 +28,8 @@ use umi\hmvc\IMVCEntityFactoryAware;
 use umi\hmvc\macros\IMacros;
 use umi\hmvc\TMVCEntityFactoryAware;
 use umi\hmvc\view\IView;
-use umi\http\request\IRequest;
+use umi\http\Request;
+use umi\http\Response;
 use umi\i18n\ILocalizable;
 use umi\i18n\TLocalizable;
 use umi\route\result\IRouteResult;
@@ -50,7 +49,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
      */
     protected $controllerViewRenderErrorInfo = [];
     /**
-     * @var IRequest $currentRequest обрабатываемый HTTP-запрос
+     * @var Request $currentRequest обрабатываемый HTTP-запрос
      */
     protected $currentRequest;
     /**
@@ -74,14 +73,14 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
     /**
      * {@inheritdoc}
      */
-    public function dispatchRequest(IComponent $component, IRequest $request)
+    public function dispatchRequest(IComponent $component, Request $request)
     {
         $this->currentRequest = $request;
         $this->initialComponent = $component;
 
         $callStack = $this->createCallStack();
 
-        $routePath = parse_url($request->getRequestURI(), PHP_URL_PATH);
+        $routePath = parse_url($request->getRequestUri(), PHP_URL_PATH);
 
         try {
             $response = $this->processRequest($component, $routePath, $callStack);
@@ -104,8 +103,10 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
             return;
         }
 
-        $response->setContent($content);
-        $response->send();
+        $response
+            ->setContent($content)
+            ->prepare($request)
+            ->send();
     }
 
     /**
@@ -291,7 +292,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
      * @param string $matchedRoutePath обработанная часть начального маршрута
      * @throws HttpNotFound если невозможно сформировать результат.
      * @throws HttpForbidden если доступ к ресурсу не разрешен.
-     * @return IHTTPComponentResponse
+     * @return Response
      */
     protected function processRequest(IComponent $component, $routePath, SplStack $callStack, $matchedRoutePath = '')
     {
@@ -373,15 +374,15 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
      * Вызывает контроллер компонента.
      * @param IController $controller контроллер
      * @throws UnexpectedValueException если контроллер вернул неожиданный результат
-     * @return IHTTPComponentResponse
+     * @return Response
      */
     protected function invokeController(IController $controller)
     {
         $componentResponse = $controller();
 
-        if (!$componentResponse instanceof IHTTPComponentResponse) {
+        if (!$componentResponse instanceof Response) {
             throw new UnexpectedValueException($this->translate(
-                'Controller "{controller}" returns unexpected value. Instance of IHTTPComponentResponse expected.',
+                'Controller "{controller}" returns unexpected value. Instance of Response expected.',
                 ['controller' => get_class($controller)]
             ));
         }
@@ -391,17 +392,17 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
 
     /**
      * Обрабатывает результат запроса по всему стеку вызова компонентов.
-     * @param IHTTPComponentResponse $response
+     * @param Response $response
      * @param SplStack $callStack
-     * @return IHTTPComponentResponse
+     * @return Response
      */
-    protected function processResponse(IHTTPComponentResponse $response, SplStack $callStack)
+    protected function processResponse(Response $response, SplStack $callStack)
     {
         /**
          * @var IDispatchContext $context
          */
         foreach ($callStack as $context) {
-            if ($response->isProcessable()) {
+            if ($response->getIsCompleted()) {
 
                 $component = $context->getComponent();
 
@@ -437,7 +438,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
      * @param string $matchedRoutePath
      * @throws HttpForbidden если дочерний компонент не существует
      * @throws HttpNotFound если доступ к дочернему компоненту не разрешен
-     * @return IHTTPComponentResponse
+     * @return Response
      */
     private function processChildComponentRequest(IComponent $component, IRouteResult $routeResult, SplStack $callStack, $matchedRoutePath)
     {
@@ -480,7 +481,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
      * @param array $routeMatches
      * @throws HttpForbidden
      * @throws HttpNotFound
-     * @return IHTTPComponentResponse
+     * @return Response
      */
     private function processControllerRequest(IComponent $component, IDispatchContext $context, SplStack $callStack, array $routeMatches)
     {

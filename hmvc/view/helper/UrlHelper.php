@@ -10,7 +10,6 @@
 namespace umi\hmvc\view\helper;
 
 use umi\hmvc\dispatcher\IDispatcher;
-use umi\http\request\IRequest;
 
 /**
  * Помощник вида для генерации URL по маршрутам компонента.
@@ -46,7 +45,7 @@ class UrlHelper
         $url = $baseUrl . $context->getComponent()->getRouter()->assemble($routeName, $params) ? : '/';
 
         if ($useQuery) {
-            $getParams = $this->dispatcher->getCurrentRequest()->getParams(IRequest::GET)->toArray();
+            $getParams = $this->dispatcher->getCurrentRequest()->query->all();
             if($getParams) {
                 $url .= '?' . http_build_query($getParams);
             }
