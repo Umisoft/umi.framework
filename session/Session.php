@@ -9,116 +9,38 @@
 
 namespace umi\session;
 
-use umi\i18n\ILocalizable;
-use umi\i18n\TLocalizable;
-use umi\session\entity\factory\ISessionEntityFactoryAware;
-use umi\session\entity\factory\TSessionEntityFactoryAware;
-use umi\session\entity\ns\ISessionNamespace;
-use umi\session\exception\OutOfBoundsException;
-use umi\session\exception\RuntimeException;
+use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag;
+use Symfony\Component\HttpFoundation\Session\Session as SymfonySession;
 
 /**
  * Сервис для работы с сессией.
  */
-class Session implements ISession, ISessionEntityFactoryAware, ILocalizable
+class Session extends SymfonySession implements ISession
 {
-
-    use TLocalizable;
-    use TSessionEntityFactoryAware;
-
     /**
-     * @var ISessionNamespace[] $namespaces зарегистрированные пространства имен сессии
+     * {@inheritdoc}
      */
-    protected $namespaces = [];
+    public function hasBag($name)
+    {
+        try {
+            $this->getBag($name);
+
+            return true;
+        } catch (\InvalidArgumentException $e) {
+
+            return false;
+        }
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function registerNamespace($name, array $validators = [])
+    public function addAttributeBag($name)
     {
-        if (isset($this->namespaces[$name])) {
-            throw new RuntimeException($this->translate(
-                'Namespace "{namespace}" already registered.',
-                ['namespace' => $name]
-            ));
-        }
-
-        $namespace = $this->createSessionNamespace($name, $validators);
-
-        foreach ($validators as $type => $options) {
-            $validator = $this->createSessionValidator($type, $options);
-
-            if (!$validator->validate($namespace)) {
-                $namespace->clear();
-            }
-        }
-
-        $this->namespaces[$name] = $namespace;
+        $bag = new AttributeBag('_umi_' . $name);
+        $bag->setName($name);
+        $this->registerBag($bag);
 
         return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hasNamespace($name)
-    {
-        return isset($this->namespaces[$name]);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getNamespace($name)
-    {
-        if (!$this->hasNamespace($name)) {
-            throw new OutOfBoundsException($this->translate(
-                'Session "{name}" has not registered.',
-                ['name' => $name]
-            ));
-        }
-
-        return $this->namespaces[$name];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function deleteNamespace($name)
-    {
-        if ($this->hasNamespace($name)) {
-            $this->getNamespace($name)
-                ->clear();
-
-            unset($this->namespaces[$name]);
-        }
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function clearSession()
-    {
-        foreach ($this->namespaces as $instance) {
-            $instance->clear();
-        }
-
-        $this->namespaces = [];
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setStorage($type, array $options = [])
-    {
-        $storage = $this->createSessionStorage($type, $options);
-
-        /** @noinspection PhpParamsInspection */
-
-        return session_set_save_handler($storage);
     }
 }

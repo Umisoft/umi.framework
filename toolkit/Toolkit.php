@@ -16,7 +16,6 @@ use umi\log\ILoggerAware;
 use umi\log\TLoggerAware;
 use umi\spl\config\TConfigSupport;
 use umi\toolkit\exception\AlreadyRegisteredException;
-use umi\toolkit\exception\DomainException;
 use umi\toolkit\exception\InvalidArgumentException;
 use umi\toolkit\exception\NotRegisteredException;
 use umi\toolkit\exception\RuntimeException;
@@ -98,6 +97,63 @@ class Toolkit implements IToolkit, ILoggerAware, ILocalizable
     public function hasToolbox($toolboxName)
     {
         return isset($this->registeredToolboxes[$toolboxName]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getToolbox($toolboxName)
+    {
+        if (isset($this->toolboxes[$toolboxName])) {
+            return $this->toolboxes[$toolboxName];
+        }
+
+        $options = $this->getToolboxSettings($toolboxName);
+        $toolboxClass = $this->registeredToolboxes[$toolboxName];
+
+        $this->trace(
+            'Creating toolbox "{toolbox}" instance with class "{class}".',
+            ['toolbox' => $toolboxName, 'class' => $toolboxClass]
+        );
+
+        try {
+            /**
+             * @var IToolkitAware|IPrototype $prototype
+             */
+            $prototype = $this->getPrototypeFactory()
+                ->create(
+                    $toolboxClass,
+                    [
+                        'umi\toolkit\toolbox\IToolbox'
+                    ]
+                );
+
+            /**
+             * @var IToolbox $toolbox
+             */
+            $toolbox = $prototype->getPrototypeInstance();
+            $this->toolboxes[$toolboxName] = $toolbox;
+
+            if ($toolbox instanceof IFactory) {
+                $toolbox->setPrototypeFactory($this->getPrototypeFactory());
+                $toolbox->setToolkit($this);
+            }
+
+            if ($options) {
+                $prototype->setOptions($toolbox, $options);
+            }
+
+            $prototype->resolveDependencies();
+            $prototype->invokeConstructor($toolbox);
+
+        } catch (\Exception $e) {
+            throw new RuntimeException($this->translate(
+                'Cannot create toolbox "{name}".',
+                ['name' => $toolboxName]
+            ), 0, $e);
+        }
+
+        return $this->toolboxes[$toolboxName];
     }
 
     /**
@@ -311,68 +367,6 @@ class Toolkit implements IToolkit, ILoggerAware, ILocalizable
         }
 
         return null;
-    }
-
-    /**
-     * Возвращает экземляр набора инструментов
-     * @param string $toolboxName интерфейс набора инструментов, либо алиас
-     * @throws NotRegisteredException если набор инструментов не зарегистрирован
-     * @throws DomainException если экземпляр набора инструментов не соответсвует интерфейсу
-     * @throws RuntimeException если зарегистрированный интерфейс не существует
-     * @return object|IToolbox
-     */
-    protected function getToolbox($toolboxName)
-    {
-        if (isset($this->toolboxes[$toolboxName])) {
-            return $this->toolboxes[$toolboxName];
-        }
-
-        $options = $this->getToolboxSettings($toolboxName);
-        $toolboxClass = $this->registeredToolboxes[$toolboxName];
-
-        $this->trace(
-            'Creating toolbox "{toolbox}" instance with class "{class}".',
-            ['toolbox' => $toolboxName, 'class' => $toolboxClass]
-        );
-
-        try {
-            /**
-             * @var IToolkitAware|IPrototype $prototype
-             */
-            $prototype = $this->getPrototypeFactory()
-                ->create(
-                    $toolboxClass,
-                    [
-                        'umi\toolkit\toolbox\IToolbox'
-                    ]
-                );
-
-            /**
-             * @var IToolbox $toolbox
-             */
-            $toolbox = $prototype->getPrototypeInstance();
-            $this->toolboxes[$toolboxName] = $toolbox;
-
-            if ($toolbox instanceof IFactory) {
-                $toolbox->setPrototypeFactory($this->getPrototypeFactory());
-                $toolbox->setToolkit($this);
-            }
-
-            if ($options) {
-                $prototype->setOptions($toolbox, $options);
-            }
-
-            $prototype->resolveDependencies();
-            $prototype->invokeConstructor($toolbox);
-
-        } catch (\Exception $e) {
-            throw new RuntimeException($this->translate(
-                'Cannot create toolbox "{name}".',
-                ['name' => $toolboxName]
-            ), 0, $e);
-        }
-
-        return $this->toolboxes[$toolboxName];
     }
 
     /**

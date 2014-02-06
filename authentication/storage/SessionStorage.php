@@ -10,7 +10,6 @@
 namespace umi\authentication\storage;
 
 use umi\authentication\exception\RuntimeException;
-use umi\session\entity\ns\ISessionNamespace;
 use umi\session\ISessionAware;
 use umi\session\TSessionAware;
 
@@ -28,19 +27,14 @@ class SessionStorage implements IAuthStorage, ISessionAware
      */
     const ATTRIBUTE_NAME = 'identity';
     /**
-     * Имя сессии по умолчанию.
+     * Имя контейнера сессии по умолчанию.
      */
-    const SESSION_NAME = 'authentication';
+    const SESSION_BAG_NAME = 'authentication';
 
     /**
      * @var array $options опции хранилища
      */
     protected $options = [];
-
-    /**
-     * @var ISessionNamespace $sessionNamespace
-     */
-    private $sessionNamespace;
 
     /**
      * {@inheritdoc}
@@ -57,7 +51,7 @@ class SessionStorage implements IAuthStorage, ISessionAware
      */
     public function setIdentity($identity)
     {
-        $this->getAuthSessionNamespace()->set(self::ATTRIBUTE_NAME, $identity);
+        $this->setSessionVar(self::ATTRIBUTE_NAME, $identity);
 
         return $this;
     }
@@ -67,7 +61,7 @@ class SessionStorage implements IAuthStorage, ISessionAware
      */
     public function getIdentity()
     {
-        $identity = $this->getAuthSessionNamespace()->get(self::ATTRIBUTE_NAME);
+        $identity = $this->getSessionVar(self::ATTRIBUTE_NAME);
 
         if (is_null($identity)) {
             throw new RuntimeException(
@@ -83,7 +77,7 @@ class SessionStorage implements IAuthStorage, ISessionAware
      */
     public function hasIdentity()
     {
-        return $this->getAuthSessionNamespace()->has(self::ATTRIBUTE_NAME);
+        return $this->hasSessionVar(self::ATTRIBUTE_NAME);
     }
 
     /**
@@ -91,18 +85,17 @@ class SessionStorage implements IAuthStorage, ISessionAware
      */
     public function clearIdentity()
     {
-        $this->getAuthSessionNamespace()->del(self::ATTRIBUTE_NAME);
+        $this->removeSessionVar(self::ATTRIBUTE_NAME);
 
         return $this;
     }
 
-    protected function getAuthSessionNamespace()
+    /**
+     * {@inheritdoc}
+     */
+    protected function getSessionBagName()
     {
-        if (!$this->sessionNamespace) {
-            $namespaceName = empty($this->options['namespace']) ? self::SESSION_NAME : $this->options['namespace'];
-            $this->sessionNamespace = $this->getSessionNamespace($namespaceName, true);
-        }
-
-        return $this->sessionNamespace;
+        return empty($this->options['bagName']) ? self::SESSION_BAG_NAME : $this->options['bagName'];
     }
+
 }
