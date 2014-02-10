@@ -10,11 +10,9 @@
 namespace umi\http;
 
 use umi\http\exception\RequiredDependencyException;
-use umi\http\request\IRequest;
-use umi\http\response\IResponse;
 
 /**
- * Трейт для внедрения поддер
+ * Трейт для использования HTTP-компонента.
  */
 trait THttpAware
 {
@@ -27,26 +25,26 @@ trait THttpAware
      * Устанавливает фабрику HTTP сущностей.
      * @param IHttpFactory $httpFactory фабрика
      */
-    public final function setHttpFactory(IHttpFactory $httpFactory)
+    public function setHttpFactory(IHttpFactory $httpFactory)
     {
         $this->_httpFactory = $httpFactory;
     }
 
     /**
-     * Возвращает HTTP запрос к серверу.
-     * @return IRequest
+     * Создает HTTP-запрос к серверу из глобальных переменных.
+     * @return Request
      */
-    protected final function getHttpRequest()
+    protected function createHttpRequest()
     {
         return $this->getHttpFactory()
-            ->getRequest();
+            ->createRequest();
     }
 
     /**
-     * Создает HTTP ответ к серверу.
-     * @return IResponse
+     * Создает HTTP-ответ к серверу.
+     * @return Response
      */
-    protected final function createHttpResponse()
+    protected function createHttpResponse()
     {
         return $this->getHttpFactory()
             ->createResponse();
@@ -57,7 +55,7 @@ trait THttpAware
      * @return IHttpFactory
      * @throws RequiredDependencyException если фабрика не установлена
      */
-    private final function getHttpFactory()
+    private function getHttpFactory()
     {
         if (!$this->_httpFactory) {
             throw new RequiredDependencyException(sprintf(

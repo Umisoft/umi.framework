@@ -25,7 +25,7 @@ trait TSyntaxAware
      * Устанавливает фабрику для создания парсера.
      * @param IParserFactory $parserFactory фабрика
      */
-    public final function setSyntaxParserFactory(IParserFactory $parserFactory)
+    public function setSyntaxParserFactory(IParserFactory $parserFactory)
     {
         $this->_syntaxParserFactory = $parserFactory;
     }
@@ -37,7 +37,7 @@ trait TSyntaxAware
      * @throws RequiredDependencyException если инструменты не были внедрены
      * @return IParser созданный парсер
      */
-    protected final function createParser(array $grammar, array $rules)
+    protected function createParser(array $grammar, array $rules)
     {
         if (!$this->_syntaxParserFactory) {
             throw new RequiredDependencyException(sprintf(

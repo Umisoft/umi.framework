@@ -25,7 +25,7 @@ trait TModelAware
      * Устанавливает фабрику моделей.
      * @param IModelFactory $factory
      */
-    public final function setModelFactory(IModelFactory $factory)
+    public function setModelFactory(IModelFactory $factory)
     {
         $this->_hmvcModelFactory = $factory;
     }
@@ -35,7 +35,7 @@ trait TModelAware
      * @param string $name
      * @return IModel|object
      */
-    protected final function createModelByName($name)
+    protected function createModelByName($name)
     {
         return $this->getModelFactory()
             ->createByName($name);
@@ -46,7 +46,7 @@ trait TModelAware
      * @param string $class класс
      * @return IModel|object
      */
-    protected final function createModelByClass($class)
+    protected function createModelByClass($class)
     {
         return $this->getModelFactory()
             ->createByClass($class);
@@ -57,7 +57,7 @@ trait TModelAware
      * @return IModelFactory фабрика
      * @throws RequiredDependencyException если фабрика не внедрена
      */
-    private final function getModelFactory()
+    private function getModelFactory()
     {
         if (!$this->_hmvcModelFactory) {
             throw new RequiredDependencyException(sprintf(

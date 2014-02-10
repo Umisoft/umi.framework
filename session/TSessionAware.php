@@ -9,13 +9,11 @@
 
 namespace umi\session;
 
-use umi\session\entity\ns\ISessionNamespace;
-use umi\session\exception\OutOfBoundsException;
+use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
 use umi\session\exception\RequiredDependencyException;
-use umi\session\exception\RuntimeException;
 
 /**
- * Трейт для внедрения функциональности работы с сессией.
+ * Трейт для внедрения поддержки сессии.
  */
 trait TSessionAware
 {
@@ -23,95 +21,117 @@ trait TSessionAware
      * @var ISession $_sessionService
      */
     private $_sessionService;
+    /**
+     * @var AttributeBagInterface $_sessionBag
+     */
+    private $_sessionBag;
 
     /**
      * @param ISession $sessionService сервис сесии
      */
-    public final function setSessionService(ISession $sessionService)
+    public function setSessionService(ISession $sessionService)
     {
         $this->_sessionService = $sessionService;
     }
 
     /**
-     * Регистрирует пространство имен сессии.
-     * @param string $name имя
-     * @param array $validators валидаторы
-     * @throws RuntimeException если такое пространство имен уже было зарегистрировано
-     * @return self
+     * Возвращает имя контейнера сессии.
+     * @return string
      */
-    protected final function registerSessionNamespace($name, array $validators = [])
+    protected function getSessionBagName()
     {
-        $this->getSessionService()
-            ->registerNamespace($name, $validators);
+        return get_class($this);
+    }
+
+    /**
+     * Проверяет, существует ли переменная в сессии.
+     * @param string $name имя переменной
+     * @return boolean
+     */
+    protected function hasSessionVar($name)
+    {
+        return $this->getSessionBag()->has($name);
+    }
+
+    /**
+     * Возвращает переменную из сессии.
+     * @param string $name имя переменной
+     * @param mixed $default значение переменной по умолчанию
+     * @return mixed
+     */
+    protected function getSessionVar($name, $default = null)
+    {
+        return $this->getSessionBag()->get($name, $default);
+    }
+
+    /**
+     * Устанавливает значение переменной в сессии.
+     * @param string $name имя переменной
+     * @param mixed $value значение переменной
+     * @return $this
+     */
+    protected function setSessionVar($name, $value)
+    {
+        $this->getSessionBag()->set($name, $value);
 
         return $this;
     }
 
     /**
-     * Проверяет существование пространства имен.
-     * @param string $name имя
-     * @return bool
+     * Возвращает все переменные из сессии.
+     * @return array
      */
-    protected final function hasSessionNamespace($name)
+    protected function getSessionVars()
     {
-        return $this->getSessionService()
-            ->hasNamespace($name);
+        return $this->getSessionBag()->all();
     }
 
     /**
-     * Возвращает экземпляр ранее зарегистрированного пространства имен.
-     * @param string $name имя
-     * @param bool $autoRegister флаг авторегистрации пространства имен, если такого не существует
-     * @throws OutOfBoundsException если пространство имен с таким именем не зарегистрировано
-     * @return ISessionNamespace
+     * Sets attributes.
+     *
+     * @param array $attributes Attributes
      */
-    protected final function getSessionNamespace($name, $autoRegister = false)
+
+    /**
+     * Заменяет все значения в сессии.
+     * @param array $attributes переменные
+     * @return $this
+     */
+    protected function replaceSessionVars(array $attributes)
     {
-        if ($autoRegister && !$this->hasSessionNamespace($name)) {
-            $this->registerSessionNamespace($name);
+        $this->getSessionBag()->replace($attributes);
+
+        return $this;
+    }
+
+    /**
+     * Удвляет переменную из сессии.
+     * @param string $name имя переменной
+     * @return mixed значение удаленной переменной или null, если переменной не было
+     */
+    protected function removeSessionVar($name)
+    {
+        return $this->getSessionBag()->remove($name);
+    }
+
+    /**
+     * Возвращает контейнер сессии.
+     * @return AttributeBagInterface
+     */
+    private function getSessionBag()
+    {
+        if (!$this->_sessionBag) {
+
+            $bagName = $this->getSessionBagName();
+
+            if (!$this->getSession()->hasBag($bagName)) {
+                $this->getSession()->addAttributeBag($bagName);
+            }
+
+            $this->_sessionBag = $this->getSession()->getBag($bagName);
         }
 
-        return $this->getSessionService()
-            ->getNamespace($name);
-    }
-
-    /**
-     * Удаляет пространство имен сесии.
-     * @param string $name
-     * @return ISessionNamespace
-     */
-    protected final function removeSessionNamespace($name)
-    {
-        $this->getSessionService()
-            ->deleteNamespace($name);
-
-        return $this;
-    }
-
-    /**
-     * Чистит сессию.
-     * @return self
-     */
-    protected final function clearSession()
-    {
-        $this->getSessionService()
-            ->clearSession();
-
-        return $this;
-    }
-
-    /**
-     * Устанавливает хранилище для сессии.
-     * @param string $type тип хранилища
-     * @param array $options опции
-     * @return bool
-     */
-    protected final function setSessionStorage($type, array $options = [])
-    {
-        $this->getSessionService()
-            ->setStorage($type, $options);
-
-        return $this;
+        return $this->_sessionBag;
     }
 
     /**
@@ -119,7 +139,7 @@ trait TSessionAware
      * @return ISession
      * @throws RequiredDependencyException если сервис не был внедрен.
      */
-    private final function getSessionService()
+    private function getSession()
     {
         if (!$this->_sessionService) {
             throw new RequiredDependencyException(sprintf(

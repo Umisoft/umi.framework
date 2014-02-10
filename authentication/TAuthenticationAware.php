@@ -29,7 +29,7 @@ trait TAuthenticationAware
      * @param IAuthenticationFactory $authFactory фабрика
      * @return self
      */
-    public final function setAuthenticationFactory(IAuthenticationFactory $authFactory)
+    public function setAuthenticationFactory(IAuthenticationFactory $authFactory)
     {
         $this->_authFactory = $authFactory;
     }
@@ -39,7 +39,7 @@ trait TAuthenticationAware
      * @param array $config конфигурация адаптера
      * @return IAuthAdapter
      */
-    protected final function createAuthAdapter(array $config = [])
+    protected function createAuthAdapter(array $config = [])
     {
         return $this->getAuthFactory()
             ->createAdapter($config);
@@ -50,7 +50,7 @@ trait TAuthenticationAware
      * @param array $config конфигурация хранилища
      * @return IAuthStorage
      */
-    protected final function createAuthStorage(array $config = [])
+    protected function createAuthStorage(array $config = [])
     {
         return $this->getAuthFactory()
             ->createStorage($config);
@@ -59,26 +59,35 @@ trait TAuthenticationAware
     /**
      * Возвращает сконфигурированный провайдер.
      * @param string $type тип провайдера
-     * @param array $options опции
+     * @param array $constructorArgs аргументы конструктора провайдера
      * @return IAuthProvider
      */
-    protected final function createAuthProvider($type, array $options = [])
+    protected function createAuthProvider($type, array $constructorArgs = [])
     {
         return $this->getAuthFactory()
-            ->createProvider($type, $options);
+            ->createProvider($type, $constructorArgs);
     }
 
     /**
      * Создает менеджер аутентификации.
-     * @param array $options опции менеджера аутентификации
      * @param IAuthAdapter $adapter адаптер аутентификации
      * @param IAuthStorage $storage хранилище аутентификации
-     * @return IAuthentication
+     * @param array $options опции менеджера аутентификации
+     * @return IAuthManager
      */
-    protected final function createAuthManager(array $options = [], IAuthAdapter $adapter = null, IAuthStorage $storage = null)
+    protected function createAuthManager(IAuthAdapter $adapter, IAuthStorage $storage, array $options = [])
     {
         return $this->getAuthFactory()
-            ->createManager($options, $adapter, $storage);
+            ->createAuthManager($adapter, $storage, $options);
+    }
+
+    /**
+     * Возвращает менеджер аутентификации с натройками по умолчанию.
+     * @return IAuthManager
+     */
+    protected function getDefaultAuthManager()
+    {
+        return $this->getAuthFactory()->getDefaultAuthManager();
     }
 
     /**

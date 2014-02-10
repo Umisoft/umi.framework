@@ -9,7 +9,7 @@
 
 namespace umi\authentication\provider;
 
-use umi\http\request\IRequest;
+use umi\http\Request;
 use umi\i18n\ILocalizable;
 use umi\i18n\TLocalizable;
 
@@ -22,15 +22,15 @@ class HttpProvider implements IAuthProvider, ILocalizable
     use TLocalizable;
 
     /**
-     * @var IRequest $request HTTP запрос
+     * @var Request $request HTTP запрос
      */
     protected $request = null;
 
     /**
      * Конструктор.
-     * @param IRequest $request HTTP запрос
+     * @param Request $request HTTP запрос
      */
-    public function __construct(IRequest $request)
+    public function __construct(Request $request)
     {
         $this->request = $request;
     }
@@ -40,8 +40,8 @@ class HttpProvider implements IAuthProvider, ILocalizable
      */
     public function getCredentials()
     {
-        $username = $this->request->getVar(IRequest::HEADERS, 'PHP_AUTH_USER');
-        $password = $this->request->getVar(IRequest::HEADERS, 'PHP_AUTH_PW');
+        $username = $this->request->getUser();
+        $password = $this->request->getPassword();
 
         if ($username && $password) {
             return [$username, $password];

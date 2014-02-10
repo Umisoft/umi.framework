@@ -25,7 +25,7 @@ trait TFilterAware
      * Устанавливает фабрику для создания фильтров.
      * @param IFilterFactory $filterFactory фабрика
      */
-    public final function setFilterFactory(IFilterFactory $filterFactory)
+    public function setFilterFactory(IFilterFactory $filterFactory)
     {
         $this->_filterFactory = $filterFactory;
     }
@@ -36,7 +36,7 @@ trait TFilterAware
      * @param array $config конфигурация фильтров
      * @return IFilterCollection
      */
-    protected final function createFilterCollection(array $config = [])
+    protected function createFilterCollection(array $config = [])
     {
         return $this->getFilterFactory()
             ->createFilterCollection($config);
@@ -48,7 +48,7 @@ trait TFilterAware
      * @param array $options опции фильтра
      * @return IFilter созданный фильтр
      */
-    protected final function createFilter($type, array $options = [])
+    protected function createFilter($type, array $options = [])
     {
         return $this->getFilterFactory()
             ->createFilter($type, $options);
@@ -59,7 +59,7 @@ trait TFilterAware
      * @return IFilterFactory
      * @throws RequiredDependencyException если фабрика не внедрена
      */
-    private final function getFilterFactory()
+    private function getFilterFactory()
     {
         if (!$this->_filterFactory) {
             throw new RequiredDependencyException(sprintf(

@@ -9,57 +9,26 @@
 
 namespace umi\session;
 
-use umi\session\entity\ns\ISessionNamespace;
-use umi\session\exception\OutOfBoundsException;
-use umi\session\exception\RuntimeException;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
  * Сервис сессии.
  */
-interface ISession
+interface ISession extends SessionInterface
 {
     /**
-     * Регистрирует пространство имен сессии.
-     * @param string $name имя
-     * @param array $validators валидаторы
-     * @throws RuntimeException если такое пространство имен уже было зарегистрировано
-     * @return self
-     */
-    public function registerNamespace($name, array $validators = []);
-
-    /**
-     * Проверяет существование пространства имен.
-     * @param string $name имя
+     * Проверяет, зарегистрирован ли контейнер сессии
+     * @param string $name имя контейнера
      * @return bool
      */
-    public function hasNamespace($name);
+    public function hasBag($name);
 
     /**
-     * Возвращает экземпляр ранее зарегистрированного пространства имен.
-     * @param string $name имя
-     * @throws OutOfBoundsException если пространство имен с таким именем не зарегистрировано
-     * @return ISessionNamespace
-     */
-    public function getNamespace($name);
-
-    /**
-     * Удаляет пространство имен сесии.
-     * @param string $name
-     * @return ISessionNamespace
-     */
-    public function deleteNamespace($name);
-
-    /**
-     * Чистит сессию.
+     * Создает и регистрирует контейнер сессии
+     * @param string $name имя контейнера
+     * @throws \InvalidArgumentException если контейнер с таким именем был зарегистрирован
      * @return self
      */
-    public function clearSession();
+    public function addAttributeBag($name);
 
-    /**
-     * Устанавливает хранилище для сессии.
-     * @param string $type тип хранилища
-     * @param array $options опции
-     * @return bool
-     */
-    public function setStorage($type, array $options = []);
 }

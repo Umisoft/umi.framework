@@ -9,8 +9,9 @@
 
 namespace umi\hmvc\controller;
 
-use umi\hmvc\component\request\IComponentRequest;
-use umi\hmvc\component\response\IComponentResponse;
+use umi\hmvc\dispatcher\IDispatchContext;
+use umi\http\Request;
+use umi\http\Response;
 
 /**
  * Интерфейс контроллера.
@@ -18,9 +19,36 @@ use umi\hmvc\component\response\IComponentResponse;
 interface IController
 {
     /**
-     * Вызывает контроллер. Передает в контроллер HTTP запрос.
-     * @param IComponentRequest $request HTTP запрос
-     * @return IComponentResponse результат работы контроллера
+     * Вызывает контроллер.
+     * @return Response
      */
-    public function __invoke(IComponentRequest $request);
+    public function __invoke();
+
+    /**
+     * Устанавливает контекст вызова контроллера.
+     * @param IDispatchContext $context
+     * @return self
+     */
+    public function setContext(IDispatchContext $context);
+
+    /**
+     * Устанавливает HTTP-запрос.
+     * @param Request $request
+     * @return self
+     */
+    public function setRequest(Request $request);
+
+    /**
+     * Устанавливает имя контроллера.
+     * @param string $name
+     * @return self
+     */
+    public function setName($name);
+
+    /**
+     * Возвращает имя контроллера.
+     * @return string
+     */
+    public function getName();
+
 }

@@ -27,7 +27,7 @@ trait TConfigEntityFactoryAware
      * Устанавливает фабрику сущностей.
      * @param IConfigEntityFactory $configFactory фабрика сущностей
      */
-    public final function setConfigEntityFactory(IConfigEntityFactory $configFactory)
+    public function setConfigEntityFactory(IConfigEntityFactory $configFactory)
     {
         $this->_configEntityFactory = $configFactory;
     }
@@ -38,7 +38,7 @@ trait TConfigEntityFactoryAware
      * @param array $source конфигурация
      * @return IConfigSource
      */
-    protected final function createConfigSource($alias, array $source)
+    protected function createConfigSource($alias, array $source)
     {
         return $this->getConfigEntityFactory()
             ->createConfigSource($alias, $source);
@@ -50,7 +50,7 @@ trait TConfigEntityFactoryAware
      * @param string $alias символическое имя конфигурации
      * @return ISeparateConfigSource
      */
-    protected final function createSeparateConfigSource($type, $alias)
+    protected function createSeparateConfigSource($type, $alias)
     {
         return $this->getConfigEntityFactory()
             ->createSeparateConfigSource($type, $alias);
@@ -60,7 +60,7 @@ trait TConfigEntityFactoryAware
      * Восстанавливает зависимости для конфигурации.
      * @param IConfigSource $config
      */
-    protected final function wakeUpConfigSource(IConfigSource $config) {
+    protected function wakeUpConfigSource(IConfigSource $config) {
         $this->getConfigEntityFactory()->wakeUpConfigSource($config);
     }
 
@@ -68,7 +68,7 @@ trait TConfigEntityFactoryAware
      * Восстанавливает зависимости для "отдельной" конфигурации.
      * @param ISeparateConfigSource $config
      */
-    protected final function wakeUpSeparateConfigSource(ISeparateConfigSource $config) {
+    protected function wakeUpSeparateConfigSource(ISeparateConfigSource $config) {
         $this->getConfigEntityFactory()->wakeUpSeparateConfigSource($config);
     }
 

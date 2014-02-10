@@ -25,7 +25,7 @@ trait TFormAware
      * Устанавливает инструменты для работы с формами
      * @param IEntityFactory $formEntityFactory
      */
-    public final function setFormEntityFactory(IEntityFactory $formEntityFactory)
+    public function setFormEntityFactory(IEntityFactory $formEntityFactory)
     {
         $this->_formEntityFactory = $formEntityFactory;
     }
@@ -36,7 +36,7 @@ trait TFormAware
      * @throws RequiredDependencyException если инструменты для работы с формами не установлены
      * @return IForm
      */
-    protected final function createForm(array $config)
+    protected function createForm(array $config)
     {
         if (!$this->_formEntityFactory) {
             throw new RequiredDependencyException(sprintf(

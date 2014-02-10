@@ -25,7 +25,7 @@ trait TTokenAware
      * Устанавливает фабрику токенов.
      * @param ITokenFactory $tokenFactory фабрика
      */
-    public final function setSyntaxTokenFactory(ITokenFactory $tokenFactory)
+    public function setSyntaxTokenFactory(ITokenFactory $tokenFactory)
     {
         $this->_syntaxTokenFactory = $tokenFactory;
     }
@@ -37,7 +37,7 @@ trait TTokenAware
      * @throws RequiredDependencyException если зависимость не внедрена
      * @return IToken созданный токен
      */
-    protected final function createSyntaxNonterminal($name, $value)
+    protected function createSyntaxNonterminal($name, $value)
     {
         return $this->getSyntaxTokenFactory()
             ->createNonterminal($name, $value);
@@ -50,7 +50,7 @@ trait TTokenAware
      * @throws RequiredDependencyException если зависимость не внедрена
      * @return string созданный токен
      */
-    protected final function createSyntaxTerminal($name, $value)
+    protected function createSyntaxTerminal($name, $value)
     {
         return $this->getSyntaxTokenFactory()
             ->createTerminal($name, $value);
@@ -61,7 +61,7 @@ trait TTokenAware
      * @return ITokenFactory
      * @throws RequiredDependencyException
      */
-    private final function getSyntaxTokenFactory()
+    private function getSyntaxTokenFactory()
     {
         if (!$this->_syntaxTokenFactory) {
             throw new RequiredDependencyException(sprintf(

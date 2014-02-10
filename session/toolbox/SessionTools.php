@@ -9,12 +9,10 @@
 
 namespace umi\session\toolbox;
 
-use umi\session\entity\factory\ISessionEntityFactory;
-use umi\session\entity\factory\ISessionEntityFactoryAware;
+use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 use umi\session\ISession;
 use umi\session\ISessionAware;
-use umi\session\ISessionManager;
-use umi\session\ISessionManagerAware;
+use umi\session\Session;
 use umi\toolkit\exception\UnsupportedServiceException;
 use umi\toolkit\toolbox\IToolbox;
 use umi\toolkit\toolbox\TToolbox;
@@ -32,29 +30,14 @@ class SessionTools implements IToolbox
     use TToolbox;
 
     /**
-     * @var string $managerClass класс менеджера сессии
+     * @var array $sessionStorage опции хранилища значений сессии
      */
-    public $managerClass = 'umi\session\SessionManager';
-    /**
-     * @var string $serviceClass класс сервиса сессии
-     */
-    public $serviceClass = 'umi\session\Session';
-    /**
-     * @var string $namespaceFactoryClass фабрика создания пространств имен
-     */
-    public $entityFactoryClass = 'umi\session\toolbox\factory\SessionEntityFactory';
+    public $storage = [];
 
     /**
-     * Конструктор.
+     * @var ISession $session сессия
      */
-    public function __construct()
-    {
-        $this->registerFactory(
-            'entity',
-            $this->entityFactoryClass,
-            ['umi\session\entity\factory\ISessionEntityFactory']
-        );
-    }
+    private $session;
 
     /**
      * {@inheritdoc}
@@ -62,8 +45,6 @@ class SessionTools implements IToolbox
     public function getService($serviceInterfaceName, $concreteClassName)
     {
         switch ($serviceInterfaceName) {
-            case 'umi\session\ISessionManager':
-                return $this->getManager();
             case 'umi\session\ISession':
                 return $this->getSession();
         }
@@ -74,12 +55,13 @@ class SessionTools implements IToolbox
     }
 
     /**
-     * Возвращает менеджер сессии.
-     * @return ISessionManager
+     * {@inheritdoc}
      */
-    protected function getManager()
+    public function injectDependencies($object)
     {
-        return $this->getPrototype($this->managerClass, ['umi\session\ISessionManager'])->createSingleInstance();
+        if ($object instanceof ISessionAware) {
+            $object->setSessionService($this->getSession());
+        }
     }
 
     /**
@@ -88,34 +70,20 @@ class SessionTools implements IToolbox
      */
     protected function getSession()
     {
-        return $this->getPrototype($this->serviceClass, ['umi\session\ISession'])->createSingleInstance();
+        if (!$this->session) {
+            $this->session = new Session($this->getSessionStorage());
+        }
+        return $this->session;
     }
 
     /**
-     * Возвращает фабрику сущностей сессии.
-     * @return ISessionEntityFactory
+     * Возвращает хранилище значений сессии.
+     * @return NativeSessionStorage
      */
-    protected function getEntityFactory()
+    private function getSessionStorage()
     {
-        return $this->getFactory('entity');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function injectDependencies($object)
-    {
-        if ($object instanceof ISessionAware) {
-            $object->setSessionService($this->getSession());
-        }
-
-        if ($object instanceof ISessionManagerAware) {
-            $object->setSessionManager($this->getManager());
-        }
-
-        if ($object instanceof ISessionEntityFactoryAware) {
-            $object->setNamespaceFactory($this->getEntityFactory());
-        }
+        $options = $this->configToArray($this->storage, true);
+        return new NativeSessionStorage($options);
     }
 
 }

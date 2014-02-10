@@ -26,7 +26,7 @@ trait TConfigIOAware
      * Устанавливает I/O сервис.
      * @param IConfigIO $configIO I/O сервис
      */
-    public final function setConfigIO(IConfigIO $configIO)
+    public function setConfigIO(IConfigIO $configIO)
     {
         $this->_configIO = $configIO;
     }
@@ -36,7 +36,7 @@ trait TConfigIOAware
      * @param string $alias символическое имя
      * @return IConfigSource
      */
-    protected final function readConfig($alias)
+    protected function readConfig($alias)
     {
         return $this->getConfigIO()
             ->read($alias);
@@ -47,7 +47,7 @@ trait TConfigIOAware
      * @param IConfigSource $config
      * @return $this
      */
-    protected final function writeConfig(IConfigSource $config)
+    protected function writeConfig(IConfigSource $config)
     {
         $this->getConfigIO()
             ->write($config);
@@ -60,7 +60,7 @@ trait TConfigIOAware
      * @return IConfigIO
      * @throws RequiredDependencyException если сервис не был внедрен
      */
-    private final function getConfigIO()
+    private function getConfigIO()
     {
         if (!$this->_configIO) {
             throw new RequiredDependencyException(sprintf(

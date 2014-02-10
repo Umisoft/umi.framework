@@ -9,23 +9,20 @@
 
 namespace umi\http;
 
-use umi\http\request\IRequest;
-use umi\http\response\IResponse;
-
 /**
- * Фабрика HTTP сущностей.
+ * Фабрика HTTP-сущностей.
  */
 interface IHttpFactory
 {
     /**
-     * Возвращает HTTP запрос к серверу.
-     * @return IRequest
+     * Создает HTTP-запрос к серверу из глобальных переменных.
+     * @return Request
      */
-    public function getRequest();
+    public function createRequest();
 
     /**
-     * Создает HTTP ответ к серверу.
-     * @return IResponse
+     * Создает HTTP-ответ к серверу.
+     * @return Response
      */
     public function createResponse();
 }

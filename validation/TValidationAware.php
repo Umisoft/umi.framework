@@ -25,7 +25,7 @@ trait TValidationAware
      * Устанавливает фабрику валидаторов.
      * @param IValidatorFactory $validatorFactory
      */
-    public final function setValidatorFactory(IValidatorFactory $validatorFactory)
+    public function setValidatorFactory(IValidatorFactory $validatorFactory)
     {
         $this->_validatorFactory = $validatorFactory;
     }
@@ -37,7 +37,7 @@ trait TValidationAware
      * @throws RequiredDependencyException если инструменты для валидации не установлены
      * @return IValidatorCollection
      */
-    protected final function createValidatorCollection(array $config = [])
+    protected function createValidatorCollection(array $config = [])
     {
         return $this->getValidatorFactory()
             ->createValidatorCollection($config);
@@ -50,7 +50,7 @@ trait TValidationAware
      * @throws RequiredDependencyException если инструменты для валидации не установлены
      * @return IValidator созданный валидатор
      */
-    protected final function createValidator($type, array $options = [])
+    protected function createValidator($type, array $options = [])
     {
         return $this->getValidatorFactory()
             ->createValidator($type, $options);
@@ -61,7 +61,7 @@ trait TValidationAware
      * @return IValidatorFactory
      * @throws RequiredDependencyException
      */
-    private final function getValidatorFactory()
+    private function getValidatorFactory()
     {
         if (!$this->_validatorFactory) {
             throw new RequiredDependencyException(sprintf(

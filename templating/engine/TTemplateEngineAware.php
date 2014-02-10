@@ -25,7 +25,7 @@ trait TTemplateEngineAware
      * Устанавливает фабрику для создания шаблонизаторов.
      * @param ITemplateEngineFactory $factory фабрика
      */
-    public final function setTemplateEngineFactory(ITemplateEngineFactory $factory)
+    public function setTemplateEngineFactory(ITemplateEngineFactory $factory)
     {
         $this->_templatingFactory = $factory;
     }
@@ -36,7 +36,7 @@ trait TTemplateEngineAware
      * @param array $options опции шаблонизатора
      * @return ITemplateEngine
      */
-    protected final function createTemplateEngine($type, array $options = [])
+    protected function createTemplateEngine($type, array $options = [])
     {
         return $this->getTemplateEngineFactory()
             ->createTemplateEngine($type, $options);
@@ -47,7 +47,7 @@ trait TTemplateEngineAware
      * @return ITemplateEngineFactory фабрика
      * @throws RequiredDependencyException если фабрика не была внедрена
      */
-    private final function getTemplateEngineFactory()
+    private function getTemplateEngineFactory()
     {
         if (!$this->_templatingFactory) {
             throw new RequiredDependencyException(sprintf(

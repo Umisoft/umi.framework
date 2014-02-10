@@ -9,21 +9,33 @@
 
 namespace umi\templating\engine;
 
+use umi\templating\exception\OutOfBoundsException;
+
 /**
  * Интерфейс фабрики шаблонизаторов.
  */
 interface ITemplateEngineFactory
 {
-    /** PHP шаблонизатор */
+    /**
+     * PHP шаблонизатор
+     */
     const PHP_ENGINE = 'php';
-    /** Twig шаблонизатор */
-    const TWIG_ENGINE = 'twig';
 
     /**
      * Создает шаблонизатор заданного типа.
      * @param string $type тип шаблонизатора
      * @param array $options опции шаблонизатора
+     * @throws OutOfBoundsException если заданный тип шаблонизатора не зарегистрирован
      * @return ITemplateEngine
      */
     public function createTemplateEngine($type, array $options = []);
+
+    /**
+     * Устанавливает инициализатор для указанного типа шаблонизатора.
+     * @param string $type тип шаблонизатора
+     * @param callable $initializer инициализатор, в который передается экземпляр шаблонизатора после его создания
+     * @throws OutOfBoundsException если заданный тип шаблонизатора не зарегистрирован
+     * @return $this
+     */
+    public function setInitializer($type, callable $initializer);
 }

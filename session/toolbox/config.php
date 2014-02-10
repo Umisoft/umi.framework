@@ -16,12 +16,9 @@ return [
     'name'    => SessionTools::NAME,
     'class'        => __NAMESPACE__ . '\SessionTools',
     'awareInterfaces' => [
-        'umi\session\ISessionAware',
-        'umi\session\ISessionManagerAware',
-        'umi\session\entity\factory\ISessionEntityFactoryAware',
+        'umi\session\ISessionAware'
     ],
     'services'            => [
-        'umi\session\ISessionManager',
         'umi\session\ISession'
     ]
 ];

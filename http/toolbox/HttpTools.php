@@ -50,11 +50,11 @@ class HttpTools implements IToolbox
     public function getService($serviceInterfaceName, $concreteClassName)
     {
         switch ($serviceInterfaceName) {
-            case 'umi\http\request\IRequest':
+            case 'umi\http\Request':
                 return $this->getHttpFactory()
-                    ->getRequest();
+                    ->createRequest();
 
-            case 'umi\http\response\IResponse':
+            case 'umi\http\Response':
                 return $this->getHttpFactory()
                     ->createResponse();
 

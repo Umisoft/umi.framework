@@ -63,7 +63,7 @@ interface IMetadata
 
     /**
      * Возвращает непосредственного родителя типа либо null, если тип базовый
-     * @param $typeName имя типа
+     * @param string $typeName имя типа
      * @throws NonexistentEntityException если тип с указанным именем не существует или не существует родителя
      * @return null|IObjectType
      */
@@ -107,7 +107,7 @@ interface IMetadata
 
     /**
      * Возвращает поле с указанным именем
-     * @param $fieldName имя поля
+     * @param string $fieldName имя поля
      * @throws NonexistentEntityException если поля с указанным именем уже существует
      * @return IField
      */

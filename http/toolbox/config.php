@@ -20,7 +20,7 @@ return [
         'umi\http\IHttpAware',
     ],
     'services'            => [
-        'umi\http\request\IRequest',
-        'umi\http\response\IResponse'
+        'umi\http\Request',
+        'umi\http\Response'
     ]
 ];
