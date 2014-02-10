@@ -1,17 +1,17 @@
 {
-	"name": "umi/rbac",
+    "name": "umi/rbac",
     "description": "UMI.Framework Role Based Access Control package",
-	"type": "library",
+    "type": "library",
     "license": "BSD-3-Clause",
-	"minimum-stability": "stable",
-	"homepage": "http://umi-framework.ru/",
-	"autoload": {
-		"psr-4": {
-			"umi\\rbac\\": "."
-		}
-	},
-	"require": {
-		"php": ">=5.4.0",
-		"umi/toolkit": "dev-master"
-	}
+    "minimum-stability": "stable",
+    "homepage": "http://umi-framework.ru/",
+    "autoload": {
+        "psr-4": {
+            "umi\\rbac\\": "."
+        }
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "umi/toolkit": "dev-master"
+    }
 }

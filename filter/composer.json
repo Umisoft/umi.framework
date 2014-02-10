@@ -1,19 +1,19 @@
 {
-	"name": "umi/filter",
-	"description": "UMI.Framework Caching package",
-	"type": "library",
-	"license": "BSD-3-Clause",
-	"minimum-stability": "stable",
-	"homepage": "http://umi-framework.ru/",
-	"autoload": {
-		"psr-4": {
-			"umi\\filter\\": "."
-		}
-	},
-	"require": {
-		"php": ">=5.4.0",
-		"umi/toolkit": "dev-master",
-		"umi/log": "dev-master",
-		"umi/spl": "dev-master"
-	}
+    "name": "umi/filter",
+    "description": "UMI.Framework Caching package",
+    "type": "library",
+    "license": "BSD-3-Clause",
+    "minimum-stability": "stable",
+    "homepage": "http://umi-framework.ru/",
+    "autoload": {
+        "psr-4": {
+            "umi\\filter\\": "."
+        }
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "umi/toolkit": "dev-master",
+        "umi/log": "dev-master",
+        "umi/spl": "dev-master"
+    }
 }

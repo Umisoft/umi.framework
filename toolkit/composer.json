@@ -1,20 +1,20 @@
 {
-	"name": "umi/toolkit",
-	"description": "UMI.Framework Toolkit package",
-	"type": "library",
-	"license": "BSD-3-Clause",
-	"minimum-stability": "stable",
-	"homepage": "http://umi-framework.ru/",
-	"autoload": {
-		"psr-4": {
-			"umi\\toolkit\\": "."
-		}
-	},
-	"require": {
-		"php": ">=5.4.0",
-		"umi/event": "dev-master",
-		"umi/i18n": "dev-master",
-		"umi/log": "dev-master",
-		"umi/spl": "dev-master"
-	}
+    "name": "umi/toolkit",
+    "description": "UMI.Framework Toolkit package",
+    "type": "library",
+    "license": "BSD-3-Clause",
+    "minimum-stability": "stable",
+    "homepage": "http://umi-framework.ru/",
+    "autoload": {
+        "psr-4": {
+            "umi\\toolkit\\": "."
+        }
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "umi/event": "dev-master",
+        "umi/i18n": "dev-master",
+        "umi/log": "dev-master",
+        "umi/spl": "dev-master"
+    }
 }

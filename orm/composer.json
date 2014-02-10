@@ -1,20 +1,20 @@
 {
-	"name": "umi/orm",
+    "name": "umi/orm",
     "description": "UMI.Framework Object Relation Mapper package",
-	"type": "library",
+    "type": "library",
     "license": "BSD-3-Clause",
-	"minimum-stability": "stable",
-	"homepage": "http://umi-framework.ru/",
-	"autoload": {
-		"psr-4": {
-			"umi\\orm\\": "."
-		}
-	},
-	"require": {
-		"php": ">=5.4.0",
-		"umi/dbal": "dev-master",
-		"umi/spl": "dev-master",
-		"umi/toolkit": "dev-master",
-		"umi/i18n": "dev-master"
-	}
+    "minimum-stability": "stable",
+    "homepage": "http://umi-framework.ru/",
+    "autoload": {
+        "psr-4": {
+            "umi\\orm\\": "."
+        }
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "umi/dbal": "dev-master",
+        "umi/spl": "dev-master",
+        "umi/toolkit": "dev-master",
+        "umi/i18n": "dev-master"
+    }
 }

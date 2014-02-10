@@ -10,17 +10,12 @@
 namespace umi\authentication\provider;
 
 use umi\http\Request;
-use umi\i18n\ILocalizable;
-use umi\i18n\TLocalizable;
 
 /**
  * Провайдер HTTP авторизации.
  */
-class HttpProvider implements IAuthProvider, ILocalizable
+class HttpProvider implements IAuthProvider
 {
-
-    use TLocalizable;
-
     /**
      * @var Request $request HTTP запрос
      */

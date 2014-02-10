@@ -1,21 +1,20 @@
 {
-	"name": "umi/templating",
+    "name": "umi/templating",
     "description": "UMI.Framework Templating package",
-	"type": "library",
+    "type": "library",
     "license": "BSD-3-Clause",
-	"minimum-stability": "stable",
-	"homepage": "http://umi-framework.ru/",
-	"autoload": {
-		"psr-4": {
-			"umi\\templating\\": "."
-		}
-	},
-	"require": {
-		"php": ">=5.4.0",
-		"umi/i18n": "dev-master",
-		"umi/form": "dev-master",
-		"umi/pagination": "dev-master",
-		"umi/toolkit": "dev-master",
-		"twig/twig": "1.*"
-	}
+    "minimum-stability": "stable",
+    "homepage": "http://umi-framework.ru/",
+    "autoload": {
+        "psr-4": {
+            "umi\\templating\\": "."
+        }
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "umi/i18n": "dev-master",
+        "umi/form": "dev-master",
+        "umi/pagination": "dev-master",
+        "umi/toolkit": "dev-master"
+    }
 }

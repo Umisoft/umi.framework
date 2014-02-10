@@ -1,18 +1,18 @@
 {
-	"name": "umi/dbal",
+    "name": "umi/dbal",
     "description": "UMI.Framework Database abstraction layer",
-	"type": "library",
+    "type": "library",
     "license": "BSD-3-Clause",
-	"minimum-stability": "stable",
-	"homepage": "http://umi-framework.ru/",
-	"autoload": {
-		"psr-4": {
-			"umi\\dbal\\": "."
-		}
-	},
-	"require": {
-		"php": ">=5.4.0",
-		"umi/toolkit": "dev-master",
-		"doctrine/dbal": "2.4.*"
-	}
+    "minimum-stability": "stable",
+    "homepage": "http://umi-framework.ru/",
+    "autoload": {
+        "psr-4": {
+            "umi\\dbal\\": "."
+        }
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "umi/toolkit": "dev-master",
+        "doctrine/dbal": "2.4.*"
+    }
 }

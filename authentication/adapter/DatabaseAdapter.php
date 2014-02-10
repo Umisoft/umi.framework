@@ -23,11 +23,17 @@ use umi\i18n\TLocalizable;
  */
 class DatabaseAdapter implements IAuthAdapter, ILocalizable
 {
-    /** Имя таблицы */
+    /**
+     * Имя таблицы
+     */
     const OPTION_TABLE = 'table';
-    /** Колонки содержащие логин пользователя */
+    /**
+     * Колонки, содержащие логин пользователя
+     */
     const OPTION_LOGIN_COLUMNS = 'loginColumns';
-    /** Колонка содержащая пароль пользователя */
+    /**
+     * Колонка, содержащая пароль пользователя
+     */
     const OPTION_PASSWORD_COLUMN = 'passwordColumn';
 
     use TLocalizable;

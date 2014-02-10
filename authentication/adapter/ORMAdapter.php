@@ -1,4 +1,12 @@
 <?php
+/**
+ * UMI.Framework (http://umi-framework.ru/)
+ *
+ * @link      http://github.com/Umisoft/framework for the canonical source repository
+ * @copyright Copyright (c) 2007-2013 Umisoft ltd. (http://umisoft.ru/)
+ * @license   http://umi-framework.ru/license/bsd-3 BSD-3 License
+ */
+
 namespace umi\authentication\adapter;
 
 use umi\authentication\exception\InvalidArgumentException;
@@ -10,6 +18,7 @@ use umi\orm\collection\ICollectionManagerAware;
 use umi\orm\collection\TCollectionManagerAware;
 use umi\orm\object\IObject;
 use umi\orm\selector\condition\IFieldConditionGroup;
+
 /**
  * Адаптер для аутентификации с помощью ORM коллекции пользователей
  */
@@ -18,11 +27,17 @@ class ORMAdapter implements IAuthAdapter, ICollectionManagerAware, ILocalizable
     use TLocalizable;
     use TCollectionManagerAware;
 
-    /** Имя коллекции */
+    /**
+     * Имя коллекции
+     */
     const OPTION_COLLECTION = 'collection';
-    /** Поля содержащие логин */
+    /**
+     * Поля, содержащие логин
+     */
     const OPTION_LOGIN_FIELDS = 'loginFields';
-    /** Поле содержащее пароль */
+    /**
+     * Поле, содержащее пароль
+     */
     const OPTION_PASSWORD_FIELD = 'passwordField';
 
     /**
@@ -39,7 +54,7 @@ class ORMAdapter implements IAuthAdapter, ICollectionManagerAware, ILocalizable
     protected $passwordField;
 
     /**
-     * Конструктор
+     * Конструктор.
      * @param array $options
      * @throws InvalidArgumentException если обязательные опции не переданы
      */
@@ -91,7 +106,7 @@ class ORMAdapter implements IAuthAdapter, ICollectionManagerAware, ILocalizable
     }
 
     /**
-     * Проверяет правильность пароля для указанного пользователя
+     * Проверяет правильность пароля для указанного пользователя.
      * @param IObject $user пользователь
      * @param string $password пароль
      * @return bool true, если пароль верный

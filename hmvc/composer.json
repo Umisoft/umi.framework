@@ -1,18 +1,18 @@
 {
-	"name": "umi/hmvc",
-	"description": "UMI.Framework Hierarchical MVC package",
-	"type": "library",
-	"license": "BSD-3-Clause",
-	"minimum-stability": "stable",
-	"homepage": "http://umi-framework.ru/",
-	"autoload": {
-		"psr-4": {
-			"umi\\hmvc\\": "."
-		}
-	},
-	"require": {
-		"php": ">=5.4.0",
-		"umi/http": "dev-master",
-		"umi/toolkit": "dev-master"
-	}
+    "name": "umi/hmvc",
+    "description": "UMI.Framework Hierarchical MVC package",
+    "type": "library",
+    "license": "BSD-3-Clause",
+    "minimum-stability": "stable",
+    "homepage": "http://umi-framework.ru/",
+    "autoload": {
+        "psr-4": {
+            "umi\\hmvc\\": "."
+        }
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "umi/http": "dev-master",
+        "umi/toolkit": "dev-master"
+    }
 }

@@ -12,7 +12,7 @@ use umi\pagination\IPaginator;
 use umi\templating\exception\InvalidArgumentException;
 
 /**
- * Коллекция помощников шаблонов для постраничной навигации.
+ * Помощник шаблонов для постраничной навигации.
  */
 class PaginationHelper
 {

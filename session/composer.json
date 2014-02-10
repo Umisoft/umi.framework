@@ -1,21 +1,17 @@
 {
-	"name": "umi/session",
+    "name": "umi/session",
     "description": "UMI.Framework Session storage tools",
-	"type": "library",
+    "type": "library",
     "license": "BSD-3-Clause",
-	"minimum-stability": "stable",
-	"homepage": "http://umi-framework.ru/",
-	"autoload": {
-		"psr-4": {
-			"umi\\session\\": "."
-		}
-	},
-	"require": {
-		"php": ">=5.4.0",
-		"umi/toolkit": "dev-master",
-		"umi/i18n": "dev-master",
-		"umi/spl": "dev-master",
-		"umi/event": "dev-master",
-		"umi/http": "dev-master"
-	}
+    "minimum-stability": "stable",
+    "homepage": "http://umi-framework.ru/",
+    "autoload": {
+        "psr-4": {
+            "umi\\session\\": "."
+        }
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "symfony/http-foundation": "2.4.*"
+    }
 }

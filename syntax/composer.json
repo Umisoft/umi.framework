@@ -1,18 +1,18 @@
 {
-	"name": "umi/syntax",
+    "name": "umi/syntax",
     "description": "UMI.Framework Syntax parsing package",
-	"type": "library",
+    "type": "library",
     "license": "BSD-3-Clause",
-	"minimum-stability": "stable",
-	"homepage": "http://umi-framework.ru/",
-	"autoload": {
-		"psr-4": {
-			"umi\\syntax\\": "."
-		}
-	},
-	"require": {
-		"php": ">=5.4.0",
-		"umi/toolkit": "dev-master",
-		"umi/i18n": "dev-master"
-	}
+    "minimum-stability": "stable",
+    "homepage": "http://umi-framework.ru/",
+    "autoload": {
+        "psr-4": {
+            "umi\\syntax\\": "."
+        }
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "umi/toolkit": "dev-master",
+        "umi/i18n": "dev-master"
+    }
 }

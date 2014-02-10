@@ -1,19 +1,19 @@
 {
-	"name": "umi/config",
+    "name": "umi/config",
     "description": "UMI.Framework Configuration package",
-	"type": "library",
+    "type": "library",
     "license": "BSD-3-Clause",
-	"minimum-stability": "stable",
-	"homepage": "http://umi-framework.ru/",
-	"autoload": {
-		"psr-4": {
-			"umi\\config\\": "."
-		}
-	},
-	"require": {
-		"php": ">=5.4.0",
-		"umi/i18n": "dev-master",
-		"umi/spl": "dev-master",
-		"umi/toolkit": "dev-master"
-	}
+    "minimum-stability": "stable",
+    "homepage": "http://umi-framework.ru/",
+    "autoload": {
+        "psr-4": {
+            "umi\\config\\": "."
+        }
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "umi/i18n": "dev-master",
+        "umi/spl": "dev-master",
+        "umi/toolkit": "dev-master"
+    }
 }
