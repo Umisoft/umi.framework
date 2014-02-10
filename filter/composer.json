@@ -3,7 +3,6 @@
     "description": "UMI.Framework Caching package",
     "type": "library",
     "license": "BSD-3-Clause",
-    "minimum-stability": "stable",
     "homepage": "http://umi-framework.ru/",
     "autoload": {
         "psr-4": {
@@ -12,8 +11,7 @@
     },
     "require": {
         "php": ">=5.4.0",
-        "umi/toolkit": "dev-master",
-        "umi/log": "dev-master",
-        "umi/spl": "dev-master"
+        "umi/log": "*",
+        "umi/spl": "*"
     }
 }

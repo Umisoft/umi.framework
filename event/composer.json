@@ -3,7 +3,6 @@
     "description": "UMI.Framework Event package",
     "type": "library",
     "license": "BSD-3-Clause",
-    "minimum-stability": "stable",
     "homepage": "http://umi-framework.ru/",
     "autoload": {
         "psr-4": {
@@ -11,7 +10,6 @@
         }
     },
     "require": {
-        "php": ">=5.4.0",
-        "umi/toolkit": "dev-master"
+        "php": ">=5.4.0"
     }
 }
