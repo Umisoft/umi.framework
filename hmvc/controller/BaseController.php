@@ -19,15 +19,12 @@ use umi\http\IHttpAware;
 use umi\http\Request;
 use umi\http\Response;
 use umi\http\THttpAware;
-use umi\i18n\ILocalizable;
-use umi\i18n\TLocalizable;
 
 /**
  * Базовый класс контроллера.
  */
-abstract class BaseController implements IController, ILocalizable, IHttpAware
+abstract class BaseController implements IController, IHttpAware
 {
-    use TLocalizable;
     use THttpAware;
 
     /**
