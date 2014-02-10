@@ -25,7 +25,7 @@ trait THttpAware
      * Устанавливает фабрику HTTP сущностей.
      * @param IHttpFactory $httpFactory фабрика
      */
-    public final function setHttpFactory(IHttpFactory $httpFactory)
+    public function setHttpFactory(IHttpFactory $httpFactory)
     {
         $this->_httpFactory = $httpFactory;
     }
@@ -34,7 +34,7 @@ trait THttpAware
      * Создает HTTP-запрос к серверу из глобальных переменных.
      * @return Request
      */
-    protected final function createHttpRequest()
+    protected function createHttpRequest()
     {
         return $this->getHttpFactory()
             ->createRequest();
@@ -44,7 +44,7 @@ trait THttpAware
      * Создает HTTP-ответ к серверу.
      * @return Response
      */
-    protected final function createHttpResponse()
+    protected function createHttpResponse()
     {
         return $this->getHttpFactory()
             ->createResponse();
@@ -55,7 +55,7 @@ trait THttpAware
      * @return IHttpFactory
      * @throws RequiredDependencyException если фабрика не установлена
      */
-    private final function getHttpFactory()
+    private function getHttpFactory()
     {
         if (!$this->_httpFactory) {
             throw new RequiredDependencyException(sprintf(

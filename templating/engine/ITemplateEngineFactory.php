@@ -16,10 +16,10 @@ use umi\templating\exception\OutOfBoundsException;
  */
 interface ITemplateEngineFactory
 {
-    /** PHP шаблонизатор */
+    /**
+     * PHP шаблонизатор
+     */
     const PHP_ENGINE = 'php';
-    /** Twig шаблонизатор */
-    const TWIG_ENGINE = 'twig';
 
     /**
      * Создает шаблонизатор заданного типа.

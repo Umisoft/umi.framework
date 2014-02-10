@@ -25,7 +25,7 @@ trait TPaginationAware
     /**
      * {@inheritdoc}
      */
-    public final function setPaginatorFactory(IPaginatorFactory $paginationFactory)
+    public function setPaginatorFactory(IPaginatorFactory $paginationFactory)
     {
         $this->_paginationFactory = $paginationFactory;
     }
@@ -37,7 +37,7 @@ trait TPaginationAware
      * @param int $itemsPerPage количество элементов на странице
      * @return IPaginator созданный пагинатор
      */
-    protected final function createObjectPaginator($objects, $itemsPerPage)
+    protected function createObjectPaginator($objects, $itemsPerPage)
     {
         return $this->getPaginatorFactory()->createObjectPaginator($objects, $itemsPerPage);
     }
@@ -48,7 +48,7 @@ trait TPaginationAware
      * @param int $itemsPerPage количество элементов на странице
      * @return IPaginator созданный пагинатор
      */
-    protected final function createPaginator(IPaginationAdapter $adapter, $itemsPerPage)
+    protected function createPaginator(IPaginationAdapter $adapter, $itemsPerPage)
     {
         return $this->getPaginatorFactory()->createPaginator($adapter, $itemsPerPage);
     }

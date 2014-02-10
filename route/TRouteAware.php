@@ -25,7 +25,7 @@ trait TRouteAware
      * Устанавливает фабрику для создания маршрутеризатора.
      * @param IRouteFactory $routerFactory фабрика
      */
-    public final function setRouteFactory(IRouteFactory $routerFactory)
+    public function setRouteFactory(IRouteFactory $routerFactory)
     {
         $this->_routeFactory = $routerFactory;
     }
@@ -46,7 +46,7 @@ trait TRouteAware
      * @return IRouteFactory
      * @throws RequiredDependencyException
      */
-    private final function getRouterFactory()
+    private function getRouterFactory()
     {
         if (!$this->_routeFactory) {
             throw new RequiredDependencyException(sprintf(

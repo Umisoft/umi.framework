@@ -29,7 +29,7 @@ trait TSessionAware
     /**
      * @param ISession $sessionService сервис сесии
      */
-    public final function setSessionService(ISession $sessionService)
+    public function setSessionService(ISession $sessionService)
     {
         $this->_sessionService = $sessionService;
     }

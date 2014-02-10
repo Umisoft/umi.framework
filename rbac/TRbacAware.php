@@ -25,7 +25,7 @@ trait TRbacAware
      * Устанавливает фабрику для создания сущностей Rbac.
      * @param IRoleFactory $rbacFactory фабрика
      */
-    public final function setRoleFactory(IRoleFactory $rbacFactory)
+    public function setRoleFactory(IRoleFactory $rbacFactory)
     {
         $this->_rbacRoleFactory = $rbacFactory;
     }
@@ -37,7 +37,7 @@ trait TRbacAware
      * @throws RequiredDependencyException если фабрика не была внедрена
      * @return IRbacRole созданная роль
      */
-    protected final function createRbacRole(array $permissions, array $roles = [])
+    protected function createRbacRole(array $permissions, array $roles = [])
     {
         if (!$this->_rbacRoleFactory) {
             throw new RequiredDependencyException(sprintf(

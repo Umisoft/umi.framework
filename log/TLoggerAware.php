@@ -25,7 +25,7 @@ trait TLoggerAware
      * Устанавливает логгер.
      * @param LoggerInterface $logger логгер
      */
-    public final function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger)
     {
         $this->_logger = $logger;
     }
@@ -52,7 +52,7 @@ trait TLoggerAware
      * @param array $placeholders список плейсхолдеров
      * @return $this
      */
-    protected final function trace($message, array $placeholders = [])
+    protected function trace($message, array $placeholders = [])
     {
         return $this->log(ILogger::LOG_DEBUG, $message, $placeholders);
     }

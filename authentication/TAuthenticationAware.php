@@ -29,7 +29,7 @@ trait TAuthenticationAware
      * @param IAuthenticationFactory $authFactory фабрика
      * @return self
      */
-    public final function setAuthenticationFactory(IAuthenticationFactory $authFactory)
+    public function setAuthenticationFactory(IAuthenticationFactory $authFactory)
     {
         $this->_authFactory = $authFactory;
     }
@@ -39,7 +39,7 @@ trait TAuthenticationAware
      * @param array $config конфигурация адаптера
      * @return IAuthAdapter
      */
-    protected final function createAuthAdapter(array $config = [])
+    protected function createAuthAdapter(array $config = [])
     {
         return $this->getAuthFactory()
             ->createAdapter($config);
@@ -50,7 +50,7 @@ trait TAuthenticationAware
      * @param array $config конфигурация хранилища
      * @return IAuthStorage
      */
-    protected final function createAuthStorage(array $config = [])
+    protected function createAuthStorage(array $config = [])
     {
         return $this->getAuthFactory()
             ->createStorage($config);
@@ -62,7 +62,7 @@ trait TAuthenticationAware
      * @param array $constructorArgs аргументы конструктора провайдера
      * @return IAuthProvider
      */
-    protected final function createAuthProvider($type, array $constructorArgs = [])
+    protected function createAuthProvider($type, array $constructorArgs = [])
     {
         return $this->getAuthFactory()
             ->createProvider($type, $constructorArgs);
@@ -75,7 +75,7 @@ trait TAuthenticationAware
      * @param array $options опции менеджера аутентификации
      * @return IAuthManager
      */
-    protected final function createAuthManager(IAuthAdapter $adapter, IAuthStorage $storage, array $options = [])
+    protected function createAuthManager(IAuthAdapter $adapter, IAuthStorage $storage, array $options = [])
     {
         return $this->getAuthFactory()
             ->createAuthManager($adapter, $storage, $options);
@@ -85,7 +85,7 @@ trait TAuthenticationAware
      * Возвращает менеджер аутентификации с натройками по умолчанию.
      * @return IAuthManager
      */
-    protected final function getDefaultAuthManager()
+    protected function getDefaultAuthManager()
     {
         return $this->getAuthFactory()->getDefaultAuthManager();
     }

@@ -30,7 +30,7 @@ trait TMVCEntityFactoryAware
      * Устанавливает фабрику MVC сущностей.
      * @param IMVCEntityFactory $factory фабрика
      */
-    public final function setMVCEntityFactory(IMVCEntityFactory $factory)
+    public function setMVCEntityFactory(IMVCEntityFactory $factory)
     {
         $this->_MVCEntityFactory = $factory;
     }
@@ -41,7 +41,7 @@ trait TMVCEntityFactoryAware
      * @param array $controllerList список контроллеров в формате ['controllerName' => 'controllerClassName', ...]
      * @return IControllerFactory
      */
-    protected final function createMVCControllerFactory(IComponent $component, array $controllerList)
+    protected function createMVCControllerFactory(IComponent $component, array $controllerList)
     {
         return $this->getMVCEntityFactory()
             ->createControllerFactory(
@@ -56,7 +56,7 @@ trait TMVCEntityFactoryAware
      * @param array $macrosList список макросов в формате ['macrosName' => 'macrosClassName', ...]
      * @return IMacrosFactory
      */
-    protected final function createMVCMacrosFactory(IComponent $component, array $macrosList)
+    protected function createMVCMacrosFactory(IComponent $component, array $macrosList)
     {
         return $this->getMVCEntityFactory()
             ->createMacrosFactory(
@@ -70,7 +70,7 @@ trait TMVCEntityFactoryAware
      * @param array $options опции
      * @return IModelFactory
      */
-    protected final function createMVCModelFactory(array $options)
+    protected function createMVCModelFactory(array $options)
     {
         return $this->getMVCEntityFactory()
             ->createModelFactory($options);
@@ -81,7 +81,7 @@ trait TMVCEntityFactoryAware
      * @param array $options опции
      * @return IViewRenderer
      */
-    protected final function createMVCViewRenderer(array $options)
+    protected function createMVCViewRenderer(array $options)
     {
         return $this->getMVCEntityFactory()
             ->createViewRenderer($options);
@@ -94,7 +94,7 @@ trait TMVCEntityFactoryAware
      * @param array $options конфигурация
      * @return IComponent
      */
-    protected final function createMVCComponent($name, $path, array $options)
+    protected function createMVCComponent($name, $path, array $options)
     {
         return $this->getMVCEntityFactory()
             ->createComponent($name, $path, $options);
@@ -105,7 +105,7 @@ trait TMVCEntityFactoryAware
      * @return IMVCEntityFactory
      * @throws RequiredDependencyException если фабрика не внедрена
      */
-    private final function getMVCEntityFactory()
+    private function getMVCEntityFactory()
     {
         if (!$this->_MVCEntityFactory) {
             throw new RequiredDependencyException(sprintf(

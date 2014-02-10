@@ -40,7 +40,7 @@ trait TConfigAliasResolverAware
      * @throws RequiredDependencyException если не внедрены инструменты работы с конфигурацией
      * @return array
      */
-    protected final function getFilesByAlias($alias)
+    protected function getFilesByAlias($alias)
     {
         return $this->getConfigIO()
             ->getFilesByAlias($alias);
@@ -51,7 +51,7 @@ trait TConfigAliasResolverAware
      * @return IConfigIO
      * @throws RequiredDependencyException если сервис не был внедрен
      */
-    private final function getConfigIO()
+    private function getConfigIO()
     {
         if (!$this->_configIO) {
             throw new RequiredDependencyException(sprintf(

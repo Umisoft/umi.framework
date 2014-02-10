@@ -26,16 +26,14 @@ class TemplateEngineFactory implements ITemplateEngineFactory, IFactory
      * @var string $engineClasses классы существующих шаблонизаторов
      */
     public $engineClasses = [
-        self::PHP_ENGINE => 'umi\templating\engine\php\PhpTemplateEngine',
-        self::TWIG_ENGINE => 'umi\templating\engine\twig\TwigTemplateEngine'
+        self::PHP_ENGINE => 'umi\templating\engine\php\PhpTemplateEngine'
     ];
 
     /**
      * @var array $defaultOptions опции шаблонизаторов по умолчанию
      */
     public $defaultOptions = [
-        self::PHP_ENGINE => [],
-        self::TWIG_ENGINE => []
+        self::PHP_ENGINE => []
     ];
 
     /**
@@ -67,11 +65,14 @@ class TemplateEngineFactory implements ITemplateEngineFactory, IFactory
             )
             ->createInstance();
 
+        $options = $this->configToArray($options, true);
+
         if (isset($this->defaultOptions[$type])) {
-            $options = $this->mergeConfigOptions($options, $this->defaultOptions[$type]);
+            $defaultOptions = $this->configToArray($this->defaultOptions[$type], true);
+            $options = $this->mergeConfigOptions($options, $defaultOptions);
         }
 
-        $engine->setOptions($this->configToArray($options, true));
+        $engine->setOptions($options);
 
         if (isset($this->initializers[$type])) {
             $this->initializers[$type]($engine);

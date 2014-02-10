@@ -28,7 +28,7 @@ trait TConfigCacheEngineAware
      * Устанавливает сервис кэширования конфигурации.
      * @param IConfigCacheEngine $cacheEngine сервис
      */
-    public final function setConfigCacheEngine(IConfigCacheEngine $cacheEngine)
+    public function setConfigCacheEngine(IConfigCacheEngine $cacheEngine)
     {
         $this->_configCacheEngine = $cacheEngine;
     }
@@ -37,7 +37,7 @@ trait TConfigCacheEngineAware
      * Проверяет, установлен ли сервис кэширования конфигурации.
      * @return bool
      */
-    protected final function hasConfigCacheEngine()
+    protected function hasConfigCacheEngine()
     {
         return $this->_configCacheEngine != null;
     }
@@ -48,7 +48,7 @@ trait TConfigCacheEngineAware
      * @param int $timestamp время "актуальности"
      * @return bool
      */
-    protected final function isConfigCacheActual($alias, $timestamp)
+    protected function isConfigCacheActual($alias, $timestamp)
     {
         return $this->getConfigCacheEngine()
             ->isActual($alias, $timestamp);
@@ -60,7 +60,7 @@ trait TConfigCacheEngineAware
      * @throws RuntimeException если заданная конфигурация не найдена в кэше
      * @return IConfigSource
      */
-    protected final function loadConfig($alias)
+    protected function loadConfig($alias)
     {
         return $this->getConfigCacheEngine()
             ->load($alias);
@@ -71,7 +71,7 @@ trait TConfigCacheEngineAware
      * @param IConfigSource $config конфигурация
      * @return self
      */
-    protected final function saveConfig(IConfigSource $config)
+    protected function saveConfig(IConfigSource $config)
     {
         $this->getConfigCacheEngine()
             ->save($config);
@@ -84,7 +84,7 @@ trait TConfigCacheEngineAware
      * @throws RequiredDependencyException если сервис кэширования не внедрен
      * @return IConfigCacheEngine
      */
-    private final function getConfigCacheEngine()
+    private function getConfigCacheEngine()
     {
         if (!$this->_configCacheEngine) {
             throw new RequiredDependencyException(sprintf(
