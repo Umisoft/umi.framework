@@ -11,10 +11,13 @@ namespace umi\hmvc\component;
 
 use umi\acl\IAclManager;
 use umi\hmvc\controller\IController;
+use umi\hmvc\dispatcher\IDispatchContext;
 use umi\hmvc\exception\OutOfBoundsException;
 use umi\hmvc\exception\RuntimeException;
 use umi\hmvc\macros\IMacros;
 use umi\hmvc\view\IViewRenderer;
+use umi\http\Request;
+use umi\http\Response;
 use umi\route\IRouter;
 
 /**
@@ -153,5 +156,19 @@ interface IComponent
      * @return IAclManager
      */
     public function getAclManager();
+
+    /**
+     * Может выполнять дополнительные действия при обработке HTTP-запроса.
+     * @param IDispatchContext $context
+     * @param Request $request
+     */
+    public function onDispatchRequest(IDispatchContext $context, Request $request);
+
+    /**
+     * Может выполнять дополнительные действия при обработке HTTP-ответа.
+     * @param IDispatchContext $context
+     * @param Response $response
+     */
+    public function onDispatchResponse(IDispatchContext $context, Response $response);
 
 }

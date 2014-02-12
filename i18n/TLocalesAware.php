@@ -54,6 +54,28 @@ trait TLocalesAware
     }
 
     /**
+     * Устанавливает локаль по умолчанию
+     * @param string $localeId
+     * @return $this
+     */
+    protected function setDefaultLocale($localeId)
+    {
+        return $this->getLocalesService()
+            ->setDefaultLocale($localeId);
+    }
+
+    /**
+     * Устанавливает текущую локаль
+     * @param string $localeId
+     * @return $this
+     */
+    protected function setCurrentLocale($localeId)
+    {
+        return $this->getLocalesService()
+            ->setCurrentLocale($localeId);
+    }
+
+    /**
      * Возвращает сервис для работы с локалями
      * @throws RequiredDependencyException
      * @return ILocalesService

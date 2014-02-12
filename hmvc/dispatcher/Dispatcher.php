@@ -307,6 +307,8 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
             ->setBaseUrl($matchedRoutePath)
             ->setCallStack(clone $callStack);
 
+        $component->onDispatchRequest($context, $this->currentRequest);
+
         if (isset($routeMatches[IComponent::MATCH_COMPONENT])) {
 
             return $this->processChildComponentRequest($component, $routeResult, $callStack, $matchedRoutePath);
@@ -402,9 +404,10 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
          * @var IDispatchContext $context
          */
         foreach ($callStack as $context) {
-            if ($response->getIsCompleted()) {
 
-                $component = $context->getComponent();
+            $component = $context->getComponent();
+
+            if (!$response->getIsCompleted()) {
 
                 if (!$component->hasController(IComponent::LAYOUT_CONTROLLER)) {
                     continue;
@@ -415,6 +418,8 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
                     ->setRequest($this->currentRequest);
                 $response = $this->invokeController($layoutController);
             }
+
+            $component->onDispatchResponse($context, $response);
         }
 
         return $response;

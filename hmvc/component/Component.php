@@ -13,6 +13,7 @@ use umi\acl\IAclAware;
 use umi\acl\IAclManager;
 use umi\acl\TAclAware;
 use umi\hmvc\controller\IControllerFactory;
+use umi\hmvc\dispatcher\IDispatchContext;
 use umi\hmvc\exception\OutOfBoundsException;
 use umi\hmvc\IMVCEntityFactoryAware;
 use umi\hmvc\macros\IMacrosFactory;
@@ -20,6 +21,8 @@ use umi\hmvc\model\IModelAware;
 use umi\hmvc\model\IModelFactory;
 use umi\hmvc\TMVCEntityFactoryAware;
 use umi\hmvc\view\IViewRenderer;
+use umi\http\Request;
+use umi\http\Response;
 use umi\i18n\ILocalizable;
 use umi\i18n\TLocalizable;
 use umi\route\IRouteAware;
@@ -212,6 +215,20 @@ class Component implements IComponent, IMVCEntityFactoryAware, IRouteAware, ILoc
         }
 
         return $this->aclManager;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function onDispatchRequest(IDispatchContext $context, Request $request)
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function onDispatchResponse(IDispatchContext $context, Response $response)
+    {
     }
 
     /**
