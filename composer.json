@@ -24,6 +24,7 @@
         "umi/route" : "self.version",
         "umi/session" : "self.version",
         "umi/spl" : "self.version",
+        "umi/stream" : "self.version",
         "umi/syntax" : "self.version",
         "umi/templating" : "self.version",
         "umi/toolkit" : "self.version",
