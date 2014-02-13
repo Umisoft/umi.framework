@@ -17,46 +17,46 @@ use umi\templating\exception\RuntimeException;
 class PhpTemplate
 {
     /**
-     * @var string $_templatingDirectory директория с шаблонами
+     * @var string $templatingDirectory директория с шаблонами
      */
-    protected $_templatingDirectory;
+    protected $templatingDirectory;
     /**
-     * @var callable $_templatingHelperCallback callback для вызова помощников
+     * @var PhpTemplateEngine $templateEngine
      */
-    protected $_templatingHelperCallback;
+    protected $templateEngine;
 
     /**
      * Конструктор
      * @param string $directory
-     * @param callable $helperCallback
+     * @param PhpTemplateEngine $templateEngine
      */
-    public function __construct($directory = '.', callable $helperCallback = null)
+    public function __construct($directory = '.', PhpTemplateEngine $templateEngine)
     {
-        $this->_templatingDirectory = $directory;
-        $this->_templatingHelperCallback = $helperCallback;
+        $this->templatingDirectory = $directory;
+        $this->templateEngine = $templateEngine;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function render($_templateName, array $_templateVariables = [])
+    public function render($templateName, array $templateVariables = [])
     {
-        $_templateFilename = $this->_templatingDirectory . DIRECTORY_SEPARATOR . $_templateName;
+        $templateFilename = $this->templatingDirectory . DIRECTORY_SEPARATOR . $templateName;
 
-        if (!is_readable($_templateFilename)) {
+        if (!is_readable($templateFilename)) {
             throw new RuntimeException(sprintf(
                 'Cannot render template "%s". PHP template file "%s" is not readable.',
-                $_templateName,
-                $_templateFilename
+                $templateName,
+                $templateFilename
             ));
         }
 
-        extract($_templateVariables);
+        extract($templateVariables);
 
         ob_start();
         try {
             /** @noinspection PhpIncludeInspection */
-            require $_templateFilename;
+            require $templateFilename;
         } catch (\Exception $e) {
             ob_end_clean();
             throw $e;
@@ -73,6 +73,6 @@ class PhpTemplate
      */
     public function __call($name, array $arguments)
     {
-        return call_user_func($this->_templatingHelperCallback, $name, $arguments);
+        return $this->templateEngine->callHelper($name, $arguments);
     }
 }

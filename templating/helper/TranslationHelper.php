@@ -35,6 +35,7 @@ class TranslationHelper implements ILocalizable
         $this->translator = $translator;
     }
 
+
     /**
      * Переводит сообщение.
      * @param string $message сообщение
