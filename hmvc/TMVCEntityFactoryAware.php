@@ -12,7 +12,7 @@ namespace umi\hmvc;
 use umi\hmvc\component\IComponent;
 use umi\hmvc\controller\IControllerFactory;
 use umi\hmvc\exception\RequiredDependencyException;
-use umi\hmvc\macros\IMacrosFactory;
+use umi\hmvc\widget\IWidgetFactory;
 use umi\hmvc\model\IModelFactory;
 use umi\hmvc\view\IViewRenderer;
 
@@ -51,17 +51,17 @@ trait TMVCEntityFactoryAware
     }
 
     /**
-     * Создает фабрику макросов для компонента.
+     * Создает фабрику виджетов для компонента.
      * @param IComponent $component
-     * @param array $macrosList список макросов в формате ['macrosName' => 'macrosClassName', ...]
-     * @return IMacrosFactory
+     * @param array $widgetList список виджетов в формате ['widgetName' => 'widgetClassName', ...]
+     * @return IWidgetFactory
      */
-    protected function createMVCMacrosFactory(IComponent $component, array $macrosList)
+    protected function createMVCWidgetFactory(IComponent $component, array $widgetList)
     {
         return $this->getMVCEntityFactory()
-            ->createMacrosFactory(
+            ->createWidgetFactory(
                 $component,
-                $macrosList
+                $widgetList
             );
     }
 

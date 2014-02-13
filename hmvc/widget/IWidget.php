@@ -7,24 +7,24 @@
  * @license   http://umi-framework.ru/license/bsd-3 BSD-3 License
  */
 
-namespace umi\hmvc\macros;
+namespace umi\hmvc\widget;
 
 use umi\hmvc\dispatcher\IDispatchContext;
 use umi\hmvc\view\IView;
 
 /**
- * Интерфейс макроса.
+ * Интерфейс виджета.
  */
-interface IMacros
+interface IWidget
 {
     /**
-     * Вызывает макрос.
+     * Вызывает виджет.
      * @return IView|string
      */
     public function __invoke();
 
     /**
-     * Внедряет контекст вызова макроса.
+     * Внедряет контекст вызова виджета.
      * @param IDispatchContext $context
      * @return self
      */

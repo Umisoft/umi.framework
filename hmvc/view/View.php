@@ -13,12 +13,12 @@ use Serializable;
 use umi\hmvc\controller\IController;
 use umi\hmvc\dispatcher\IDispatchContext;
 use umi\hmvc\exception\ViewRenderException;
-use umi\hmvc\macros\IMacros;
+use umi\hmvc\widget\IWidget;
 use umi\spl\container\TArrayAccess;
 use umi\spl\container\TPropertyAccess;
 
 /**
- * Содержимое результата работы макроса или контроллера, требующее шаблонизации.
+ * Содержимое результата работы виджета или контроллера, требующее шаблонизации.
  */
 class View implements IView, Serializable
 {
@@ -26,11 +26,11 @@ class View implements IView, Serializable
     use TPropertyAccess;
 
     /**
-     * @var IController|IMacros $viewOwner
+     * @var IController|IWidget $viewOwner
      */
     protected $viewOwner;
     /**
-     * @var IDispatchContext $context контекст вызова макроса
+     * @var IDispatchContext $context контекст вызова виджета
      */
     protected $context;
     /**
@@ -48,8 +48,8 @@ class View implements IView, Serializable
 
     /**
      * Конструктор.
-     * @param IController|IMacros $viewOwner
-     * @param IDispatchContext $context контекст вызова макроса
+     * @param IController|IWidget $viewOwner
+     * @param IDispatchContext $context контекст вызова виджета
      * @param string $templateName имя шаблона
      * @param array $variables переменные шаблона
      */

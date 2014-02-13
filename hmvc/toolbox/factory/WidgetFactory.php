@@ -12,8 +12,8 @@ namespace umi\hmvc\toolbox\factory;
 use umi\hmvc\component\IComponent;
 use umi\hmvc\exception\OutOfBoundsException;
 use umi\hmvc\exception\RuntimeException;
-use umi\hmvc\macros\IMacros;
-use umi\hmvc\macros\IMacrosFactory;
+use umi\hmvc\widget\IWidget;
+use umi\hmvc\widget\IWidgetFactory;
 use umi\hmvc\model\IModelAware;
 use umi\hmvc\model\IModelFactory;
 use umi\toolkit\factory\IFactory;
@@ -21,17 +21,17 @@ use umi\toolkit\factory\TFactory;
 use umi\toolkit\prototype\IPrototype;
 
 /**
- * Фабрика макросов для компонента.
+ * Фабрика виджетов для компонента.
  */
-class MacrosFactory implements IMacrosFactory, IFactory, IModelAware
+class WidgetFactory implements IWidgetFactory, IFactory, IModelAware
 {
 
     use TFactory;
 
     /**
-     * @var array $macrosList список макросов компонента
+     * @var array $widgetList список виджетов компонента
      */
-    protected $macrosList = [];
+    protected $widgetList = [];
     /**
      * @var IModelFactory $modelFactory фабрика моделей
      */
@@ -44,22 +44,22 @@ class MacrosFactory implements IMacrosFactory, IFactory, IModelAware
     /**
      * Конструктор.
      * @param IComponent $component
-     * @param array $macrosList список макросов в формате ['macrosName' => 'macrosClassName', ...]
+     * @param array $widgetList список виджетов в формате ['widgetName' => 'widgetClassName', ...]
      */
-    public function __construct(IComponent $component, array $macrosList)
+    public function __construct(IComponent $component, array $widgetList)
     {
         $this->component = $component;
-        $this->macrosList = $macrosList;
+        $this->widgetList = $widgetList;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function createMacros($name, $params = [])
+    public function createWidget($name, $params = [])
     {
-        if (!$this->hasMacros($name)) {
+        if (!$this->hasWidget($name)) {
             throw new OutOfBoundsException($this->translate(
-                'Cannot create "{name}" macros. Macros is not registered in component "{component}".',
+                'Cannot create "{name}" widget. Widget is not registered in component "{component}".',
                 [
                     'name' => $name,
                     'component' => $this->component->getPath()
@@ -67,15 +67,15 @@ class MacrosFactory implements IMacrosFactory, IFactory, IModelAware
             ));
         }
 
-        return $this->createMacrosByClass($this->macrosList[$name], $params);
+        return $this->createWidgetByClass($this->widgetList[$name], $params);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function hasMacros($name)
+    public function hasWidget($name)
     {
-        return isset($this->macrosList[$name]);
+        return isset($this->widgetList[$name]);
     }
 
     /**
@@ -87,24 +87,24 @@ class MacrosFactory implements IMacrosFactory, IFactory, IModelAware
     }
 
     /**
-     * Создает макрос заданного класса.
-     * @param string $class класс макроса
-     * @param array $params параметры вызова макроса
-     * @throws RuntimeException если макрос не callable
-     * @return IMacros
+     * Создает виджет заданного класса.
+     * @param string $class класс виджета
+     * @param array $params параметры вызова виджета
+     * @throws RuntimeException если виджет не callable
+     * @return IWidget
      */
-    protected function createMacrosByClass($class, $params = [])
+    protected function createWidgetByClass($class, $params = [])
     {
-        $macros = $this->getPrototype(
+        $widget = $this->getPrototype(
             $class,
-            ['umi\hmvc\macros\IMacros'],
+            ['umi\hmvc\widget\IWidget'],
             function (IPrototype $prototype) use ($class)
             {
                 /** @noinspection PhpParamsInspection */
                 if (!is_callable($prototype->getPrototypeInstance())) {
                     throw new RuntimeException(
                         $this->translate(
-                            'Macros "{class}" should be callable.',
+                            'Widget "{class}" should be callable.',
                             ['class' => $class]
                         )
                     );
@@ -123,11 +123,11 @@ class MacrosFactory implements IMacrosFactory, IFactory, IModelAware
         )
             ->createInstance([], $params);
 
-        if ($macros instanceof IModelAware) {
-            $macros->setModelFactory($this->modelFactory);
+        if ($widget instanceof IModelAware) {
+            $widget->setModelFactory($this->modelFactory);
         }
 
-        return $macros;
+        return $widget;
     }
 }
  

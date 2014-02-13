@@ -15,7 +15,7 @@ use umi\acl\IAclResource;
 use umi\hmvc\component\IComponent;
 use umi\hmvc\controller\IController;
 use umi\hmvc\exception\RuntimeException;
-use umi\hmvc\macros\IMacros;
+use umi\hmvc\widget\IWidget;
 use umi\hmvc\view\IView;
 use umi\http\Request;
 
@@ -26,9 +26,9 @@ interface IDispatcher
 {
 
     /**
-     * Разделитель пути для вызова макроса
+     * Разделитель пути для вызова виджета
      */
-    const MACROS_URI_SEPARATOR = '/';
+    const WIDGET_URI_SEPARATOR = '/';
 
     /**
      * Возвращает текущий HTTP-запрос.
@@ -47,18 +47,18 @@ interface IDispatcher
      * Обрабатывает ошибку рендеринга.
      * @param Exception $e
      * @param IDispatchContext $failureContext контекст, в котором произошла ошибка
-     * @param IController|IMacros $viewOwner
+     * @param IController|IWidget $viewOwner
      * @return string
      */
     public function reportViewRenderError(Exception $e, IDispatchContext $failureContext, $viewOwner);
 
     /**
-     * Обрабатывает вызов макроса.
-     * @param string $macrosURI путь макроса
-     * @param array $params параметры вызова макроса
+     * Обрабатывает вызов виджета.
+     * @param string $widgetUri путь виджета
+     * @param array $params параметры вызова виджета
      * @return string|IView
      */
-    public function executeMacros($macrosURI, array $params = []);
+    public function executeWidget($widgetUri, array $params = []);
 
     /**
      * Переключает обрабатываемый контекст.

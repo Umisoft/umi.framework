@@ -14,7 +14,7 @@ use umi\hmvc\controller\IController;
 use umi\hmvc\dispatcher\IDispatchContext;
 use umi\hmvc\exception\OutOfBoundsException;
 use umi\hmvc\exception\RuntimeException;
-use umi\hmvc\macros\IMacros;
+use umi\hmvc\widget\IWidget;
 use umi\hmvc\view\IViewRenderer;
 use umi\http\Request;
 use umi\http\Response;
@@ -51,9 +51,9 @@ interface IComponent
      */
     const OPTION_CONTROLLERS = 'controllers';
     /**
-     * Опция для конфигурирования макросов
+     * Опция для конфигурирования виджетов
      */
-    const OPTION_MACROS = 'macros';
+    const OPTION_WIDGET = 'widget';
     /**
      * Опция для конфигурирования дочерних компонентов
      */
@@ -82,9 +82,9 @@ interface IComponent
     const LAYOUT_CONTROLLER = 'layout';
 
     /**
-     * Имя макроса для отображения ошибок работы макросов
+     * Имя виджета для отображения ошибок работы виджетов
      */
-    const ERROR_MACROS = 'error';
+    const ERROR_WIDGET = 'error';
 
     /**
      * Возвращает иерархический путь компонента.
@@ -129,21 +129,21 @@ interface IComponent
     public function getController($controllerName, array $args = []);
 
     /**
-     * Проверяет, существует ли макрос в компоненте.
-     * @param string $macrosName имя макроса
+     * Проверяет, существует ли виджет в компоненте.
+     * @param string $widgetName имя виджета
      * @return bool
      */
-    public function hasMacros($macrosName);
+    public function hasWidget($widgetName);
 
     /**
-     * Возвращает макрос компонента.
-     * @param string $macrosName имя макроса
-     * @param array $params параметры вызова макроса
-     * @throws OutOfBoundsException если макрос не существует
-     * @throws RuntimeException если макрос не callable
-     * @return IMacros
+     * Возвращает виджет компонента.
+     * @param string $widgetName имя виджета
+     * @param array $params параметры вызова виджета
+     * @throws OutOfBoundsException если виджет не существует
+     * @throws RuntimeException если виджет не callable
+     * @return IWidget
      */
-    public function getMacros($macrosName, array $params = []);
+    public function getWidget($widgetName, array $params = []);
 
     /**
      * Возвращает рендерер шаблонов компонента.

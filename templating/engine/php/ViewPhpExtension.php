@@ -19,9 +19,9 @@ use umi\hmvc\view\helper\UrlHelper;
 class ViewPhpExtension implements IPhpExtension
 {
     /**
-     * @var string $macrosFunctionName имя функции для вызова макроса
+     * @var string $widgetFunctionName имя функции для вызова виджета
      */
-    public $macrosFunctionName = 'macros';
+    public $widgetFunctionName = 'widget';
     /**
      * @var string $urlFunctionName имя функции для генерации URL
      */
@@ -32,7 +32,7 @@ class ViewPhpExtension implements IPhpExtension
     public $isAllowedFunctionName = 'isAllowed';
 
     /**
-     * @var IDispatcher $dispatcher диспетчер для вызова макроса
+     * @var IDispatcher $dispatcher диспетчер
      */
     protected $dispatcher;
 
@@ -47,7 +47,7 @@ class ViewPhpExtension implements IPhpExtension
 
     /**
      * Конструктор.
-     * @param IDispatcher $dispatcher диспетчер для вызова макроса
+     * @param IDispatcher $dispatcher диспетчер
      */
     public function __construct(IDispatcher $dispatcher) {
         $this->dispatcher = $dispatcher;
@@ -68,7 +68,7 @@ class ViewPhpExtension implements IPhpExtension
     public function getFunctions()
     {
         return [
-            $this->macrosFunctionName => $this->getMacrosHelper(),
+            $this->widgetFunctionName => $this->getWidgetHelper(),
             $this->urlFunctionName => $this->getUrlHelper(),
             $this->isAllowedFunctionName => $this->getIsAllowedHelper()
         ];
@@ -99,13 +99,13 @@ class ViewPhpExtension implements IPhpExtension
     }
 
     /**
-     * Возвращает помощник вида для вызова макросов
+     * Возвращает помощник вида для вызова виджетов
      * @return callable
      */
-    protected function getMacrosHelper()
+    protected function getWidgetHelper()
     {
-        return function($macrosPath, array $args = []) {
-            return $this->dispatcher->executeMacros($macrosPath, $args);
+        return function($widgetPath, array $args = []) {
+            return $this->dispatcher->executeWidget($widgetPath, $args);
         };
     }
 

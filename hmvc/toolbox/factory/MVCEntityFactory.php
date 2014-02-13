@@ -34,9 +34,9 @@ class MVCEntityFactory implements IMVCEntityFactory, IFactory
      */
     public $controllerFactoryClass = 'umi\hmvc\toolbox\factory\ControllerFactory';
     /**
-     * @var string $macrosFactoryClass класс фабрики макросов
+     * @var string $widgetFactoryClass класс фабрики виджетов
      */
-    public $macrosFactoryClass = 'umi\hmvc\toolbox\factory\MacrosFactory';
+    public $widgetFactoryClass = 'umi\hmvc\toolbox\factory\WidgetFactory';
     /**
      * @var string $viewExtensionFactoryClass класс фабрики расширений View
      */
@@ -65,13 +65,13 @@ class MVCEntityFactory implements IMVCEntityFactory, IFactory
     /**
      * {@inheritdoc}
      */
-    public function createMacrosFactory(IComponent $component, array $macrosList)
+    public function createWidgetFactory(IComponent $component, array $widgetList)
     {
         return $this->getPrototype(
-            $this->macrosFactoryClass,
-            ['umi\hmvc\macros\IMacrosFactory']
+            $this->widgetFactoryClass,
+            ['umi\hmvc\widget\IWidgetFactory']
         )
-            ->createInstance([$component, $macrosList]);
+            ->createInstance([$component, $widgetList]);
     }
 
     /**

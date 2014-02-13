@@ -262,13 +262,13 @@ abstract class BaseController implements IController, IHttpAware
     }
 
     /**
-     * Вызывает макрос.
-     * @param string $macrosURI путь к макросу
-     * @param array $params параметры вызова макроса
+     * Вызывает виджет.
+     * @param string $widgetURI путь к виджету
+     * @param array $params параметры вызова виджета
      * @return string|IView
      */
-    protected function callMacros($macrosURI, array $params = [])
+    protected function callWidget($widgetURI, array $params = [])
     {
-        return $this->getContext()->getDispatcher()->executeMacros($macrosURI, $params);
+        return $this->getContext()->getDispatcher()->executeWidget($widgetURI, $params);
     }
 }

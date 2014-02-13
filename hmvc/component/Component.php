@@ -16,7 +16,7 @@ use umi\hmvc\controller\IControllerFactory;
 use umi\hmvc\dispatcher\IDispatchContext;
 use umi\hmvc\exception\OutOfBoundsException;
 use umi\hmvc\IMVCEntityFactoryAware;
-use umi\hmvc\macros\IMacrosFactory;
+use umi\hmvc\widget\IWidgetFactory;
 use umi\hmvc\model\IModelAware;
 use umi\hmvc\model\IModelFactory;
 use umi\hmvc\TMVCEntityFactoryAware;
@@ -66,9 +66,9 @@ class Component implements IComponent, IMVCEntityFactoryAware, IRouteAware, ILoc
      */
     private $controllerFactory;
     /**
-     * @var IMacrosFactory $macrosFactory фабрика макросов
+     * @var IWidgetFactory $widgetFactory фабрика виджетов
      */
-    private $macrosFactory;
+    private $widgetFactory;
     /**
      * @var IModelFactory $modelFactory фабрика моделей
      */
@@ -167,17 +167,17 @@ class Component implements IComponent, IMVCEntityFactoryAware, IRouteAware, ILoc
     /**
      * {@inheritdoc}
      */
-    public function hasMacros($macrosName)
+    public function hasWidget($widgetName)
     {
-        return $this->getMacrosFactory()->hasMacros($macrosName);
+        return $this->getWidgetFactory()->hasWidget($widgetName);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getMacros($macrosName, array $params = [])
+    public function getWidget($widgetName, array $params = [])
     {
-        return $this->getMacrosFactory()->createMacros($macrosName, $params);
+        return $this->getWidgetFactory()->createWidget($widgetName, $params);
     }
 
     /**
@@ -254,25 +254,25 @@ class Component implements IComponent, IMVCEntityFactoryAware, IRouteAware, ILoc
     }
 
     /**
-     * Возвращает фабрику макросов компонента.
-     * @return IMacrosFactory
+     * Возвращает фабрику виджетов компонента.
+     * @return IWidgetFactory
      */
-    protected function getMacrosFactory()
+    protected function getWidgetFactory()
     {
-        if (!$this->macrosFactory) {
-            $macrosList = isset($this->options[self::OPTION_MACROS]) ? $this->options[self::OPTION_MACROS] : [];
-            $macrosList = $this->configToArray($macrosList, true);
+        if (!$this->widgetFactory) {
+            $widgetList = isset($this->options[self::OPTION_WIDGET]) ? $this->options[self::OPTION_WIDGET] : [];
+            $widgetList = $this->configToArray($widgetList, true);
 
-            $macrosFactory = $this->createMVCMacrosFactory($this, $macrosList);
+            $widgetFactory = $this->createMVCWidgetFactory($this, $widgetList);
 
-            if ($macrosFactory instanceof IModelAware) {
-                $macrosFactory->setModelFactory($this->getModelsFactory());
+            if ($widgetFactory instanceof IModelAware) {
+                $widgetFactory->setModelFactory($this->getModelsFactory());
             }
 
-            return $this->macrosFactory = $macrosFactory;
+            return $this->widgetFactory = $widgetFactory;
         }
 
-        return $this->macrosFactory;
+        return $this->widgetFactory;
     }
 
     /**

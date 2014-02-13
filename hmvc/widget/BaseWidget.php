@@ -7,7 +7,7 @@
  * @license   http://umi-framework.ru/license/bsd-3 BSD-3 License
  */
 
-namespace umi\hmvc\macros;
+namespace umi\hmvc\widget;
 
 use umi\hmvc\component\IComponent;
 use umi\hmvc\dispatcher\IDispatchContext;
@@ -16,12 +16,12 @@ use umi\hmvc\view\IView;
 use umi\hmvc\view\View;
 
 /**
- * Базовая реализация макроса компонента.
+ * Базовая реализация виджета компонента.
  */
-abstract class BaseMacros implements IMacros
+abstract class BaseWidget implements IWidget
 {
     /**
-     * @var IDispatchContext $context контекст вызова макроса
+     * @var IDispatchContext $context контекст вызова виджета
      */
     private $context;
 
@@ -36,7 +36,7 @@ abstract class BaseMacros implements IMacros
     }
 
     /**
-     * Возвращает контекст вызова макроса.
+     * Возвращает контекст вызова виджета.
      * @throws RequiredDependencyException если контекст не был установлен
      * @return IDispatchContext
      */
@@ -44,7 +44,7 @@ abstract class BaseMacros implements IMacros
     {
         if (!$this->context) {
             throw new RequiredDependencyException(
-                sprintf('Context is not injected in macros "%s".', get_class($this))
+                sprintf('Context is not injected in widget "%s".', get_class($this))
             );
         }
 
@@ -62,7 +62,7 @@ abstract class BaseMacros implements IMacros
     }
 
     /**
-     * Создает результат работы макроса, требующий шаблонизации.
+     * Создает результат работы виджета, требующий шаблонизации.
      * @param string $templateName имя шаблона
      * @param array $variables переменные
      * @return IView
