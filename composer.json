@@ -24,13 +24,18 @@
         "umi/route" : "self.version",
         "umi/session" : "self.version",
         "umi/spl" : "self.version",
+        "umi/stream" : "self.version",
         "umi/syntax" : "self.version",
         "umi/templating" : "self.version",
         "umi/toolkit" : "self.version",
         "umi/validation" : "self.version"
     },
     "require": {
-        "php": ">=5.4.0"
+        "php": ">=5.4.0",
+        "symfony/http-foundation": "2.4.*",
+        "psr/log": "1.*",
+        "doctrine/dbal": "2.4.*",
+        "twig/twig": "1.*"
     },
     "autoload": {
         "psr-4": {
