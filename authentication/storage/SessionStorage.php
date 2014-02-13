@@ -29,7 +29,7 @@ class SessionStorage implements IAuthStorage, ISessionAware
     /**
      * Имя контейнера сессии по умолчанию.
      */
-    const SESSION_BAG_NAME = 'authentication';
+    const SESSION_NAMESPACE = 'authentication';
 
     /**
      * @var array $options опции хранилища
@@ -95,7 +95,7 @@ class SessionStorage implements IAuthStorage, ISessionAware
      */
     protected function getSessionNamespacePath()
     {
-        return empty($this->options['bagName']) ? self::SESSION_BAG_NAME : $this->options['bagName'];
+        return empty($this->options['namespace']) ? self::SESSION_NAMESPACE : $this->options['namespace'];
     }
 
 }
