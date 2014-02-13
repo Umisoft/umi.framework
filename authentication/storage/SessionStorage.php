@@ -93,7 +93,7 @@ class SessionStorage implements IAuthStorage, ISessionAware
     /**
      * {@inheritdoc}
      */
-    protected function getSessionBagName()
+    protected function getSessionNamespacePath()
     {
         return empty($this->options['bagName']) ? self::SESSION_BAG_NAME : $this->options['bagName'];
     }

@@ -7,16 +7,15 @@
  * @license   http://umi-framework.ru/license/bsd-3 BSD-3 License
  */
 
-namespace umi\templating\extension\helper\type;
+namespace umi\templating\helper;
 
 use umi\i18n\ILocalizable;
-use umi\i18n\TLocalizable;
 use umi\i18n\translator\ITranslator;
 
 /**
- * Помощник шаблонов для перевода сообщений.
+ * Помощники шаблонов для локализации.
  */
-class TranslateHelper implements ILocalizable
+class TranslationHelper implements ILocalizable
 {
     /**
      * Словарь по умолчанию
@@ -36,7 +35,6 @@ class TranslateHelper implements ILocalizable
         $this->translator = $translator;
     }
 
-
     /**
      * Переводит сообщение.
      * @param string $message сообщение
@@ -44,7 +42,7 @@ class TranslateHelper implements ILocalizable
      * @param array $dictionaries
      * @return string
      */
-    public function __invoke($message, array $placeholders = [], array $dictionaries = [])
+    public function translate($message, array $placeholders = [], array $dictionaries = [])
     {
         $dictionaries = $dictionaries ?: [self::DICTIONARY_DEFAULT];
 

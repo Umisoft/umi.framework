@@ -38,7 +38,7 @@ trait TSessionAware
      * Возвращает имя контейнера сессии.
      * @return string
      */
-    protected function getSessionBagName()
+    protected function getSessionNamespacePath()
     {
         return get_class($this);
     }
@@ -50,7 +50,7 @@ trait TSessionAware
      */
     protected function hasSessionVar($name)
     {
-        return $this->getSessionBag()->has($name);
+        return $this->getSession()->has($this->getSessionNamespace($name));
     }
 
     /**
@@ -61,7 +61,7 @@ trait TSessionAware
      */
     protected function getSessionVar($name, $default = null)
     {
-        return $this->getSessionBag()->get($name, $default);
+        return $this->getSession()->get($this->getSessionNamespace($name), $default);
     }
 
     /**
@@ -72,7 +72,7 @@ trait TSessionAware
      */
     protected function setSessionVar($name, $value)
     {
-        $this->getSessionBag()->set($name, $value);
+        $this->getSession()->set($this->getSessionNamespace($name), $value);
 
         return $this;
     }
@@ -83,14 +83,22 @@ trait TSessionAware
      */
     protected function getSessionVars()
     {
-        return $this->getSessionBag()->all();
+        return $this->getSession()->get($this->getSessionNamespacePath());
     }
 
     /**
-     * Sets attributes.
-     *
-     * @param array $attributes Attributes
+     * Удаляет все переменные из сессии.
+     * @return $this
      */
+    protected function clearSessionVars()
+    {
+        foreach ($this->getSessionVars() as $name => $value) {
+            $this->removeSessionVar($name);
+        }
+
+        return $this;
+    }
+
 
     /**
      * Заменяет все значения в сессии.
@@ -99,7 +107,12 @@ trait TSessionAware
      */
     protected function replaceSessionVars(array $attributes)
     {
-        $this->getSessionBag()->replace($attributes);
+
+        $this->clearSessionVars();
+
+        foreach ($attributes as $name => $value) {
+            $this->setSessionVar($name, $value);
+        }
 
         return $this;
     }
@@ -111,27 +124,17 @@ trait TSessionAware
      */
     protected function removeSessionVar($name)
     {
-        return $this->getSessionBag()->remove($name);
+        return $this->getSession()->remove($this->getSessionNamespace($name));
     }
 
     /**
-     * Возвращает контейнер сессии.
-     * @return AttributeBagInterface
+     * Возвращает неймспейс сессии.
+     * @param string $name
+     * @return string
      */
-    private function getSessionBag()
+    private function getSessionNamespace($name)
     {
-        if (!$this->_sessionBag) {
-
-            $bagName = $this->getSessionBagName();
-
-            if (!$this->getSession()->hasBag($bagName)) {
-                $this->getSession()->addAttributeBag($bagName);
-            }
-
-            $this->_sessionBag = $this->getSession()->getBag($bagName);
-        }
-
-        return $this->_sessionBag;
+        return $this->getSessionNamespacePath() . '/' . $name;
     }
 
     /**

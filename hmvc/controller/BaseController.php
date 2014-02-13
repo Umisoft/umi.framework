@@ -204,7 +204,7 @@ abstract class BaseController implements IController, IHttpAware
      * @param int $code код ответа
      * @return Response
      */
-    protected function redirectToRoute($routeName, array $params = [], $useQuery = false, $code = Response::HTTP_MOVED_PERMANENTLY)
+    protected function redirectToRoute($routeName, array $params = [], $useQuery = false, $code = Response::HTTP_SEE_OTHER)
     {
 
         $baseUrl = $this->getContext()->getBaseUrl();

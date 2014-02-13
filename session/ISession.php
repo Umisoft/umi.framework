@@ -16,19 +16,5 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
  */
 interface ISession extends SessionInterface
 {
-    /**
-     * Проверяет, зарегистрирован ли контейнер сессии
-     * @param string $name имя контейнера
-     * @return bool
-     */
-    public function hasBag($name);
-
-    /**
-     * Создает и регистрирует контейнер сессии
-     * @param string $name имя контейнера
-     * @throws \InvalidArgumentException если контейнер с таким именем был зарегистрирован
-     * @return self
-     */
-    public function addAttributeBag($name);
 
 }

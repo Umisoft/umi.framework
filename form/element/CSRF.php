@@ -85,7 +85,7 @@ class CSRF extends Hidden implements ILocalizable, ISessionAware
     /**
      * {@inheritdoc}
      */
-    protected function getSessionBagName()
+    protected function getSessionNamespacePath()
     {
         return self::SESSION_BAG_NAME;
     }
