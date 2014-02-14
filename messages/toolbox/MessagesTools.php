@@ -35,7 +35,7 @@ class MessagesTools implements IToolbox
     public $mailerOptions = [
         'encryption' => null,
         'auth_mode' => null,
-        'transport' => null,
+        'transport' => 'mail',
         'host' => null,
         'port' => null,
         'username' => null,
