@@ -17,7 +17,7 @@ use Psr\Log\LoggerInterface;
 trait TLoggerAware
 {
     /**
-     * @var LoggerInterface $_logger логгер
+     * @var LoggerInterface $traitLogger логгер
      */
     private $traitLogger;
 

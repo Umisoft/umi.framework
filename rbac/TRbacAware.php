@@ -17,7 +17,7 @@ use umi\rbac\exception\RequiredDependencyException;
 trait TRbacAware
 {
     /**
-     * @var IRoleFactory $_rbacRoleFactory фабрика
+     * @var IRoleFactory $traitRbacRoleFactory фабрика
      */
     private $traitRbacRoleFactory;
 

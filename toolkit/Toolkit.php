@@ -60,7 +60,7 @@ class Toolkit implements IToolkit, ILoggerAware, ILocalizable
      */
     protected $settings = [];
     /**
-     * @var IPrototypeFactory $_prototypeFactory
+     * @var IPrototypeFactory $prototypeFactory
      */
     private $prototypeFactory;
 
