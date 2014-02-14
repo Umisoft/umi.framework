@@ -10,14 +10,14 @@
 namespace umi\hmvc\toolbox\factory;
 
 use umi\hmvc\component\IComponent;
-use umi\hmvc\IMVCEntityFactory;
+use umi\hmvc\IMvcEntityFactory;
 use umi\toolkit\factory\IFactory;
 use umi\toolkit\factory\TFactory;
 
 /**
  * Фабрика для создания сущностей, используемых в компоненте MVC.
  */
-class MVCEntityFactory implements IMVCEntityFactory, IFactory
+class MVCEntityFactory implements IMvcEntityFactory, IFactory
 {
     use TFactory;
 

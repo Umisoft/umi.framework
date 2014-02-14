@@ -24,9 +24,9 @@ use umi\hmvc\exception\http\HttpForbidden;
 use umi\hmvc\exception\http\HttpNotFound;
 use umi\hmvc\exception\RuntimeException;
 use umi\hmvc\exception\UnexpectedValueException;
-use umi\hmvc\IMVCEntityFactoryAware;
+use umi\hmvc\IMvcEntityFactoryAware;
 use umi\hmvc\widget\IWidget;
-use umi\hmvc\TMVCEntityFactoryAware;
+use umi\hmvc\TMvcEntityFactoryAware;
 use umi\hmvc\view\IView;
 use umi\http\Request;
 use umi\http\Response;
@@ -37,11 +37,11 @@ use umi\route\result\IRouteResult;
 /**
  * Диспетчер MVC-компонентов.
  */
-class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, IAuthenticationAware
+class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, IAuthenticationAware
 {
 
     use TLocalizable;
-    use TMVCEntityFactoryAware;
+    use TMvcEntityFactoryAware;
     use TAuthenticationAware;
 
     /**

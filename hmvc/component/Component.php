@@ -15,11 +15,11 @@ use umi\acl\TAclAware;
 use umi\hmvc\controller\IControllerFactory;
 use umi\hmvc\dispatcher\IDispatchContext;
 use umi\hmvc\exception\OutOfBoundsException;
-use umi\hmvc\IMVCEntityFactoryAware;
+use umi\hmvc\IMvcEntityFactoryAware;
 use umi\hmvc\widget\IWidgetFactory;
 use umi\hmvc\model\IModelAware;
 use umi\hmvc\model\IModelFactory;
-use umi\hmvc\TMVCEntityFactoryAware;
+use umi\hmvc\TMvcEntityFactoryAware;
 use umi\hmvc\view\IViewRenderer;
 use umi\http\Request;
 use umi\http\Response;
@@ -33,9 +33,9 @@ use umi\spl\config\TConfigSupport;
 /**
  * Реализация MVC компонента системы.
  */
-class Component implements IComponent, IMVCEntityFactoryAware, IRouteAware, ILocalizable, IAclAware
+class Component implements IComponent, IMvcEntityFactoryAware, IRouteAware, ILocalizable, IAclAware
 {
-    use TMVCEntityFactoryAware;
+    use TMvcEntityFactoryAware;
     use TRouteAware;
     use TLocalizable;
     use TConfigSupport;

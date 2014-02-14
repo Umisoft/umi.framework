@@ -10,8 +10,8 @@
 namespace umi\hmvc\toolbox;
 
 use umi\hmvc\dispatcher\IDispatcher;
-use umi\hmvc\IMVCEntityFactoryAware;
-use umi\hmvc\IMVCEntityFactory;
+use umi\hmvc\IMvcEntityFactoryAware;
+use umi\hmvc\IMvcEntityFactory;
 use umi\toolkit\exception\UnsupportedServiceException;
 use umi\toolkit\toolbox\IToolbox;
 use umi\toolkit\toolbox\TToolbox;
@@ -71,14 +71,14 @@ class HMVCTools implements IToolbox
      */
     public function injectDependencies($object)
     {
-        if ($object instanceof IMVCEntityFactoryAware) {
+        if ($object instanceof IMvcEntityFactoryAware) {
             $object->setMVCEntityFactory($this->getMVCEntityFactory());
         }
     }
 
     /**
      * Возвращает фабрику MVC слоев.
-     * @return IMVCEntityFactory
+     * @return IMvcEntityFactory
      */
     protected function getMVCEntityFactory()
     {
