@@ -60,7 +60,7 @@ class MessagesTools implements IToolbox
     public function getService($serviceInterfaceName, $concreteClassName)
     {
         switch ($serviceInterfaceName) {
-            case 'umi\messages\ISwiftMailer':
+            case 'umi\messages\SwiftMailer':
                 return $this->getMailer();
         }
         throw new UnsupportedServiceException($this->translate(

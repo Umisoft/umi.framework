@@ -16,9 +16,9 @@ return [
     'name' => MessagesTools::NAME,
     'class' => __NAMESPACE__ . '\MessagesTools',
     'awareInterfaces' => [
-        'umi\session\ISwiftMailerAware'
+        'umi\messages\ISwiftMailerAware'
     ],
     'services' => [
-        'umi\session\SwiftMailer'
+        'umi\messages\SwiftMailer'
     ]
 ];
