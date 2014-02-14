@@ -40,8 +40,10 @@ interface IDispatcher
      * Обрабатывает http-запрос с помощью указанного MVC-компонента.
      * @param IComponent $component начальный компонент
      * @param Request $request
+     * @param string|null $routePath путь маршрутизации, если не задан - будет взят из $request
+     * @return
      */
-    public function dispatchRequest(IComponent $component, Request $request);
+    public function dispatchRequest(IComponent $component, Request $request, $routePath = null);
 
     /**
      * Обрабатывает ошибку рендеринга.

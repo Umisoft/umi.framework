@@ -73,14 +73,16 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
     /**
      * {@inheritdoc}
      */
-    public function dispatchRequest(IComponent $component, Request $request)
+    public function dispatchRequest(IComponent $component, Request $request, $routePath = null)
     {
         $this->currentRequest = $request;
         $this->initialComponent = $component;
 
         $callStack = $this->createCallStack();
 
-        $routePath = parse_url($request->getRequestUri(), PHP_URL_PATH);
+        if (is_null($routePath)) {
+            $routePath = $request->getPathInfo();
+        }
 
         try {
             $response = $this->processRequest($component, $routePath, $callStack);
