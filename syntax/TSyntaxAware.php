@@ -17,17 +17,16 @@ use umi\syntax\exception\RequiredDependencyException;
 trait TSyntaxAware
 {
     /**
-     * @var IParserFactory $_syntaxParserFactory фабрика
+     * @var IParserFactory $traitSyntaxParserFactory фабрика
      */
-    private $_syntaxParserFactory;
+    private $traitSyntaxParserFactory;
 
     /**
-     * Устанавливает фабрику для создания парсера.
-     * @param IParserFactory $parserFactory фабрика
+     * @see ISyntaxAware::setSyntaxParserFactory()
      */
     public function setSyntaxParserFactory(IParserFactory $parserFactory)
     {
-        $this->_syntaxParserFactory = $parserFactory;
+        $this->traitSyntaxParserFactory = $parserFactory;
     }
 
     /**
@@ -35,17 +34,17 @@ trait TSyntaxAware
      * @param array $grammar грамматика
      * @param array $rules правила
      * @throws RequiredDependencyException если инструменты не были внедрены
-     * @return IParser созданный парсер
+     * @return IParser
      */
     protected function createParser(array $grammar, array $rules)
     {
-        if (!$this->_syntaxParserFactory) {
+        if (!$this->traitSyntaxParserFactory) {
             throw new RequiredDependencyException(sprintf(
                 'Syntax parser factory is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_syntaxParserFactory->createParser($grammar, $rules);
+        return $this->traitSyntaxParserFactory->createParser($grammar, $rules);
     }
 }

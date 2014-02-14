@@ -19,17 +19,16 @@ use umi\config\exception\RuntimeException;
 trait TConfigAliasResolverAware
 {
     /**
-     * @var IConfigIO $_configIO I/O config service
+     * @var IConfigIO $traitConfigIO I/O config service
      */
-    private $_configIO;
+    private $traitConfigIO;
 
     /**
-     * Устанавливает I/O сервис.
-     * @param IConfigIO $configIO I/O сервис
+     * @see IConfigAliasResolverAware::setConfigIO()
      */
     public function setConfigIO(IConfigIO $configIO)
     {
-        $this->_configIO = $configIO;
+        $this->traitConfigIO = $configIO;
     }
 
     /**
@@ -48,18 +47,18 @@ trait TConfigAliasResolverAware
 
     /**
      * Возврващает I/O сервис конфигурации.
-     * @return IConfigIO
      * @throws RequiredDependencyException если сервис не был внедрен
+     * @return IConfigIO
      */
     private function getConfigIO()
     {
-        if (!$this->_configIO) {
+        if (!$this->traitConfigIO) {
             throw new RequiredDependencyException(sprintf(
                 'Config IO service is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_configIO;
+        return $this->traitConfigIO;
     }
 }

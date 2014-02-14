@@ -17,17 +17,16 @@ use umi\syntax\exception\RequiredDependencyException;
 trait TTokenAware
 {
     /**
-     * @var ITokenFactory $_syntaxTokenFactory фабрика токенов
+     * @var ITokenFactory $traitSyntaxTokenFactory фабрика токенов
      */
-    private $_syntaxTokenFactory;
+    private $traitSyntaxTokenFactory;
 
     /**
-     * Устанавливает фабрику токенов.
-     * @param ITokenFactory $tokenFactory фабрика
+     * @see ITokenAware::setSyntaxTokenFactory()
      */
     public function setSyntaxTokenFactory(ITokenFactory $tokenFactory)
     {
-        $this->_syntaxTokenFactory = $tokenFactory;
+        $this->traitSyntaxTokenFactory = $tokenFactory;
     }
 
     /**
@@ -58,18 +57,18 @@ trait TTokenAware
 
     /**
      * Возвращает фабрику токенов.
+     * @throws RequiredDependencyException если фабрика не была внедрена
      * @return ITokenFactory
-     * @throws RequiredDependencyException
      */
     private function getSyntaxTokenFactory()
     {
-        if (!$this->_syntaxTokenFactory) {
+        if (!$this->traitSyntaxTokenFactory) {
             throw new RequiredDependencyException(sprintf(
                 'Syntax token factory is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_syntaxTokenFactory;
+        return $this->traitSyntaxTokenFactory;
     }
 }

@@ -17,24 +17,17 @@ use umi\orm\object\IObject;
 trait TScalarField
 {
     /**
-     * Возвращает имя поля
-     * @return string
+     * @see IField::getName()
      */
     abstract public function getName();
 
     /**
-     * Возвращает php-тип данных поля. Используется для PDO.<br />
-     * http://ru2.php.net/manual/en/function.gettype.php
-     * @return string
+     * @see IField::getDataType()
      */
     abstract public function getDataType();
 
     /**
-     * Подготавливает и возвращает значение свойства по внутреннему значению из БД
-     * @internal
-     * @param IObject $object объект, для которого подготавливается свойство
-     * @param mixed $internalDbValue внутреннее значение свойства в БД
-     * @return mixed
+     * @see IField::preparePropertyValue()
      */
     public function preparePropertyValue(IObject $object, $internalDbValue)
     {
@@ -48,11 +41,7 @@ trait TScalarField
     }
 
     /**
-     * Подготавливает и возвращает значение для записи в БД
-     * @internal
-     * @param IObject $object объект, для которого будет установлено свойство
-     * @param mixed $propertyValue значение свойства
-     * @return mixed
+     * @see IField::prepareDbValue()
      */
     public function prepareDbValue(IObject $object, $propertyValue)
     {

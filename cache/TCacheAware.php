@@ -16,18 +16,16 @@ trait TCacheAware
 {
 
     /**
-     * @var ICache $_cache компонент для кеширования
+     * @var ICache $traitCache компонент для кеширования
      */
-    private $_cache;
+    private $traitCache;
 
     /**
-     * Устанавливает компонент для кэширования.
-     * @param ICache $cache
-     * @return self
+     * @see ICacheAware::setCache()
      */
     public function setCache(ICache $cache)
     {
-        $this->_cache = $cache;
+        $this->traitCache = $cache;
     }
 
     /**
@@ -41,8 +39,8 @@ trait TCacheAware
      */
     protected function cache($key, callable $algorithm, $expiration = 0, array $invalidationTags = null)
     {
-        if ($this->_cache) {
-            return $this->_cache->algorithm($key, $algorithm, $expiration, $invalidationTags);
+        if ($this->traitCache) {
+            return $this->traitCache->algorithm($key, $algorithm, $expiration, $invalidationTags);
         }
 
         return $algorithm();
@@ -56,8 +54,8 @@ trait TCacheAware
      */
     protected function invalidateCache(array $tags, $time = null)
     {
-        if ($this->_cache) {
-            $this->_cache->invalidateTags($tags, $time);
+        if ($this->traitCache) {
+            $this->traitCache->invalidateTags($tags, $time);
         }
 
         return $this;

@@ -19,17 +19,16 @@ use umi\config\exception\RequiredDependencyException;
 trait TConfigEntityFactoryAware
 {
     /**
-     * @var IConfigEntityFactory $_configEntityFactory фабрика сущностей конфигурации
+     * @var IConfigEntityFactory $traitConfigEntityFactory фабрика сущностей конфигурации
      */
-    private $_configEntityFactory;
+    private $traitConfigEntityFactory;
 
     /**
-     * Устанавливает фабрику сущностей.
-     * @param IConfigEntityFactory $configFactory фабрика сущностей
+     * @see IConfigEntityFactoryAware::setConfigEntityFactory()
      */
     public function setConfigEntityFactory(IConfigEntityFactory $configFactory)
     {
-        $this->_configEntityFactory = $configFactory;
+        $this->traitConfigEntityFactory = $configFactory;
     }
 
     /**
@@ -74,18 +73,18 @@ trait TConfigEntityFactoryAware
 
     /**
      * Возвращает фабрику сущностей конфигурации.
+     * @throws RequiredDependencyException если фабрика не была внедрена
      * @return IConfigEntityFactory
-     * @throws RequiredDependencyException
      */
     private function getConfigEntityFactory()
     {
-        if (!$this->_configEntityFactory instanceof IConfigEntityFactory) {
+        if (!$this->traitConfigEntityFactory instanceof IConfigEntityFactory) {
             throw new RequiredDependencyException(sprintf(
                 'Config entity factory is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_configEntityFactory;
+        return $this->traitConfigEntityFactory;
     }
 }

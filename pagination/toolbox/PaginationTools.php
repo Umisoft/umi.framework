@@ -16,7 +16,7 @@ use umi\toolkit\toolbox\IToolbox;
 use umi\toolkit\toolbox\TToolbox;
 
 /**
- * Инструменты работы с пагинатором.
+ * Инструменты работы с постраничной навигацией.
  */
 class PaginationTools implements IToolbox
 {
@@ -28,7 +28,7 @@ class PaginationTools implements IToolbox
     use TToolbox;
 
     /**
-     * @var string $paginatorFactoryClass класс фабрики для создания пагинатора
+     * @var string $paginatorFactoryClass класс фабрики для создания постраничной навигации
      */
     public $paginatorFactoryClass = 'umi\pagination\toolbox\factory\PaginatorFactory';
 
@@ -70,7 +70,7 @@ class PaginationTools implements IToolbox
     }
 
     /**
-     * Возвращает фабрику пагинаторов.
+     * Возвращает фабрику постраничной навигации.
      * @return IPaginatorFactory
      */
     protected function getPaginatorFactory()

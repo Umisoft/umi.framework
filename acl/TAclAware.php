@@ -17,18 +17,16 @@ use umi\acl\exception\RequiredDependencyException;
 trait TAclAware
 {
     /**
-     * @var IAclFactory $_aclFactory
+     * @var IAclFactory $traitAclFactory
      */
-    private $_aclFactory;
+    private $traitAclFactory;
 
     /**
-     * Устанавливает фабрику сущностей ACL.
-     * @param IAclFactory $aclFactory
-     * @return self
+     * @see IAclAware::setAclFactory()
      */
     public function setAclFactory(IAclFactory $aclFactory)
     {
-        $this->_aclFactory = $aclFactory;
+        $this->traitAclFactory = $aclFactory;
 
         return $this;
     }
@@ -40,14 +38,14 @@ trait TAclAware
      */
     protected function getAclFactory()
     {
-        if (!$this->_aclFactory) {
+        if (!$this->traitAclFactory) {
             throw new RequiredDependencyException(sprintf(
                 'ACL factory is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_aclFactory;
+        return $this->traitAclFactory;
     }
 
 }

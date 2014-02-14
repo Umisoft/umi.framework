@@ -20,17 +20,16 @@ use umi\config\exception\RuntimeException;
 trait TConfigCacheEngineAware
 {
     /**
-     * @var IConfigCacheEngine $_configCacheEngine
+     * @var IConfigCacheEngine $traitConfigCacheEngine
      */
-    private $_configCacheEngine;
+    private $traitConfigCacheEngine;
 
     /**
-     * Устанавливает сервис кэширования конфигурации.
-     * @param IConfigCacheEngine $cacheEngine сервис
+     * @see IConfigCacheEngineAware::setConfigCacheEngine()
      */
     public function setConfigCacheEngine(IConfigCacheEngine $cacheEngine)
     {
-        $this->_configCacheEngine = $cacheEngine;
+        $this->traitConfigCacheEngine = $cacheEngine;
     }
 
     /**
@@ -39,7 +38,7 @@ trait TConfigCacheEngineAware
      */
     protected function hasConfigCacheEngine()
     {
-        return $this->_configCacheEngine != null;
+        return $this->traitConfigCacheEngine != null;
     }
 
     /**
@@ -86,14 +85,14 @@ trait TConfigCacheEngineAware
      */
     private function getConfigCacheEngine()
     {
-        if (!$this->_configCacheEngine) {
+        if (!$this->traitConfigCacheEngine) {
             throw new RequiredDependencyException(sprintf(
                 'Config cache engine service is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_configCacheEngine;
+        return $this->traitConfigCacheEngine;
     }
 
 }

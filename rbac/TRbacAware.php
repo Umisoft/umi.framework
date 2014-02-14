@@ -19,15 +19,14 @@ trait TRbacAware
     /**
      * @var IRoleFactory $_rbacRoleFactory фабрика
      */
-    private $_rbacRoleFactory;
+    private $traitRbacRoleFactory;
 
     /**
-     * Устанавливает фабрику для создания сущностей Rbac.
-     * @param IRoleFactory $rbacFactory фабрика
+     * @see IRbacAware::setRoleFactory()
      */
     public function setRoleFactory(IRoleFactory $rbacFactory)
     {
-        $this->_rbacRoleFactory = $rbacFactory;
+        $this->traitRbacRoleFactory = $rbacFactory;
     }
 
     /**
@@ -35,17 +34,17 @@ trait TRbacAware
      * @param array $permissions разрешения
      * @param IRbacRole[] $roles родительские роли
      * @throws RequiredDependencyException если фабрика не была внедрена
-     * @return IRbacRole созданная роль
+     * @return IRbacRole
      */
     protected function createRbacRole(array $permissions, array $roles = [])
     {
-        if (!$this->_rbacRoleFactory) {
+        if (!$this->traitRbacRoleFactory) {
             throw new RequiredDependencyException(sprintf(
                 'Rbac role factory is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_rbacRoleFactory->createRole($permissions, $roles);
+        return $this->traitRbacRoleFactory->createRole($permissions, $roles);
     }
 }

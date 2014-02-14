@@ -16,7 +16,7 @@ use umi\toolkit\factory\IFactory;
 use umi\toolkit\factory\TFactory;
 
 /**
- * Фабрика пагинаторов.
+ * Фабрика постраничной навигации.
  */
 class PaginatorFactory implements IPaginatorFactory, IFactory
 {
@@ -24,12 +24,12 @@ class PaginatorFactory implements IPaginatorFactory, IFactory
     use TFactory;
 
     /**
-     * @var string $paginatorClass класс пагинатора
+     * @var string $paginatorClass класс постраничной навигации
      */
     public $paginatorClass = 'umi\pagination\Paginator';
 
     /**
-     * @var array $paginationAdapters список адаптеров пагинатора
+     * @var array $paginationAdapters список адаптеров постраничной навигации
      */
     public $paginationAdapters = [
         IPaginationAdapter::ARRAY_ADAPTER => 'umi\pagination\adapter\ArrayPaginationAdapter',

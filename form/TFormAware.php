@@ -17,34 +17,33 @@ use umi\form\exception\RequiredDependencyException;
 trait TFormAware
 {
     /**
-     * @var IEntityFactory $_formTools инструменты работы с формами.
+     * @var IEntityFactory $traitFormEntityFactory фабрика элементов формы
      */
-    private $_formEntityFactory;
+    private $traitFormEntityFactory;
 
     /**
-     * Устанавливает инструменты для работы с формами
-     * @param IEntityFactory $formEntityFactory
+     * @see IFormAware::setFormEntityFactory()
      */
     public function setFormEntityFactory(IEntityFactory $formEntityFactory)
     {
-        $this->_formEntityFactory = $formEntityFactory;
+        $this->traitFormEntityFactory = $formEntityFactory;
     }
 
     /**
-     * Создает форму на основе конфига
+     * Создает форму на основе конфига.
      * @param array $config конфигурация
-     * @throws RequiredDependencyException если инструменты для работы с формами не установлены
+     * @throws RequiredDependencyException если фабрика элементов формы не установлена
      * @return IForm
      */
     protected function createForm(array $config)
     {
-        if (!$this->_formEntityFactory) {
+        if (!$this->traitFormEntityFactory) {
             throw new RequiredDependencyException(sprintf(
                 'Form entity factory is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_formEntityFactory->createForm($config);
+        return $this->traitFormEntityFactory->createForm($config);
     }
 }

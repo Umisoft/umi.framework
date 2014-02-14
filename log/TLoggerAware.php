@@ -19,15 +19,14 @@ trait TLoggerAware
     /**
      * @var LoggerInterface $_logger логгер
      */
-    private $_logger;
+    private $traitLogger;
 
     /**
-     * Устанавливает логгер.
-     * @param LoggerInterface $logger логгер
+     * @see ILoggerAware::setLogger()
      */
     public function setLogger(LoggerInterface $logger)
     {
-        $this->_logger = $logger;
+        $this->traitLogger = $logger;
     }
 
     /**
@@ -39,8 +38,8 @@ trait TLoggerAware
      */
     protected function log($level, $message, array $placeholders = [])
     {
-        if ($this->_logger) {
-            $this->_logger->log($level, $message, $placeholders);
+        if ($this->traitLogger) {
+            $this->traitLogger->log($level, $message, $placeholders);
         }
 
         return $this;

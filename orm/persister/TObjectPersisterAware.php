@@ -17,17 +17,16 @@ use umi\orm\exception\RequiredDependencyException;
 trait TObjectPersisterAware
 {
     /**
-     * @var IObjectPersister $_objectPersister синхронизатор объектов
+     * @var IObjectPersister $traitObjectPersister синхронизатор объектов
      */
-    private $_objectPersister;
+    private $traitObjectPersister;
 
     /**
-     * Устанавливает синхронизатор объектов
-     * @param IObjectPersister $objectPersister
+     * @see IObjectPersisterAware::setObjectPersister()
      */
     public function setObjectPersister(IObjectPersister $objectPersister)
     {
-        $this->_objectPersister = $objectPersister;
+        $this->traitObjectPersister = $objectPersister;
     }
 
     /**
@@ -37,13 +36,13 @@ trait TObjectPersisterAware
      */
     protected function getObjectPersister()
     {
-        if (!$this->_objectPersister) {
+        if (!$this->traitObjectPersister) {
             throw new RequiredDependencyException(sprintf(
                 'Object persister is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_objectPersister;
+        return $this->traitObjectPersister;
     }
 }

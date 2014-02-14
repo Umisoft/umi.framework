@@ -9,7 +9,6 @@
 
 namespace umi\session;
 
-use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
 use umi\session\exception\RequiredDependencyException;
 
 /**
@@ -18,20 +17,16 @@ use umi\session\exception\RequiredDependencyException;
 trait TSessionAware
 {
     /**
-     * @var ISession $_sessionService
+     * @var ISession $traitSessionService
      */
-    private $_sessionService;
-    /**
-     * @var AttributeBagInterface $_sessionBag
-     */
-    private $_sessionBag;
+    private $traitSessionService;
 
     /**
-     * @param ISession $sessionService сервис сесии
+     * @see ISessionAware::setSessionService()
      */
     public function setSessionService(ISession $sessionService)
     {
-        $this->_sessionService = $sessionService;
+        $this->traitSessionService = $sessionService;
     }
 
     /**
@@ -139,18 +134,18 @@ trait TSessionAware
 
     /**
      * Возвращает сервис сессии.
-     * @return ISession
      * @throws RequiredDependencyException если сервис не был внедрен.
+     * @return ISession
      */
     private function getSession()
     {
-        if (!$this->_sessionService) {
+        if (!$this->traitSessionService) {
             throw new RequiredDependencyException(sprintf(
                 'Session service is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_sessionService;
+        return $this->traitSessionService;
     }
 }

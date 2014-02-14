@@ -107,7 +107,7 @@ interface IComponent
     public function getChildComponent($name);
 
     /**
-     * Возвращает маршрутеризатор компонента.
+     * Возвращает маршрутизатор компонента.
      * @return IRouter
      */
     public function getRouter();

@@ -10,12 +10,12 @@
 namespace umi\route;
 
 /**
- * Интерфейс для внедрения поддержки маршрутеризации.
+ * Интерфейс для внедрения поддержки маршрутизации.
  */
 interface IRouteAware
 {
     /**
-     * Устанавливает фабрику для создания маршрутеризатора.
+     * Устанавливает фабрику для создания маршрутизатора.
      * @param IRouteFactory $factory фабрика
      */
     public function setRouteFactory(IRouteFactory $factory);

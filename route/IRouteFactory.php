@@ -10,7 +10,7 @@
 namespace umi\route;
 
 /**
- * Интерфейс фабрики правил маршрутеризации.
+ * Интерфейс фабрики правил маршрутизации.
  */
 interface IRouteFactory
 {
@@ -29,7 +29,7 @@ interface IRouteFactory
     const ROUTE_EXTENDED = 'extended';
 
     /**
-     * Создает маршрутеризатор на основе конфигурации.
+     * Создает маршрутизатор на основе конфигурации.
      * @param array $config конфигурация
      * @return IRouter
      */

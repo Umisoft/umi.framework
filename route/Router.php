@@ -32,13 +32,13 @@ class Router implements IRouter, ILocalizable
      */
     protected $params = [];
     /**
-     * @var IRoute[] $routes массив правил маршрутеризации
+     * @var IRoute[] $routes массив правил маршрутизации
      */
     protected $routes = [];
 
     /**
      * Конструктор.
-     * @param IRoute[] $routes массив правил маршрутеризации
+     * @param IRoute[] $routes массив правил маршрутизации
      */
     public function __construct(array $routes = [])
     {
@@ -91,7 +91,7 @@ class Router implements IRouter, ILocalizable
      * Рекурсивно проверяет соответствие url маршрутам.
      * Если маршрут подошел, то пробует подобрать соответствие
      * в дочерних к нему маршрутах.
-     * @param IRoute[] $routes правила маршрутеризации
+     * @param IRoute[] $routes правила маршрутизации
      * @param string $url проверяемый URL
      * @param IRouteResultBuilder $resultBuilder
      * @return bool
@@ -119,7 +119,7 @@ class Router implements IRouter, ILocalizable
     }
 
     /**
-     * Устанавливает базовый URL для маршрутеризатора.
+     * Устанавливает базовый URL для маршрутизатора.
      * @param string $url базовый URL
      * @return self
      */
@@ -131,7 +131,7 @@ class Router implements IRouter, ILocalizable
     }
 
     /**
-     * Возвращает базовый URL для маршрутеризатора.
+     * Возвращает базовый URL для маршрутизатора.
      * @return string базовый URL
      */
     public function getBaseUrl()

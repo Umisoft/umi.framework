@@ -14,11 +14,9 @@ namespace umi\dbal\cluster;
  */
 interface IDbClusterAware
 {
-
     /**
      * Устанавливает компонент для работы с бд.
      * @param IDbCluster $dbCluster
-     * @return self
      */
     public function setDbCluster(IDbCluster $dbCluster);
 }

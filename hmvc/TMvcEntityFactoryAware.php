@@ -22,17 +22,16 @@ use umi\hmvc\view\IViewRenderer;
 trait TMvcEntityFactoryAware
 {
     /**
-     * @var IMvcEntityFactory $_mvcLayerFactory
+     * @var IMvcEntityFactory $traitMvcEntityFactory
      */
-    private $_mvcEntityFactory;
+    private $traitMvcEntityFactory;
 
     /**
-     * Устанавливает фабрику MVC сущностей.
-     * @param IMvcEntityFactory $factory фабрика
+     * @see IMvcEntityFactoryAware::setMvcEntityFactory()
      */
     public function setMvcEntityFactory(IMvcEntityFactory $factory)
     {
-        $this->_mvcEntityFactory = $factory;
+        $this->traitMvcEntityFactory = $factory;
     }
 
     /**
@@ -102,19 +101,19 @@ trait TMvcEntityFactoryAware
 
     /**
      * Возвращает фабрику слоев MVC.
-     * @return IMvcEntityFactory
      * @throws RequiredDependencyException если фабрика не внедрена
+     * @return IMvcEntityFactory
      */
     private function getMvcEntityFactory()
     {
-        if (!$this->_mvcEntityFactory) {
+        if (!$this->traitMvcEntityFactory) {
             throw new RequiredDependencyException(sprintf(
                 'MVC entity factory is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_mvcEntityFactory;
+        return $this->traitMvcEntityFactory;
     }
 
 }

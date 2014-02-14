@@ -31,7 +31,7 @@ interface IRouteResultBuilder
     public function setUnmatchedUrl($unmatchedPart);
 
     /**
-     * Формирует результат маршрутеризации.
+     * Формирует результат маршрутизации.
      * @return IRouteResult результат
      */
     public function getResult();

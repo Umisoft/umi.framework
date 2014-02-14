@@ -17,17 +17,16 @@ use umi\toolkit\exception\RequiredDependencyException;
 trait TToolkitAware
 {
     /**
-     * @var IToolkit $_toolkit
+     * @var IToolkit $traitToolkit
      */
-    private $_toolkit;
+    private $traitToolkit;
 
     /**
-     * Устанавливает toolkit.
-     * @param IToolkit $toolkit
+     * @see IToolkitAware::setToolkit()
      */
     public function setToolkit(IToolkit $toolkit)
     {
-        $this->_toolkit = $toolkit;
+        $this->traitToolkit = $toolkit;
     }
 
     /**
@@ -37,14 +36,14 @@ trait TToolkitAware
      */
     protected function getToolkit()
     {
-        if (!$this->_toolkit) {
+        if (!$this->traitToolkit) {
             throw new RequiredDependencyException(sprintf(
                 'Toolkit is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_toolkit;
+        return $this->traitToolkit;
     }
 
     /**

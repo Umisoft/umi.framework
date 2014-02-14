@@ -20,18 +20,16 @@ use umi\authentication\storage\IAuthStorage;
 trait TAuthenticationAware
 {
     /**
-     * @var IAuthenticationFactory $_authTools инструменты работы с авторизацией
+     * @var IAuthenticationFactory $traitAuthFactory фабрика компонентов авторизации
      */
-    private $_authFactory;
+    private $traitAuthFactory;
 
     /**
-     * Устанавливает фабрика аутентификации.
-     * @param IAuthenticationFactory $authFactory фабрика
-     * @return self
+     * @see IAuthenticationAware::setAuthenticationFactory()
      */
     public function setAuthenticationFactory(IAuthenticationFactory $authFactory)
     {
-        $this->_authFactory = $authFactory;
+        $this->traitAuthFactory = $authFactory;
     }
 
     /**
@@ -91,19 +89,19 @@ trait TAuthenticationAware
     }
 
     /**
-     * Возвращает инструменты для работы с аутентификацией.
+     * Возвращает фабрику компонентов авторизации.
+     * @throws RequiredDependencyException если фабрика не была установлена
      * @return IAuthenticationFactory
-     * @throws RequiredDependencyException если инструменты для работы с аутентификацией не установлены
      */
     private function getAuthFactory()
     {
-        if (!$this->_authFactory) {
+        if (!$this->traitAuthFactory) {
             throw new RequiredDependencyException(sprintf(
                 'Authentication factory is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_authFactory;
+        return $this->traitAuthFactory;
     }
 }

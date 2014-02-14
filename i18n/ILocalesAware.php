@@ -14,11 +14,9 @@ namespace umi\i18n;
  */
 interface ILocalesAware
 {
-
     /**
      * Внедряет сервис для работы с локалями
      * @param ILocalesService $localesService
-     * @return self
      */
     public function setLocalesService(ILocalesService $localesService);
 }

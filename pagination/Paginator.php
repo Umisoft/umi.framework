@@ -17,7 +17,7 @@ use umi\pagination\exception\OutOfBoundsException;
 use umi\pagination\exception\UnexpectedValueException;
 
 /**
- * Класс пагинатора.
+ * Класс постраничной навигации.
  */
 class Paginator implements IPaginator
 {
@@ -33,13 +33,13 @@ class Paginator implements IPaginator
      */
     protected $currentPage = 1;
     /**
-     * @var IPaginationAdapter $adapter адаптер пагинатора
+     * @var IPaginationAdapter $adapter адаптер постраничной навигации
      */
     protected $adapter;
 
     /**
      * Конструктор.
-     * @param IPaginationAdapter $adapter адаптер пагинатора
+     * @param IPaginationAdapter $adapter адаптер постраничной навигации
      * @param int $itemsPerPage количество элементов на странице
      * @throws InvalidArgumentException если количество страниц в ряду задано неверно
      */

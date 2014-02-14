@@ -17,17 +17,16 @@ use umi\toolkit\exception\RequiredDependencyException;
 trait TModelAware
 {
     /**
-     * @var IModelFactory $_hmvcModelFactory фабрика моделей
+     * @var IModelFactory $traitModelFactory фабрика моделей
      */
-    private $_hmvcModelFactory;
+    private $traitModelFactory;
 
     /**
-     * Устанавливает фабрику моделей.
-     * @param IModelFactory $factory
+     * @see IModelAware::setModelFactory()
      */
     public function setModelFactory(IModelFactory $factory)
     {
-        $this->_hmvcModelFactory = $factory;
+        $this->traitModelFactory = $factory;
     }
 
     /**
@@ -54,18 +53,18 @@ trait TModelAware
 
     /**
      * Возвращает фабрику моделей.
-     * @return IModelFactory фабрика
      * @throws RequiredDependencyException если фабрика не внедрена
+     * @return IModelFactory фабрика
      */
     private function getModelFactory()
     {
-        if (!$this->_hmvcModelFactory) {
+        if (!$this->traitModelFactory) {
             throw new RequiredDependencyException(sprintf(
                 'Model factory is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_hmvcModelFactory;
+        return $this->traitModelFactory;
     }
 }

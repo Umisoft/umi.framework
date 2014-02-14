@@ -17,7 +17,6 @@ interface IEventObservant
     /**
      * Устанавливает фабрику событий и менеджеров событий
      * @param IEventFactory $eventFactory
-     * @return self
      */
     public function setEventFactory(IEventFactory $eventFactory);
 

@@ -17,17 +17,16 @@ use umi\filter\exception\RequiredDependencyException;
 trait TFilterAware
 {
     /**
-     * @var IFilterFactory $_filterTools инструменты для работы с фильтрами
+     * @var IFilterFactory $traitFilterFactory фабрика для создания фильтров
      */
-    private $_filterFactory;
+    private $traitFilterFactory;
 
     /**
-     * Устанавливает фабрику для создания фильтров.
-     * @param IFilterFactory $filterFactory фабрика
+     * @see IFilterAware::setFilterFactory()
      */
     public function setFilterFactory(IFilterFactory $filterFactory)
     {
-        $this->_filterFactory = $filterFactory;
+        $this->traitFilterFactory = $filterFactory;
     }
 
     /**
@@ -56,18 +55,18 @@ trait TFilterAware
 
     /**
      * Возвращает фабрику фильтров.
-     * @return IFilterFactory
      * @throws RequiredDependencyException если фабрика не внедрена
+     * @return IFilterFactory
      */
     private function getFilterFactory()
     {
-        if (!$this->_filterFactory) {
+        if (!$this->traitFilterFactory) {
             throw new RequiredDependencyException(sprintf(
                 'Filter factory is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_filterFactory;
+        return $this->traitFilterFactory;
     }
 }
