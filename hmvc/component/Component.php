@@ -128,7 +128,7 @@ class Component implements IComponent, IMvcEntityFactoryAware, IRouteAware, ILoc
         }
 
         $config = $this->configToArray($this->options[self::OPTION_COMPONENTS][$name]);
-        $component = $this->createMVCComponent($name, $this->path . self::PATH_SEPARATOR . $name, $config);
+        $component = $this->createMvcComponent($name, $this->path . self::PATH_SEPARATOR . $name, $config);
 
         return $this->children[$name] = $component;
     }
@@ -189,7 +189,7 @@ class Component implements IComponent, IMvcEntityFactoryAware, IRouteAware, ILoc
             $config = isset($this->options[self::OPTION_VIEW]) ? $this->options[self::OPTION_VIEW] : [];
             $config = $this->configToArray($config, true);
 
-            $viewRenderer = $this->createMVCViewRenderer($config);
+            $viewRenderer = $this->createMvcViewRenderer($config);
 
             if ($viewRenderer instanceof IModelAware) {
                 $viewRenderer->setModelFactory($this->getModelsFactory());
@@ -241,7 +241,7 @@ class Component implements IComponent, IMvcEntityFactoryAware, IRouteAware, ILoc
             $controllerList = isset($this->options[self::OPTION_CONTROLLERS]) ? $this->options[self::OPTION_CONTROLLERS] : [];
             $controllerList = $this->configToArray($controllerList, true);
 
-            $controllerFactory = $this->createMVCControllerFactory($this, $controllerList);
+            $controllerFactory = $this->createMvcControllerFactory($this, $controllerList);
 
             if ($controllerFactory instanceof IModelAware) {
                 $controllerFactory->setModelFactory($this->getModelsFactory());
@@ -263,7 +263,7 @@ class Component implements IComponent, IMvcEntityFactoryAware, IRouteAware, ILoc
             $widgetList = isset($this->options[self::OPTION_WIDGET]) ? $this->options[self::OPTION_WIDGET] : [];
             $widgetList = $this->configToArray($widgetList, true);
 
-            $widgetFactory = $this->createMVCWidgetFactory($this, $widgetList);
+            $widgetFactory = $this->createMvcWidgetFactory($this, $widgetList);
 
             if ($widgetFactory instanceof IModelAware) {
                 $widgetFactory->setModelFactory($this->getModelsFactory());
@@ -285,7 +285,7 @@ class Component implements IComponent, IMvcEntityFactoryAware, IRouteAware, ILoc
             $config = isset($this->options[self::OPTION_MODELS]) ? $this->options[self::OPTION_MODELS] : [];
             $config = $this->configToArray($config, true);
 
-            return $this->modelFactory = $this->createMVCModelFactory($config);
+            return $this->modelFactory = $this->createMvcModelFactory($config);
         }
 
         return $this->modelFactory;

@@ -72,7 +72,7 @@ class HMVCTools implements IToolbox
     public function injectDependencies($object)
     {
         if ($object instanceof IMvcEntityFactoryAware) {
-            $object->setMVCEntityFactory($this->getMVCEntityFactory());
+            $object->setMvcEntityFactory($this->getMVCEntityFactory());
         }
     }
 
