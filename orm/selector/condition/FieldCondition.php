@@ -86,6 +86,10 @@ class FieldCondition implements IFieldCondition
      */
     public function equals($value)
     {
+        if (is_null($value)) {
+            return $this->isNull();
+        }
+
         $this->operator = self::OPERATOR_EQUALS;
         $this->expression = $this->prepareValue($value);
 
@@ -108,6 +112,10 @@ class FieldCondition implements IFieldCondition
      */
     public function notEquals($value)
     {
+        if (is_null($value)) {
+            return $this->notNull();
+        }
+
         $this->operator = self::OPERATOR_NOTEQUALS;
         $this->expression = $value;
 
