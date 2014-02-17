@@ -162,6 +162,7 @@ interface IComponent
      * Если возвращает Response, диспетчирезиция запроса останавливается, запускается диспетчеризация ответа.
      * @param IDispatchContext $context
      * @param Request $request
+     * @return void|Response
      */
     public function onDispatchRequest(IDispatchContext $context, Request $request);
 
