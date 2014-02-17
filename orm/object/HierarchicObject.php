@@ -23,7 +23,7 @@ class HierarchicObject extends Object implements IHierarchicObject
     /**
      * @var string $normalizedURL нормализованный url объекта
      */
-    private $normalizedURL;
+    private $normalizedUrl;
 
     /**
      * {@inheritdoc}
@@ -84,13 +84,13 @@ class HierarchicObject extends Object implements IHierarchicObject
      */
     public function getURL()
     {
-        if (is_null($this->normalizedURL)) {
+        if (is_null($this->normalizedUrl)) {
             $url = $this->getProperty(self::FIELD_URI)
                 ->getValue();
-            $this->normalizedURL = substr($url, 1);
+            $this->normalizedUrl = substr($url, 1);
         }
 
-        return $this->normalizedURL;
+        return $this->normalizedUrl;
     }
 
     /**
@@ -108,6 +108,6 @@ class HierarchicObject extends Object implements IHierarchicObject
     public function reset()
     {
         parent::reset();
-        $this->normalizedURL = null;
+        $this->normalizedUrl = null;
     }
 }

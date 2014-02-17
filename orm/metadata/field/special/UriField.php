@@ -28,6 +28,11 @@ class UriField extends BaseField implements IScalarField, ICalculableField
     use TCalculableField;
 
     /**
+     * Начальный символ для URI
+     */
+    const URI_START_SYMBOL = '/';
+
+    /**
      * {@inheritdoc}
      */
     public function getDataType()
@@ -63,7 +68,7 @@ class UriField extends BaseField implements IScalarField, ICalculableField
         if (($parent = $object->getParent()) && $parent->getURI()) {
             return $parent->getURI() . '/' . $object->getSlug();
         } else {
-            return '//' . $object->getSlug();
+            return  self::URI_START_SYMBOL . '/' . $object->getSlug();
         }
     }
 }
