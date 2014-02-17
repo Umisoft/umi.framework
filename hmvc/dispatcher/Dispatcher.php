@@ -309,7 +309,10 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
             ->setBaseUrl($matchedRoutePath)
             ->setCallStack(clone $callStack);
 
-        $component->onDispatchRequest($context, $this->currentRequest);
+        $response = $component->onDispatchRequest($context, $this->currentRequest);
+        if ($response instanceof Response) {
+            return $this->processResponse($response, $callStack);
+        }
 
         if (isset($routeMatches[IComponent::MATCH_COMPONENT])) {
 

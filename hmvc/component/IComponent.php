@@ -159,6 +159,7 @@ interface IComponent
 
     /**
      * Может выполнять дополнительные действия при обработке HTTP-запроса.
+     * Если возвращает Response, диспетчирезиция запроса останавливается, запускается диспетчеризация ответа.
      * @param IDispatchContext $context
      * @param Request $request
      */
