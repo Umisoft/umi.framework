@@ -73,7 +73,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
     /**
      * {@inheritdoc}
      */
-    public function dispatchRequest(IComponent $component, Request $request, $routePath = null)
+    public function dispatchRequest(IComponent $component, Request $request, $routePath = null, $baseUrl = '')
     {
         $this->currentRequest = $request;
         $this->initialComponent = $component;
@@ -85,7 +85,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
         }
 
         try {
-            $response = $this->processRequest($component, $routePath, $callStack);
+            $response = $this->processRequest($component, $routePath, $callStack, $baseUrl);
         } catch (Exception $e) {
             $this->processError($e, $callStack);
             return;

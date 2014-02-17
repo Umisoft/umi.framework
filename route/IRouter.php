@@ -30,17 +30,4 @@ interface IRouter
      * @return string собранный URL
      */
     public function assemble($name, array $params = []);
-
-    /**
-     * Устанавливает базовый URL для маршрутизатора.
-     * @param string $url базовый URL
-     * @return self
-     */
-    public function setBaseUrl($url);
-
-    /**
-     * Возвращает базовый URL для маршрутизатора.
-     * @return string базовый URL
-     */
-    public function getBaseUrl();
 }

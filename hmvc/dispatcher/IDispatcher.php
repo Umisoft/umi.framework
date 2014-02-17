@@ -41,9 +41,10 @@ interface IDispatcher
      * @param IComponent $component начальный компонент
      * @param Request $request
      * @param string|null $routePath путь маршрутизации, если не задан - будет взят из $request
+     * @param string $baseUrl базовый URL марщрутизации
      * @return
      */
-    public function dispatchRequest(IComponent $component, Request $request, $routePath = null);
+    public function dispatchRequest(IComponent $component, Request $request, $routePath = null, $baseUrl = '');
 
     /**
      * Обрабатывает ошибку рендеринга.

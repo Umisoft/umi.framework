@@ -24,10 +24,6 @@ class Router implements IRouter, ILocalizable
     use TLocalizable;
 
     /**
-     * @var string $baseUrl базовый URL
-     */
-    protected $baseUrl = '';
-    /**
      * @var array $params параметры
      */
     protected $params = [];
@@ -63,13 +59,9 @@ class Router implements IRouter, ILocalizable
      */
     public function assemble($name, array $params = [])
     {
-        if (!$name) {
-            return $this->getBaseUrl();
-        }
+        $url = '';
 
         $names = explode('/', $name);
-
-        $url = '';
 
         $routes = $this->routes;
         foreach ($names as $name) {
@@ -84,7 +76,7 @@ class Router implements IRouter, ILocalizable
             $routes = $routes[$name]->getSubRoutes();
         }
 
-        return $this->baseUrl . $url;
+        return $url;
     }
 
     /**
@@ -116,26 +108,5 @@ class Router implements IRouter, ILocalizable
         }
 
         return false;
-    }
-
-    /**
-     * Устанавливает базовый URL для маршрутизатора.
-     * @param string $url базовый URL
-     * @return self
-     */
-    public function setBaseUrl($url)
-    {
-        $this->baseUrl = $url;
-
-        return $this;
-    }
-
-    /**
-     * Возвращает базовый URL для маршрутизатора.
-     * @return string базовый URL
-     */
-    public function getBaseUrl()
-    {
-        return $this->baseUrl;
     }
 }
