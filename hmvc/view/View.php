@@ -91,10 +91,14 @@ class View extends ArrayIterator implements IView, Serializable
                 $e
             );
 
-            $result = $dispatcher->reportViewRenderError($exception, $this->context, $this->viewOwner);
+            try {
+                $result = $dispatcher->reportViewRenderError($exception, $this->context, $this->viewOwner);
 
-            if ($previousContext) {
-                $dispatcher->switchCurrentContext($previousContext);
+                if ($previousContext) {
+                    $dispatcher->switchCurrentContext($previousContext);
+                }
+            } catch (\Exception $e) {
+                $result = $e->getMessage();
             }
 
             return $result;

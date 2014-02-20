@@ -77,7 +77,7 @@ class DateTime extends \DateTime
     /**
      * {@inheritdoc}
      */
-    public function add(\DateInterval $interval)
+    public function add($interval)
     {
         $result = parent::add($interval);
         $this->update();

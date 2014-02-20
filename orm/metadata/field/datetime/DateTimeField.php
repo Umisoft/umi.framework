@@ -11,8 +11,6 @@ namespace umi\orm\metadata\field\datetime;
 
 use umi\orm\exception\NotAllowedOperationException;
 use umi\orm\metadata\field\BaseField;
-use umi\orm\metadata\field\IScalarField;
-use umi\orm\metadata\field\TScalarField;
 use umi\orm\object\IObject;
 use umi\orm\object\property\datetime\DateTime;
 use umi\orm\object\property\datetime\IDateTimeProperty;
@@ -20,11 +18,8 @@ use umi\orm\object\property\datetime\IDateTimeProperty;
 /**
  * Класс поля для даты с учетом времени.
  */
-class DateTimeField extends BaseField implements IScalarField
+class DateTimeField extends BaseField
 {
-
-    use TScalarField;
-
     /**
      * {@inheritdoc}
      */
