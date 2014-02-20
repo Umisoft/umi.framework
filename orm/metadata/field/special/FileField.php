@@ -46,7 +46,7 @@ class FileField extends BaseField
     public function validateInputPropertyValue($propertyValue)
     {
         throw new NotAllowedOperationException($this->translate(
-            'Cannot set value for property "{name}".',
+            'Cannot set value for property "{name}". Use File::setFilePath() to set value.',
             ['name' => $this->getName()]
         ));
     }

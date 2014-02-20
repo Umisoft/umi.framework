@@ -9,9 +9,13 @@
 
 namespace umi\orm\metadata\field\datetime;
 
+use umi\orm\exception\NotAllowedOperationException;
 use umi\orm\metadata\field\BaseField;
 use umi\orm\metadata\field\IScalarField;
 use umi\orm\metadata\field\TScalarField;
+use umi\orm\object\IObject;
+use umi\orm\object\property\datetime\DateTime;
+use umi\orm\object\property\datetime\IDateTimeProperty;
 
 /**
  * Класс поля для даты с учетом времени.
@@ -34,6 +38,36 @@ class DateTimeField extends BaseField implements IScalarField
      */
     public function validateInputPropertyValue($propertyValue)
     {
-        return is_string($propertyValue);
+        throw new NotAllowedOperationException($this->translate(
+            'Cannot set value for property "{name}". Use DateTime methods to set value.',
+            ['name' => $this->getName()]
+        ));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function preparePropertyValue(IObject $object, $internalDbValue)
+    {
+        /**
+         * @var IDateTimeProperty $property
+         */
+        $property = $object->getProperty($this->getName());
+
+        return new DateTime($internalDbValue, null, $property);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function prepareDbValue(IObject $object, $propertyValue)
+    {
+        $dbValue = null;
+        if ($propertyValue instanceof DateTime && $propertyValue->getIsTimeSet()) {
+
+            $dbValue = $propertyValue->format('Y-m-d H:i:s');
+        }
+
+        return $dbValue;
     }
 }

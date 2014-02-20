@@ -9,6 +9,7 @@
 
 namespace umi\orm\toolbox\factory;
 
+use umi\orm\metadata\field\datetime\DateTimeField;
 use umi\orm\metadata\field\ICalculableField;
 use umi\orm\metadata\field\IField;
 use umi\orm\metadata\field\ILocalizableField;
@@ -17,6 +18,8 @@ use umi\orm\metadata\field\special\FileField;
 use umi\orm\object\IObject;
 use umi\orm\object\property\calculable\ICalculableProperty;
 use umi\orm\object\property\calculable\ICounterProperty;
+use umi\orm\object\property\datetime\IDateTimeProperty;
+use umi\orm\object\property\file\IFileProperty;
 use umi\orm\object\property\localized\ILocalizedProperty;
 use umi\orm\object\property\IProperty;
 use umi\orm\object\property\IPropertyFactory;
@@ -51,13 +54,16 @@ class PropertyFactory implements IPropertyFactory, IFactory
      * @var string $defaultFilePropertyClass класс свойства со значением типа файл
      */
     public $defaultFilePropertyClass = 'umi\orm\object\property\file\FileProperty';
+    /**
+     * @var string $defaultDateTimePropertyClass класс свойства со значением типа DateTime
+     */
+    public $defaultDateTimePropertyClass = 'umi\orm\object\property\datetime\DateTimeProperty';
 
     /**
      * {@inheritdoc}
      */
     public function createProperty(IObject $object, IField $field, $localeId = null)
     {
-        /** @var CounterField | FileField | ICalculableField | ILocalizableField $field */
         switch (true) {
             case ($field instanceof CounterField):
             {
@@ -66,6 +72,10 @@ class PropertyFactory implements IPropertyFactory, IFactory
             case ($field instanceof FileField):
             {
                 return $this->createFileProperty($object, $field);
+            }
+            case ($field instanceof DateTimeField):
+            {
+                return $this->createDateTimeProperty($object, $field);
             }
             case ($field instanceof ICalculableField):
             {
@@ -152,16 +162,33 @@ class PropertyFactory implements IPropertyFactory, IFactory
     }
 
     /**
-     * Создает экземпляр обычного свойства для указанного объекта
+     * Создает экземпляр свойства со значением типа файл для указанного объекта
      * @param IObject $object объект
      * @param FileField $field поле типа данных
-     * @return ICounterProperty
+     * @return IFileProperty
      */
     protected function createFileProperty(IObject $object, FileField $field)
     {
         $property = $this->getPrototype(
             $this->defaultFilePropertyClass,
             ['umi\orm\object\property\file\IFileProperty']
+        )
+            ->createInstance([$object, $field]);
+
+        return $property;
+    }
+
+    /**
+     * Создает экземпляр свойства со значением типа DateTime для указанного объекта
+     * @param IObject $object объект
+     * @param DateTimeField $field поле типа данных
+     * @return IDateTimeProperty
+     */
+    protected function createDateTimeProperty(IObject $object, DateTimeField $field)
+    {
+        $property = $this->getPrototype(
+            $this->defaultDateTimePropertyClass,
+            ['umi\orm\object\property\datetime\IDateTimeProperty']
         )
             ->createInstance([$object, $field]);
 
