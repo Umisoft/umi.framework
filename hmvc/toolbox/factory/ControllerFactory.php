@@ -13,7 +13,7 @@ use umi\hmvc\component\IComponent;
 use umi\hmvc\controller\IController;
 use umi\hmvc\controller\IControllerFactory;
 use umi\hmvc\exception\OutOfBoundsException;
-use umi\hmvc\exception\RuntimeException;
+use umi\hmvc\exception\UnexpectedValueException;
 use umi\hmvc\model\IModelAware;
 use umi\hmvc\model\IModelFactory;
 use umi\toolkit\factory\IFactory;
@@ -88,7 +88,7 @@ class ControllerFactory implements IControllerFactory, IFactory, IModelAware
      * Создает контроллер заданного класса.
      * @param string $class класс контроллера
      * @param array $args аргументы конструктора
-     * @throws RuntimeException если контроллер не callable
+     * @throws UnexpectedValueException если контроллер не callable
      * @return IController
      */
     protected function createControllerByClass($class, $args = [])
@@ -96,14 +96,14 @@ class ControllerFactory implements IControllerFactory, IFactory, IModelAware
         $controller = $this->getPrototype(
                 $class,
                 ['umi\hmvc\controller\IController'],
-                function (IPrototype $prototype) use ($class)
+                function (IPrototype $prototype)
                 {
                     /** @noinspection PhpParamsInspection */
                     if (!is_callable($prototype->getPrototypeInstance())) {
-                        throw new RuntimeException(
+                        throw new UnexpectedValueException(
                             $this->translate(
                                 'Controller "{class}" should be callable.',
-                                ['class' => $class]
+                                ['class' => $prototype->getClassName()]
                             )
                         );
                     }

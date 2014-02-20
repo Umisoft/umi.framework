@@ -12,6 +12,7 @@ namespace umi\hmvc\toolbox\factory;
 use umi\hmvc\component\IComponent;
 use umi\hmvc\exception\OutOfBoundsException;
 use umi\hmvc\exception\RuntimeException;
+use umi\hmvc\exception\UnexpectedValueException;
 use umi\hmvc\widget\IWidget;
 use umi\hmvc\widget\IWidgetFactory;
 use umi\hmvc\model\IModelAware;
@@ -90,7 +91,7 @@ class WidgetFactory implements IWidgetFactory, IFactory, IModelAware
      * Создает виджет заданного класса.
      * @param string $class класс виджета
      * @param array $params параметры вызова виджета
-     * @throws RuntimeException если виджет не callable
+     * @throws UnexpectedValueException если виджет не callable
      * @return IWidget
      */
     protected function createWidgetByClass($class, $params = [])
@@ -98,14 +99,14 @@ class WidgetFactory implements IWidgetFactory, IFactory, IModelAware
         $widget = $this->getPrototype(
             $class,
             ['umi\hmvc\widget\IWidget'],
-            function (IPrototype $prototype) use ($class)
+            function (IPrototype $prototype)
             {
                 /** @noinspection PhpParamsInspection */
                 if (!is_callable($prototype->getPrototypeInstance())) {
-                    throw new RuntimeException(
+                    throw new UnexpectedValueException(
                         $this->translate(
                             'Widget "{class}" should be callable.',
-                            ['class' => $class]
+                            ['class' => $prototype->getClassName()]
                         )
                     );
                 }
