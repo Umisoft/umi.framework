@@ -9,6 +9,7 @@
 
 namespace umi\hmvc\view;
 
+use ArrayIterator;
 use Serializable;
 use umi\hmvc\controller\IController;
 use umi\hmvc\dispatcher\IDispatchContext;
@@ -20,7 +21,7 @@ use umi\spl\container\TPropertyAccess;
 /**
  * Содержимое результата работы виджета или контроллера, требующее шаблонизации.
  */
-class View implements IView, Serializable
+class View extends ArrayIterator implements IView, Serializable
 {
     use TArrayAccess;
     use TPropertyAccess;
@@ -59,6 +60,8 @@ class View implements IView, Serializable
         $this->context = $context;
         $this->templateName = $templateName;
         $this->variables = $variables;
+
+        parent::__construct($variables);
     }
 
     /**
