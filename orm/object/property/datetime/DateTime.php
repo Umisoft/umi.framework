@@ -145,7 +145,7 @@ class DateTime extends \DateTime
      */
     private function update()
     {
-        if ($this->oldValue != $this->getTimestamp()) {
+        if (!$this->timeIsSet || $this->oldValue != $this->getTimestamp()) {
             $this->oldValue = $this->getTimestamp();
             $this->timeIsSet = true;
             $this->property->update();

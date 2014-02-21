@@ -69,6 +69,12 @@ interface IField
     public function getName();
 
     /**
+     * Возвращает тип поля
+     * @return string
+     */
+    public function getType();
+
+    /**
      * Возвращает признак видимости поля
      * @return bool
      */
