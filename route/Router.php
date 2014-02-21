@@ -39,6 +39,12 @@ class Router implements IRouter, ILocalizable
     public function __construct(array $routes = [])
     {
         $this->routes = $routes;
+        uasort($this->routes, function(IRoute $first, IRoute $second){
+            if ($first->getPriority() == $second->getPriority()) {
+                return 0;
+            }
+            return ($first->getPriority() < $second->getPriority()) ? -1 : 1;
+        });
     }
 
     /**

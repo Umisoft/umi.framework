@@ -99,8 +99,14 @@ class RouteFactory implements IRouteFactory, IFactory
     {
         $routes = [];
 
-        foreach ($config as $name => $route) {
-            $routes[$name] = $this->createRoute($route);
+        $defaultPriority = 1;
+        foreach ($config as $name => $routeConfig) {
+
+            $route = $this->createRoute($routeConfig);
+            $priority = isset($routeConfig[IRoute::OPTION_PRIORITY]) ? $routeConfig[IRoute::OPTION_PRIORITY] : $defaultPriority;
+            $route->setPriority($priority);
+            $routes[$name] = $route;
+            $defaultPriority++;
         }
 
         return $routes;

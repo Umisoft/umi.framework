@@ -14,10 +14,18 @@ namespace umi\route\type;
  */
 interface IRoute
 {
-    /** Опция для установки маршрута. */
+    /**
+     * Опция для установки маршрута
+     */
     const OPTION_ROUTE = 'route';
-    /** Опция для установки значений по умолчанию */
+    /**
+     * Опция для установки значений по умолчанию
+     */
     const OPTION_DEFAULTS = 'defaults';
+    /**
+     * Опция для установки приоритетности выбора маршрута
+     */
+    const OPTION_PRIORITY = 'priority';
 
     /**
      * Проверяет соответствие части URL и правила маршрутизатора.
@@ -44,4 +52,17 @@ interface IRoute
      * @return self[]
      */
     public function getSubRoutes();
+
+    /**
+     * Возвращает приоритет маршрута.
+     * @return int
+     */
+    public function getPriority();
+
+    /**
+     * Выставляет приоритет маршрута.
+     * @param int $priority
+     * @return self
+     */
+    public function setPriority($priority);
 }
