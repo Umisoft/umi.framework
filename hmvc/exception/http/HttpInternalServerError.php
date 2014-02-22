@@ -9,6 +9,8 @@
 
 namespace umi\hmvc\exception\http;
 
+use umi\http\Response;
+
 /**
  * Исключение бросаемое при ошибке сервера.
  */
@@ -19,6 +21,6 @@ class HttpInternalServerError extends HttpException
      */
     public function __construct($message, \Exception $previous = null)
     {
-        parent::__construct(self::HTTP_INTERNAL_SERVER_ERROR, $message, $previous);
+        parent::__construct(Response::HTTP_INTERNAL_SERVER_ERROR, $message, $previous);
     }
 }
