@@ -105,10 +105,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
             return;
         }
 
-        $response
-            ->setContent($content)
-            ->prepare($request)
-            ->send();
+        $this->sendResponse($response, $request, $content);
     }
 
     /**
@@ -367,9 +364,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
                 throw $renderException;
             }
 
-            $layoutResponse
-                ->setContent($content)
-                ->send();
+            $this->sendResponse($layoutResponse, $this->currentRequest, $content);
 
             return;
         }
@@ -438,6 +433,20 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
     protected function createDispatchContext(IComponent $component)
     {
         return new DispatchContext($component, $this);
+    }
+
+    /**
+     * Отправляет ответ.
+     * @param Response $response HTTP-ответ
+     * @param Request $request HTTP-запрос
+     * @param mixed $content содержание ответа
+     */
+    protected function sendResponse(Response $response, Request $request, $content)
+    {
+        $response
+            ->setContent($content)
+            ->prepare($request)
+            ->send();
     }
 
     /**
