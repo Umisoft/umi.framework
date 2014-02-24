@@ -31,7 +31,7 @@ trait TStemmingAware
     /**
      * @return \umi\stemming\IStemming
      */
-    public function getTraitStemming()
+    public function getStemming()
     {
         return $this->traitStemming;
     }
