@@ -409,14 +409,14 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
 
             if (!$response->getIsCompleted()) {
 
-                if (!$component->hasController(IComponent::LAYOUT_CONTROLLER)) {
-                    continue;
+                if ($component->hasController(IComponent::LAYOUT_CONTROLLER)) {
+
+                    $layoutController = $component->getController(IComponent::LAYOUT_CONTROLLER, [$response])
+                        ->setContext($context)
+                        ->setRequest($this->currentRequest);
+                    $response = $this->invokeController($layoutController);
                 }
 
-                $layoutController = $component->getController(IComponent::LAYOUT_CONTROLLER, [$response])
-                    ->setContext($context)
-                    ->setRequest($this->currentRequest);
-                $response = $this->invokeController($layoutController);
             }
 
             $component->onDispatchResponse($context, $response);
