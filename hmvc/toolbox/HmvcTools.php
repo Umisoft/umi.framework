@@ -43,7 +43,7 @@ class HmvcTools implements IToolbox
     public function __construct()
     {
         $this->registerFactory(
-            'MvcEntity',
+            'entity',
             $this->mvcEntityFactoryClass,
             ['umi\hmvc\IMvcEntityFactory']
         );
@@ -82,7 +82,7 @@ class HmvcTools implements IToolbox
      */
     protected function getMvcEntityFactory()
     {
-        return $this->getFactory('MvcEntity');
+        return $this->getFactory('entity');
     }
 
     /**
