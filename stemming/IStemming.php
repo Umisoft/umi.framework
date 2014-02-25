@@ -29,6 +29,7 @@ interface IStemming
     const LEMM_ONLY_PREDICT = \phpMorphy_MorphyInterface::ONLY_PREDICT;
 
     /**
+     * Определяет возможные базовые формы слова
      * @param $word
      * @param int $type
      * @return array
@@ -36,6 +37,7 @@ interface IStemming
     public function getBaseForm($word, $type = IStemming::LEMM_NORMAL);
 
     /**
+     * Определяет все возможные формы слова
      * @param $word
      * @param int $type
      * @return array
@@ -43,6 +45,7 @@ interface IStemming
     public function getAllForms($word, $type = IStemming::LEMM_NORMAL);
 
     /**
+     * Определяет возможные части речи, возвращает кириллическую аббревиатуру для каждой
      * @param $word
      * @param int $type
      * @return string
@@ -50,9 +53,10 @@ interface IStemming
     public function getPartOfSpeech($word, $type = IStemming::LEMM_NORMAL);
 
     /**
+     * Общий корень для всех форм слова. Может вернуть пустую строку.
      * @param $word
      * @param int $type
-     * @return \phpMorphy_Paradigm_Collection
+     * @return string
      */
-    public function getWordParadigms($word, $type = IStemming::LEMM_NORMAL);
+    public function getCommonRoot($word, $type = IStemming::LEMM_NORMAL);
 }

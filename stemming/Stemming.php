@@ -53,8 +53,9 @@ class Stemming implements IStemming
     /**
      * {@inheritdoc}
      */
-    public function getWordParadigms($word, $type = IStemming::LEMM_NORMAL)
+    public function getCommonRoot($word, $type = IStemming::LEMM_NORMAL)
     {
-        return $this->phpmorphy->findWord(mb_strtoupper($word, 'utf-8'), $type);
+        $pseudoRoots = $this->phpmorphy->getPseudoRoot(mb_strtoupper($word, 'utf-8'), $type);
+        return current($pseudoRoots);
     }
 }
