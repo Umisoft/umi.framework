@@ -83,6 +83,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
         if (is_null($routePath)) {
             $routePath = $request->getPathInfo();
         }
+        $routePath = urldecode($routePath);
 
         try {
             $response = $this->processRequest($component, $routePath, $callStack, $baseUrl);
