@@ -48,15 +48,15 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
      * @var array $controllerViewRenderErrorInfo информация об исключение рендеринга
      */
     protected $controllerViewRenderErrorInfo = [];
+
     /**
      * @var Request $currentRequest обрабатываемый HTTP-запрос
      */
-    protected $currentRequest;
+    private $currentRequest;
     /**
      * @var IComponent $initialComponent начальный компонент HTTP-запроса
      */
-    protected $initialComponent;
-
+    private $initialComponent;
     /**
      * @var IDispatchContext $currentContext текущий контекст
      */
@@ -65,31 +65,68 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
     /**
      * {@inheritdoc}
      */
+    public function setCurrentRequest(Request $request)
+    {
+        $this->currentRequest = $request;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getCurrentRequest()
     {
+        if (!$this->currentRequest) {
+            throw new RuntimeException(
+                $this->translate('Current HTTP request is unknown.')
+            );
+        }
         return $this->currentRequest;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function dispatchRequest(IComponent $component, Request $request, $routePath = null, $baseUrl = '')
+    public function setInitialComponent(IComponent $component)
     {
-        $this->currentRequest = $request;
         $this->initialComponent = $component;
+        $this->controllerViewRenderErrorInfo = [];
+        $this->currentContext = null;
 
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getInitialComponent()
+    {
+        if (!$this->initialComponent) {
+            throw new RuntimeException(
+                $this->translate('Initial component is unknown.')
+            );
+        }
+
+        return $this->initialComponent;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function dispatch($routePath = null, $baseUrl = '')
+    {
         $callStack = $this->createCallStack();
 
         if (is_null($routePath)) {
-            $routePath = $request->getPathInfo();
+            $routePath = $this->getCurrentRequest()->getPathInfo();
         }
         $routePath = urldecode($routePath);
 
         try {
-            $response = $this->processRequest($component, $routePath, $callStack, $baseUrl);
+            $response = $this->processRequest($this->getInitialComponent(), $routePath, $callStack, $baseUrl);
         } catch (Exception $e) {
-            $this->processError($e, $callStack);
-            return;
+            return $this->processError($e, $callStack);
         }
 
         $content = (string) $response->getContent();
@@ -102,11 +139,10 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
             list ($e, $failureContext) = $this->controllerViewRenderErrorInfo;
             $this->controllerViewRenderErrorInfo = [];
 
-            $this->processError($e, $failureContext->getCallStack());
-            return;
+            return $this->processError($e, $failureContext->getCallStack());
         }
 
-        $this->sendResponse($response, $request, $content);
+        return $response->setContent($content);
     }
 
     /**
@@ -307,7 +343,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
             ->setBaseUrl($matchedRoutePath)
             ->setCallStack(clone $callStack);
 
-        $response = $component->onDispatchRequest($context, $this->currentRequest);
+        $response = $component->onDispatchRequest($context, $this->getCurrentRequest());
         if ($response instanceof Response) {
             return $this->processResponse($response, $callStack);
         }
@@ -330,10 +366,11 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
     }
 
     /**
-     * Формирует результат запроса с учетом произошедшей исключительной ситуации.
+     * Формирует HTTP-ответ с учетом произошедшей исключительной ситуации.
      * @param Exception $e произошедшая исключительная ситуация
      * @param SplStack $callStack
      * @throws Exception если не удалось обработать исключительную ситуацию
+     * @return Response
      */
     protected function processError(Exception $e, SplStack $callStack)
     {
@@ -349,7 +386,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
 
             $errorController = $component->getController(IComponent::ERROR_CONTROLLER, [$e])
                 ->setContext($context)
-                ->setRequest($this->currentRequest);
+                ->setRequest($this->getCurrentRequest());
 
 
             try {
@@ -365,9 +402,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
                 throw $renderException;
             }
 
-            $this->sendResponse($layoutResponse, $this->currentRequest, $content);
-
-            return;
+            return $layoutResponse->setContent($content);
         }
 
         throw $e;
@@ -414,7 +449,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
 
                     $layoutController = $component->getController(IComponent::LAYOUT_CONTROLLER, [$response])
                         ->setContext($context)
-                        ->setRequest($this->currentRequest);
+                        ->setRequest($this->getCurrentRequest());
                     $response = $this->invokeController($layoutController);
                 }
 
@@ -434,20 +469,6 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
     protected function createDispatchContext(IComponent $component)
     {
         return new DispatchContext($component, $this);
-    }
-
-    /**
-     * Отправляет ответ.
-     * @param Response $response HTTP-ответ
-     * @param Request $request HTTP-запрос
-     * @param mixed $content содержание ответа
-     */
-    protected function sendResponse(Response $response, Request $request, $content)
-    {
-        $response
-            ->setContent($content)
-            ->prepare($request)
-            ->send();
     }
 
     /**
@@ -519,7 +540,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
          */
         $controller = $component->getController($routeMatches[IComponent::MATCH_CONTROLLER])
             ->setContext($context)
-            ->setRequest($this->currentRequest);
+            ->setRequest($this->getCurrentRequest());
 
         if ($controller instanceof IACLResource && !$this->checkPermissions($component, $controller)) {
             throw new HttpForbidden(
@@ -566,7 +587,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
         }
 
         return [
-            $this->initialComponent,
+            $this->getInitialComponent(),
             $this->createCallStack(),
             ''
         ];
