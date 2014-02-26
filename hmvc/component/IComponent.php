@@ -64,11 +64,11 @@ interface IComponent
     const OPTION_ACL = 'acl';
 
     /**
-     * Имя параметра маршрута, для передачи управления дочернему компоненту
+     * Имя параметра маршрута для передачи управления дочернему компоненту
      */
     const MATCH_COMPONENT = 'component';
     /**
-     * Имя параметра маршрута, для передачи управления контроллеру
+     * Имя параметра маршрута для передачи управления контроллеру
      */
     const MATCH_CONTROLLER = 'controller';
 
@@ -170,6 +170,7 @@ interface IComponent
      * Может выполнять дополнительные действия при обработке HTTP-ответа.
      * @param IDispatchContext $context
      * @param Response $response
+     * @return Response
      */
     public function onDispatchResponse(IDispatchContext $context, Response $response);
 

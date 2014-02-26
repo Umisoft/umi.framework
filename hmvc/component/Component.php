@@ -222,6 +222,7 @@ class Component implements IComponent, IMvcEntityFactoryAware, IRouteAware, ILoc
      */
     public function onDispatchRequest(IDispatchContext $context, Request $request)
     {
+        return null;
     }
 
     /**
@@ -229,6 +230,7 @@ class Component implements IComponent, IMvcEntityFactoryAware, IRouteAware, ILoc
      */
     public function onDispatchResponse(IDispatchContext $context, Response $response)
     {
+        return $response;
     }
 
     /**

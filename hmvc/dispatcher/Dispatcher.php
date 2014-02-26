@@ -455,7 +455,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
 
             }
 
-            $component->onDispatchResponse($context, $response);
+            $response = $component->onDispatchResponse($context, $response);
         }
 
         return $response;
