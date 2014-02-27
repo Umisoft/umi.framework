@@ -93,6 +93,12 @@ interface IComponent
     public function getPath();
 
     /**
+     * Возвращает имя компонента.
+     * @return string
+     */
+    public function getName();
+
+    /**
      * Проверяет, существует ли дочерний компонент с заданным именем.
      * @param string $name имя компонента
      * @return bool

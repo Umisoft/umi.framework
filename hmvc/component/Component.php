@@ -106,6 +106,14 @@ class Component implements IComponent, IMvcEntityFactoryAware, IRouteAware, ILoc
     /**
      * {@inheritdoc}
      */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function hasChildComponent($name)
     {
         return isset($this->options[self::OPTION_COMPONENTS][$name]);
