@@ -29,10 +29,14 @@ trait TStemmingAware
     }
 
     /**
+     * @throws \UnexpectedValueException
      * @return \umi\stemming\IStemming
      */
     public function getStemming()
     {
+        if (is_null($this->traitStemming)) {
+            throw new \UnexpectedValueException("Stemming service is not injected");
+        }
         return $this->traitStemming;
     }
 }
