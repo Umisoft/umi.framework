@@ -20,7 +20,6 @@ interface ILocalizable
     /**
      * Устанавливает транслятор для локализации
      * @param ITranslator $translator
-     * @return self
      */
     public function setTranslator(ITranslator $translator);
 }

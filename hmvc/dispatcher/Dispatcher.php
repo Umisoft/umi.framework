@@ -24,9 +24,9 @@ use umi\hmvc\exception\http\HttpForbidden;
 use umi\hmvc\exception\http\HttpNotFound;
 use umi\hmvc\exception\RuntimeException;
 use umi\hmvc\exception\UnexpectedValueException;
-use umi\hmvc\IMVCEntityFactoryAware;
-use umi\hmvc\macros\IMacros;
-use umi\hmvc\TMVCEntityFactoryAware;
+use umi\hmvc\IMvcEntityFactoryAware;
+use umi\hmvc\widget\IWidget;
+use umi\hmvc\TMvcEntityFactoryAware;
 use umi\hmvc\view\IView;
 use umi\http\Request;
 use umi\http\Response;
@@ -37,26 +37,26 @@ use umi\route\result\IRouteResult;
 /**
  * Диспетчер MVC-компонентов.
  */
-class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, IAuthenticationAware
+class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, IAuthenticationAware
 {
 
     use TLocalizable;
-    use TMVCEntityFactoryAware;
+    use TMvcEntityFactoryAware;
     use TAuthenticationAware;
 
     /**
      * @var array $controllerViewRenderErrorInfo информация об исключение рендеринга
      */
     protected $controllerViewRenderErrorInfo = [];
+
     /**
      * @var Request $currentRequest обрабатываемый HTTP-запрос
      */
-    protected $currentRequest;
+    private $currentRequest;
     /**
      * @var IComponent $initialComponent начальный компонент HTTP-запроса
      */
-    protected $initialComponent;
-
+    private $initialComponent;
     /**
      * @var IDispatchContext $currentContext текущий контекст
      */
@@ -65,28 +65,68 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
     /**
      * {@inheritdoc}
      */
+    public function setCurrentRequest(Request $request)
+    {
+        $this->currentRequest = $request;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getCurrentRequest()
     {
+        if (!$this->currentRequest) {
+            throw new RuntimeException(
+                $this->translate('Current HTTP request is unknown.')
+            );
+        }
         return $this->currentRequest;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function dispatchRequest(IComponent $component, Request $request)
+    public function setInitialComponent(IComponent $component)
     {
-        $this->currentRequest = $request;
         $this->initialComponent = $component;
+        $this->controllerViewRenderErrorInfo = [];
+        $this->currentContext = null;
 
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getInitialComponent()
+    {
+        if (!$this->initialComponent) {
+            throw new RuntimeException(
+                $this->translate('Initial component is unknown.')
+            );
+        }
+
+        return $this->initialComponent;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function dispatch($routePath = null, $baseUrl = '')
+    {
         $callStack = $this->createCallStack();
 
-        $routePath = parse_url($request->getRequestUri(), PHP_URL_PATH);
+        if (is_null($routePath)) {
+            $routePath = $this->getCurrentRequest()->getPathInfo();
+        }
+        $routePath = urldecode($routePath);
 
         try {
-            $response = $this->processRequest($component, $routePath, $callStack);
+            $response = $this->processRequest($this->getInitialComponent(), $routePath, $callStack, $baseUrl);
         } catch (Exception $e) {
-            $this->processError($e, $callStack);
-            return;
+            return $this->processError($e, $callStack);
         }
 
         $content = (string) $response->getContent();
@@ -99,14 +139,10 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
             list ($e, $failureContext) = $this->controllerViewRenderErrorInfo;
             $this->controllerViewRenderErrorInfo = [];
 
-            $this->processError($e, $failureContext->getCallStack());
-            return;
+            return $this->processError($e, $failureContext->getCallStack());
         }
 
-        $response
-            ->setContent($content)
-            ->prepare($request)
-            ->send();
+        return $response->setContent($content);
     }
 
     /**
@@ -114,8 +150,8 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
      */
     public function reportViewRenderError(Exception $e, IDispatchContext $failureContext, $viewOwner)
     {
-        if ($viewOwner instanceof IMacros) {
-            return $this->processMacrosError($e, $failureContext);
+        if ($viewOwner instanceof IWidget) {
+            return $this->processWidgetError($e, $failureContext);
         }
 
         $this->controllerViewRenderErrorInfo = [$e, $failureContext];
@@ -126,22 +162,22 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
     /**
      * {@inheritdoc}
      */
-    public function executeMacros($macrosURI, array $params = [])
+    public function executeWidget($widgetUri, array $params = [])
     {
 
-        list ($component, $callStack, $componentURI) = $this->resolveMacrosContext($macrosURI);
+        list ($component, $callStack, $componentURI) = $this->resolveWidgetContext($widgetUri);
 
         try {
-            $macros = $this->dispatchMacros($component, $macrosURI, $params, $callStack, $componentURI);
+            $widget = $this->dispatchWidget($component, $widgetUri, $params, $callStack, $componentURI);
 
-            return $this->invokeMacros($macros);
+            return $this->invokeWidget($widget);
 
         } catch (Exception $e) {
 
             $context = $this->createDispatchContext($component);
             $context->setCallStack(clone $callStack);
 
-            return $this->processMacrosError($e, $context);
+            return $this->processWidgetError($e, $context);
         }
     }
 
@@ -192,13 +228,13 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
     }
 
     /**
-     * Формирует результат макроса с учетом произошедшей исключительной ситуации.
+     * Формирует результат виджета с учетом произошедшей исключительной ситуации.
      * @param Exception $e
-     * @param IDispatchContext $context контекст вызова макроса
+     * @param IDispatchContext $context контекст вызова виджета
      * @throws Exception если исключительная ситуация не была обработана
      * @return string
      */
-    protected function processMacrosError(Exception $e, IDispatchContext $context)
+    protected function processWidgetError(Exception $e, IDispatchContext $context)
     {
         $callStack = $context->getCallStack();
         /**
@@ -207,22 +243,22 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
         foreach ($callStack as $context) {
 
             $component = $context->getComponent();
-            if (!$component->hasMacros(IComponent::ERROR_MACROS)) {
+            if (!$component->hasWidget(IComponent::ERROR_WIDGET)) {
                 continue;
             }
 
-            $errorMacros = $component->getMacros(
-                IComponent::ERROR_MACROS,
+            $errorWidget = $component->getWidget(
+                IComponent::ERROR_WIDGET,
                 ['exception' => $e]
             );
 
             $context = $this->createDispatchContext($component);
             $context->setCallStack(clone $callStack);
 
-            $errorMacros->setContext($context);
+            $errorWidget->setContext($context);
 
             try {
-                return (string) $this->invokeMacros($errorMacros);
+                return (string) $this->invokeWidget($errorWidget);
             } catch (Exception $e) { }
         }
 
@@ -230,17 +266,17 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
     }
 
     /**
-     * Диспетчеризирует вызов макроса.
+     * Диспетчеризирует вызов виджета.
      * @param IComponent $component компонент для поиска
-     * @param string $macrosURI путь макроса относительно компонента
-     * @param array $params параметры вызова макроса
+     * @param string $widgetUri путь виджета относительно компонента
+     * @param array $params параметры вызова виджета
      * @param SplStack $callStack стек вызова компонентов
-     * @param string $matchedMacrosURI известная часть пути вызова макроса
-     * @return IMacros
+     * @param string $matchedWidgetUri известная часть пути вызова виджета
+     * @return IWidget
      */
-    protected function dispatchMacros(IComponent $component, $macrosURI, array $params, SplStack $callStack, $matchedMacrosURI = '')
+    protected function dispatchWidget(IComponent $component, $widgetUri, array $params, SplStack $callStack, $matchedWidgetUri = '')
     {
-        $routeResult = $component->getRouter()->match($macrosURI);
+        $routeResult = $component->getRouter()->match($widgetUri);
         $routeMatches = $routeResult->getMatches();
 
         $context = $this->createDispatchContext($component);
@@ -248,40 +284,40 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
 
         $context
             ->setRouteParams($routeMatches)
-            ->setBaseUrl($matchedMacrosURI)
+            ->setBaseUrl($matchedWidgetUri)
             ->setCallStack(clone $callStack);
 
         if (isset($routeMatches[IComponent::MATCH_COMPONENT]) && $component->hasChildComponent($routeMatches[IComponent::MATCH_COMPONENT])) {
 
             $childComponent = $component->getChildComponent($routeMatches[IComponent::MATCH_COMPONENT]);
-            $matchedMacrosURI .= $routeResult->getMatchedUrl();
+            $matchedWidgetUri .= $routeResult->getMatchedUrl();
 
-            return $this->dispatchMacros($childComponent, $routeResult->getUnmatchedUrl(), $params, $callStack, $matchedMacrosURI);
+            return $this->dispatchWidget($childComponent, $routeResult->getUnmatchedUrl(), $params, $callStack, $matchedWidgetUri);
 
         } else {
-            return $component->getMacros(ltrim($macrosURI, self::MACROS_URI_SEPARATOR), $params)
+            return $component->getWidget(ltrim($widgetUri, self::WIDGET_URI_SEPARATOR), $params)
                 ->setContext($context);
         }
     }
 
     /**
-     * Вызывает макрос.
-     * @param IMacros $macros
-     * @throws UnexpectedValueException если макрос вернул неверный результат
+     * Вызывает виджет.
+     * @param IWidget $widget
+     * @throws UnexpectedValueException если виджет вернул неверный результат
      * @return IView|string
      */
-    protected function invokeMacros(IMacros $macros)
+    protected function invokeWidget(IWidget $widget)
     {
-        $macrosResult = $macros();
+        $widgetResult = $widget();
 
-        if (!$macrosResult instanceof IView && !is_string($macrosResult)) {
+        if (!$widgetResult instanceof IView && !is_string($widgetResult)) {
             throw new UnexpectedValueException($this->translate(
-                'Macros "{macros}" returns unexpected value. String or instance of IView expected.',
-                ['macros' => get_class($macros)]
+                'Widget "{widget}" returns unexpected value. String or instance of IView expected.',
+                ['widget' => get_class($widget)]
             ));
         }
 
-        return $macrosResult;
+        return $widgetResult;
     }
 
     /**
@@ -307,6 +343,11 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
             ->setBaseUrl($matchedRoutePath)
             ->setCallStack(clone $callStack);
 
+        $response = $component->onDispatchRequest($context, $this->getCurrentRequest());
+        if ($response instanceof Response) {
+            return $this->processResponse($response, $callStack);
+        }
+
         if (isset($routeMatches[IComponent::MATCH_COMPONENT])) {
 
             return $this->processChildComponentRequest($component, $routeResult, $callStack, $matchedRoutePath);
@@ -325,10 +366,11 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
     }
 
     /**
-     * Формирует результат запроса с учетом произошедшей исключительной ситуации.
+     * Формирует HTTP-ответ с учетом произошедшей исключительной ситуации.
      * @param Exception $e произошедшая исключительная ситуация
      * @param SplStack $callStack
      * @throws Exception если не удалось обработать исключительную ситуацию
+     * @return Response
      */
     protected function processError(Exception $e, SplStack $callStack)
     {
@@ -344,7 +386,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
 
             $errorController = $component->getController(IComponent::ERROR_CONTROLLER, [$e])
                 ->setContext($context)
-                ->setRequest($this->currentRequest);
+                ->setRequest($this->getCurrentRequest());
 
 
             try {
@@ -360,11 +402,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
                 throw $renderException;
             }
 
-            $layoutResponse
-                ->setContent($content)
-                ->send();
-
-            return;
+            return $layoutResponse->setContent($content);
         }
 
         throw $e;
@@ -402,19 +440,22 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
          * @var IDispatchContext $context
          */
         foreach ($callStack as $context) {
-            if ($response->getIsCompleted()) {
 
-                $component = $context->getComponent();
+            $component = $context->getComponent();
 
-                if (!$component->hasController(IComponent::LAYOUT_CONTROLLER)) {
-                    continue;
+            if (!$response->getIsCompleted()) {
+
+                if ($component->hasController(IComponent::LAYOUT_CONTROLLER)) {
+
+                    $layoutController = $component->getController(IComponent::LAYOUT_CONTROLLER, [$response])
+                        ->setContext($context)
+                        ->setRequest($this->getCurrentRequest());
+                    $response = $this->invokeController($layoutController);
                 }
 
-                $layoutController = $component->getController(IComponent::LAYOUT_CONTROLLER, [$response])
-                    ->setContext($context)
-                    ->setRequest($this->currentRequest);
-                $response = $this->invokeController($layoutController);
             }
+
+            $response = $component->onDispatchResponse($context, $response);
         }
 
         return $response;
@@ -499,7 +540,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
          */
         $controller = $component->getController($routeMatches[IComponent::MATCH_CONTROLLER])
             ->setContext($context)
-            ->setRequest($this->currentRequest);
+            ->setRequest($this->getCurrentRequest());
 
         if ($controller instanceof IACLResource && !$this->checkPermissions($component, $controller)) {
             throw new HttpForbidden(
@@ -519,24 +560,24 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
     }
 
     /**
-     * Возвращает информацию о контексте вызова макроса.
-     * @param string $macrosURI путь макроса
+     * Возвращает информацию о контексте вызова виджета.
+     * @param string $widgetUri путь виджета
      * @throws RuntimeException если контекст не существует
      * @return array
      */
-    private function resolveMacrosContext(&$macrosURI)
+    private function resolveWidgetContext(&$widgetUri)
     {
-        if (strpos($macrosURI, self::MACROS_URI_SEPARATOR) !== 0) {
+        if (strpos($widgetUri, self::WIDGET_URI_SEPARATOR) !== 0) {
             if (!$this->currentContext) {
                 throw new RuntimeException(
                     $this->translate(
-                        'Context for executing macros "{macros}" is unknown.',
-                        ['macros' => $macrosURI]
+                        'Context for executing widget "{widget}" is unknown.',
+                        ['widget' => $widgetUri]
                     )
                 );
             }
 
-            $macrosURI = self::MACROS_URI_SEPARATOR . $macrosURI;
+            $widgetUri = self::WIDGET_URI_SEPARATOR . $widgetUri;
 
             return [
                 $this->currentContext->getComponent(),
@@ -546,7 +587,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMVCEntityFactoryAware, I
         }
 
         return [
-            $this->initialComponent,
+            $this->getInitialComponent(),
             $this->createCallStack(),
             ''
         ];

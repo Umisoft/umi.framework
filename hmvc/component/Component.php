@@ -13,13 +13,16 @@ use umi\acl\IAclAware;
 use umi\acl\IAclManager;
 use umi\acl\TAclAware;
 use umi\hmvc\controller\IControllerFactory;
+use umi\hmvc\dispatcher\IDispatchContext;
 use umi\hmvc\exception\OutOfBoundsException;
-use umi\hmvc\IMVCEntityFactoryAware;
-use umi\hmvc\macros\IMacrosFactory;
+use umi\hmvc\IMvcEntityFactoryAware;
+use umi\hmvc\widget\IWidgetFactory;
 use umi\hmvc\model\IModelAware;
 use umi\hmvc\model\IModelFactory;
-use umi\hmvc\TMVCEntityFactoryAware;
+use umi\hmvc\TMvcEntityFactoryAware;
 use umi\hmvc\view\IViewRenderer;
+use umi\http\Request;
+use umi\http\Response;
 use umi\i18n\ILocalizable;
 use umi\i18n\TLocalizable;
 use umi\route\IRouteAware;
@@ -30,9 +33,9 @@ use umi\spl\config\TConfigSupport;
 /**
  * Реализация MVC компонента системы.
  */
-class Component implements IComponent, IMVCEntityFactoryAware, IRouteAware, ILocalizable, IAclAware
+class Component implements IComponent, IMvcEntityFactoryAware, IRouteAware, ILocalizable, IAclAware
 {
-    use TMVCEntityFactoryAware;
+    use TMvcEntityFactoryAware;
     use TRouteAware;
     use TLocalizable;
     use TConfigSupport;
@@ -63,9 +66,9 @@ class Component implements IComponent, IMVCEntityFactoryAware, IRouteAware, ILoc
      */
     private $controllerFactory;
     /**
-     * @var IMacrosFactory $macrosFactory фабрика макросов
+     * @var IWidgetFactory $widgetFactory фабрика виджетов
      */
-    private $macrosFactory;
+    private $widgetFactory;
     /**
      * @var IModelFactory $modelFactory фабрика моделей
      */
@@ -103,6 +106,14 @@ class Component implements IComponent, IMVCEntityFactoryAware, IRouteAware, ILoc
     /**
      * {@inheritdoc}
      */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function hasChildComponent($name)
     {
         return isset($this->options[self::OPTION_COMPONENTS][$name]);
@@ -125,7 +136,7 @@ class Component implements IComponent, IMVCEntityFactoryAware, IRouteAware, ILoc
         }
 
         $config = $this->configToArray($this->options[self::OPTION_COMPONENTS][$name]);
-        $component = $this->createMVCComponent($name, $this->path . self::PATH_SEPARATOR . $name, $config);
+        $component = $this->createMvcComponent($name, $this->path . self::PATH_SEPARATOR . $name, $config);
 
         return $this->children[$name] = $component;
     }
@@ -164,17 +175,17 @@ class Component implements IComponent, IMVCEntityFactoryAware, IRouteAware, ILoc
     /**
      * {@inheritdoc}
      */
-    public function hasMacros($macrosName)
+    public function hasWidget($widgetName)
     {
-        return $this->getMacrosFactory()->hasMacros($macrosName);
+        return $this->getWidgetFactory()->hasWidget($widgetName);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getMacros($macrosName, array $params = [])
+    public function getWidget($widgetName, array $params = [])
     {
-        return $this->getMacrosFactory()->createMacros($macrosName, $params);
+        return $this->getWidgetFactory()->createWidget($widgetName, $params);
     }
 
     /**
@@ -186,7 +197,7 @@ class Component implements IComponent, IMVCEntityFactoryAware, IRouteAware, ILoc
             $config = isset($this->options[self::OPTION_VIEW]) ? $this->options[self::OPTION_VIEW] : [];
             $config = $this->configToArray($config, true);
 
-            $viewRenderer = $this->createMVCViewRenderer($config);
+            $viewRenderer = $this->createMvcViewRenderer($config);
 
             if ($viewRenderer instanceof IModelAware) {
                 $viewRenderer->setModelFactory($this->getModelsFactory());
@@ -215,6 +226,22 @@ class Component implements IComponent, IMVCEntityFactoryAware, IRouteAware, ILoc
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function onDispatchRequest(IDispatchContext $context, Request $request)
+    {
+        return null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function onDispatchResponse(IDispatchContext $context, Response $response)
+    {
+        return $response;
+    }
+
+    /**
      * Возвращает фабрику контроллеров компонента.
      * @return IControllerFactory
      */
@@ -224,7 +251,7 @@ class Component implements IComponent, IMVCEntityFactoryAware, IRouteAware, ILoc
             $controllerList = isset($this->options[self::OPTION_CONTROLLERS]) ? $this->options[self::OPTION_CONTROLLERS] : [];
             $controllerList = $this->configToArray($controllerList, true);
 
-            $controllerFactory = $this->createMVCControllerFactory($this, $controllerList);
+            $controllerFactory = $this->createMvcControllerFactory($this, $controllerList);
 
             if ($controllerFactory instanceof IModelAware) {
                 $controllerFactory->setModelFactory($this->getModelsFactory());
@@ -237,25 +264,25 @@ class Component implements IComponent, IMVCEntityFactoryAware, IRouteAware, ILoc
     }
 
     /**
-     * Возвращает фабрику макросов компонента.
-     * @return IMacrosFactory
+     * Возвращает фабрику виджетов компонента.
+     * @return IWidgetFactory
      */
-    protected function getMacrosFactory()
+    protected function getWidgetFactory()
     {
-        if (!$this->macrosFactory) {
-            $macrosList = isset($this->options[self::OPTION_MACROS]) ? $this->options[self::OPTION_MACROS] : [];
-            $macrosList = $this->configToArray($macrosList, true);
+        if (!$this->widgetFactory) {
+            $widgetList = isset($this->options[self::OPTION_WIDGET]) ? $this->options[self::OPTION_WIDGET] : [];
+            $widgetList = $this->configToArray($widgetList, true);
 
-            $macrosFactory = $this->createMVCMacrosFactory($this, $macrosList);
+            $widgetFactory = $this->createMvcWidgetFactory($this, $widgetList);
 
-            if ($macrosFactory instanceof IModelAware) {
-                $macrosFactory->setModelFactory($this->getModelsFactory());
+            if ($widgetFactory instanceof IModelAware) {
+                $widgetFactory->setModelFactory($this->getModelsFactory());
             }
 
-            return $this->macrosFactory = $macrosFactory;
+            return $this->widgetFactory = $widgetFactory;
         }
 
-        return $this->macrosFactory;
+        return $this->widgetFactory;
     }
 
     /**
@@ -268,7 +295,7 @@ class Component implements IComponent, IMVCEntityFactoryAware, IRouteAware, ILoc
             $config = isset($this->options[self::OPTION_MODELS]) ? $this->options[self::OPTION_MODELS] : [];
             $config = $this->configToArray($config, true);
 
-            return $this->modelFactory = $this->createMVCModelFactory($config);
+            return $this->modelFactory = $this->createMvcModelFactory($config);
         }
 
         return $this->modelFactory;

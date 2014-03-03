@@ -45,7 +45,7 @@ class RegexpRoute extends BaseRoute implements ILocalizable
         //TODO: change that!!!!
         $this->assembleParams = $params + $this->defaults;
 
-        return preg_replace_callback('#\(\?P?<(.+?)>(.+?)\)#', [$this, 'assembleReplaceCallback'], $this->route);
+        return preg_replace_callback('#\(\?P<(\w+)>([^\(\)]+)\)#', [$this, 'assembleReplaceCallback'], $this->route);
     }
 
     /**

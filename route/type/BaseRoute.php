@@ -23,6 +23,10 @@ abstract class BaseRoute implements IRoute
      */
     protected $defaults = [];
     /**
+     * @var int $priority приоритет маршрута
+     */
+    protected $priority = 1;
+    /**
      * @var IRoute[] $subroutes дочерние правила маршрутизатора
      */
     protected $subroutes = [];
@@ -38,8 +42,13 @@ abstract class BaseRoute implements IRoute
      */
     public function __construct(array $options = [], array $subroutes = [])
     {
-        $this->route = isset($options[self::OPTION_ROUTE]) ? $options[self::OPTION_ROUTE] : null;
-        $this->defaults = isset($options[self::OPTION_DEFAULTS]) ? $options[self::OPTION_DEFAULTS] : [];
+        if (isset($options[self::OPTION_ROUTE])) {
+            $this->route = $options[self::OPTION_ROUTE];
+        }
+
+        if(isset($options[self::OPTION_DEFAULTS])) {
+            $this->defaults = $options[self::OPTION_DEFAULTS];
+        }
 
         $this->subroutes = $subroutes;
     }
@@ -58,5 +67,23 @@ abstract class BaseRoute implements IRoute
     public final function getSubRoutes()
     {
         return $this->subroutes;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPriority()
+    {
+        return $this->priority;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setPriority($priority)
+    {
+        $this->priority = (int) $priority;
+
+        return $this;
     }
 }

@@ -160,6 +160,6 @@ class MetadataFactory implements IMetadataFactory, IFactory
             $this->fieldTypes[$fieldType],
             ['umi\orm\metadata\field\IField']
         )
-        ->createInstance([$fieldName, $config]);
+        ->createInstance([$fieldName, $fieldType, $config]);
     }
 }

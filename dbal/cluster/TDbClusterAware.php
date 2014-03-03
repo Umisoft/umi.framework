@@ -16,36 +16,33 @@ use umi\dbal\exception\RequiredDependencyException;
  */
 trait TDbClusterAware
 {
-
     /**
-     * @var IDbCluster $_dbCluster компонент для работы с бд
+     * @var IDbCluster $traitDbCluster компонент для работы с бд
      */
-    private $_dbCluster;
+    private $traitDbCluster;
 
     /**
-     * Устанавливает компонент для работы с бд.
-     * @param IDbCluster $dbCluster
-     * @return self
+     * @see IDbClusterAware::setDbCluster()
      */
     public function setDbCluster(IDbCluster $dbCluster)
     {
-        $this->_dbCluster = $dbCluster;
+        $this->traitDbCluster = $dbCluster;
     }
 
     /**
      * Возвращает компонент для работы с бд.
-     * @throws RequiredDependencyException
+     * @throws RequiredDependencyException если компонент не был внедрен
      * @return IDbCluster
      */
     protected function getDbCluster()
     {
-        if (!$this->_dbCluster) {
+        if (!$this->traitDbCluster) {
             throw new RequiredDependencyException(sprintf(
                 'DB cluster is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_dbCluster;
+        return $this->traitDbCluster;
     }
 }

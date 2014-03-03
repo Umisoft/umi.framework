@@ -9,6 +9,8 @@
 
 namespace umi\hmvc\exception\http;
 
+use umi\http\Response;
+
 /**
  * Исключение бросаемое при невозможности найти маршрут.
  */
@@ -19,6 +21,6 @@ class HttpNotFound extends HttpException
      */
     public function __construct($message, \Exception $previous = null)
     {
-        parent::__construct(self::HTTP_NOT_FOUND, $message, $previous);
+        parent::__construct(Response::HTTP_NOT_FOUND, $message, $previous);
     }
 }

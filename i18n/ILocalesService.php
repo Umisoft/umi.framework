@@ -30,14 +30,14 @@ interface ILocalesService
     /**
      * Устанавливает локаль по умолчанию
      * @param string $localeId
-     * @return $this
+     * @return self
      */
     public function setDefaultLocale($localeId);
 
     /**
      * Устанавливает текущую локаль
      * @param string $localeId
-     * @return $this
+     * @return self
      */
     public function setCurrentLocale($localeId);
 

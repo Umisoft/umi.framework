@@ -17,17 +17,16 @@ use umi\validation\exception\RequiredDependencyException;
 trait TValidationAware
 {
     /**
-     * @var IValidatorFactory $_validatorFactory фабрика для создания валидаторов.
+     * @var IValidatorFactory $traitValidatorFactory фабрика для создания валидаторов.
      */
-    private $_validatorFactory;
+    private $traitValidatorFactory;
 
     /**
-     * Устанавливает фабрику валидаторов.
-     * @param IValidatorFactory $validatorFactory
+     * @see IValidationAware::setValidatorFactory()
      */
     public function setValidatorFactory(IValidatorFactory $validatorFactory)
     {
-        $this->_validatorFactory = $validatorFactory;
+        $this->traitValidatorFactory = $validatorFactory;
     }
 
     /**
@@ -58,18 +57,18 @@ trait TValidationAware
 
     /**
      * Возвращает фабрику валидаторов.
+     * @throws RequiredDependencyException если фабрика не была внедрена
      * @return IValidatorFactory
-     * @throws RequiredDependencyException
      */
     private function getValidatorFactory()
     {
-        if (!$this->_validatorFactory) {
+        if (!$this->traitValidatorFactory) {
             throw new RequiredDependencyException(sprintf(
                 'Validator factory is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_validatorFactory;
+        return $this->traitValidatorFactory;
     }
 }

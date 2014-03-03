@@ -33,23 +33,20 @@ trait TFactory
     use TConfigSupport;
 
     /**
-     * @var IPrototypeFactory $_prototypeFactory фабрика прототипов
+     * @var IPrototypeFactory $traitPrototypeFactory фабрика прототипов
      */
-    private $_prototypeFactory;
+    private $traitPrototypeFactory;
     /**
-     * @var array $_registeredFactories список зарегистрированных фабрик
+     * @var array $traitRegisteredFactories список зарегистрированных фабрик
      */
-    private $_registeredFactories = [];
+    private $traitRegisteredFactories = [];
 
     /**
-     * Устанавливает фабрику для создания прототипов
-     * @param IPrototypeFactory $prototypeFactory
-     * @return self
+     * @see IFactory::setPrototypeFactory()
      */
     public function setPrototypeFactory(IPrototypeFactory $prototypeFactory)
     {
-        $this->_prototypeFactory = $prototypeFactory;
-        return $this;
+        $this->traitPrototypeFactory = $prototypeFactory;
     }
 
     /**
@@ -59,14 +56,14 @@ trait TFactory
      */
     protected function getPrototypeFactory()
     {
-        if (!$this->_prototypeFactory) {
+        if (!$this->traitPrototypeFactory) {
             throw new RequiredDependencyException(sprintf(
                 'Prototype factory is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_prototypeFactory;
+        return $this->traitPrototypeFactory;
     }
 
     /**
@@ -76,7 +73,7 @@ trait TFactory
      */
     protected function hasFactory($factoryName)
     {
-        return isset($this->_registeredFactories[$factoryName]);
+        return isset($this->traitRegisteredFactories[$factoryName]);
     }
 
     /**
@@ -96,7 +93,7 @@ trait TFactory
                 ['factory' => $factoryName, 'toolbox' => get_class($this)]
             ));
         }
-        $this->_registeredFactories[$factoryName] = [$factoryClass, $contracts];
+        $this->traitRegisteredFactories[$factoryName] = [$factoryClass, $contracts];
 
         return $this;
     }
@@ -165,7 +162,7 @@ trait TFactory
             ));
         }
 
-        list ($factoryClassName, $contracts) = $this->_registeredFactories[$factoryName];
+        list ($factoryClassName, $contracts) = $this->traitRegisteredFactories[$factoryName];
 
         $options = $this->getFactoryConfig($factoryName);
 

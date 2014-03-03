@@ -17,17 +17,16 @@ use umi\orm\exception\RequiredDependencyException;
 trait TObjectManagerAware
 {
     /**
-     * @var IObjectManager $_objectManager менеджер объектов
+     * @var IObjectManager $traitObjectManager менеджер объектов
      */
-    private $_objectManager;
+    private $traitObjectManager;
 
     /**
-     * Устанавливает менеджер объектов
-     * @param IObjectManager $objectManager
+     * @see IObjectManagerAware::setObjectManager()
      */
     public function setObjectManager(IObjectManager $objectManager)
     {
-        $this->_objectManager = $objectManager;
+        $this->traitObjectManager = $objectManager;
     }
 
     /**
@@ -37,13 +36,13 @@ trait TObjectManagerAware
      */
     protected function getObjectManager()
     {
-        if (!$this->_objectManager) {
+        if (!$this->traitObjectManager) {
             throw new RequiredDependencyException(sprintf(
                 'Object manager is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_objectManager;
+        return $this->traitObjectManager;
     }
 }

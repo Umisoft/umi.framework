@@ -17,20 +17,16 @@ use umi\i18n\translator\ITranslator;
 trait TLocalizable
 {
     /**
-     * @var ITranslator $_translator транслятор
+     * @var ITranslator $traitTranslator транслятор
      */
-    private $_translator;
+    private $traitTranslator;
 
     /**
-     * Устанавливает транслятор для локализации
-     * @param ITranslator $translator транслятор
-     * @return $this
+     * @see ILocalizable::setTranslator()
      */
     public function setTranslator(ITranslator $translator)
     {
-        $this->_translator = $translator;
-
-        return $this;
+        $this->traitTranslator = $translator;
     }
 
     /**
@@ -62,8 +58,8 @@ trait TLocalizable
     protected function translate($message, array $placeholders = [], $localeId = null)
     {
         $dictionaries = $this->getI18nDictionaries();
-        if ($this->_translator) {
-            return $this->_translator->translate($dictionaries, $message, $placeholders, $localeId);
+        if ($this->traitTranslator) {
+            return $this->traitTranslator->translate($dictionaries, $message, $placeholders, $localeId);
         }
         $replace = [];
         foreach ($placeholders as $key => $val) {

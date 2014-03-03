@@ -17,17 +17,16 @@ use umi\http\exception\RequiredDependencyException;
 trait THttpAware
 {
     /**
-     * @var IHttpFactory $_httpFactory фабрика HTTP сущностей
+     * @var IHttpFactory $traitHttpFactory фабрика HTTP-сущностей
      */
-    private $_httpFactory;
+    private $traitHttpFactory;
 
     /**
-     * Устанавливает фабрику HTTP сущностей.
-     * @param IHttpFactory $httpFactory фабрика
+     * @see IHttpAware::setHttpFactory()
      */
     public function setHttpFactory(IHttpFactory $httpFactory)
     {
-        $this->_httpFactory = $httpFactory;
+        $this->traitHttpFactory = $httpFactory;
     }
 
     /**
@@ -52,18 +51,18 @@ trait THttpAware
 
     /**
      * Возвращает фабрику сущностей HTTP.
-     * @return IHttpFactory
      * @throws RequiredDependencyException если фабрика не установлена
+     * @return IHttpFactory
      */
     private function getHttpFactory()
     {
-        if (!$this->_httpFactory) {
+        if (!$this->traitHttpFactory) {
             throw new RequiredDependencyException(sprintf(
                 'Http factory is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_httpFactory;
+        return $this->traitHttpFactory;
     }
 }

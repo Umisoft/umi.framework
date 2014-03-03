@@ -12,26 +12,25 @@ namespace umi\route;
 use umi\route\exception\RequiredDependencyException;
 
 /**
- * Трейт для внедрения поддержки маршрутеризации.
+ * Трейт для внедрения поддержки маршрутизации.
  */
 trait TRouteAware
 {
     /**
-     * @var IRouteFactory $_routerFactory фабрика
+     * @var IRouteFactory $traitRouteFactory фабрика
      */
-    private $_routeFactory;
+    private $traitRouteFactory;
 
     /**
-     * Устанавливает фабрику для создания маршрутеризатора.
-     * @param IRouteFactory $routerFactory фабрика
+     * @see IRouteAware::setRouteFactory()
      */
-    public function setRouteFactory(IRouteFactory $routerFactory)
+    public function setRouteFactory(IRouteFactory $factory)
     {
-        $this->_routeFactory = $routerFactory;
+        $this->traitRouteFactory = $factory;
     }
 
     /**
-     * Создает маршрутеризатор на основе конфигурации.
+     * Создает маршрутизатор на основе конфигурации.
      * @param array $config конфигурация
      * @return IRouter
      */
@@ -42,19 +41,19 @@ trait TRouteAware
     }
 
     /**
-     * Возвращает фабрику для создания маршрутеризаторов.
+     * Возвращает фабрику для создания маршрутизаторов.
+     * @throws RequiredDependencyException если фабрика не была внедрена
      * @return IRouteFactory
-     * @throws RequiredDependencyException
      */
     private function getRouterFactory()
     {
-        if (!$this->_routeFactory) {
+        if (!$this->traitRouteFactory) {
             throw new RequiredDependencyException(sprintf(
                 'Route factory is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_routeFactory;
+        return $this->traitRouteFactory;
     }
 }

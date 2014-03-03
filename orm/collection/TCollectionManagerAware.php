@@ -17,17 +17,16 @@ use umi\orm\exception\RequiredDependencyException;
 trait TCollectionManagerAware
 {
     /**
-     * @var ICollectionManager $_collectionManager менеджер коллекций
+     * @var ICollectionManager $traitCollectionManager менеджер коллекций
      */
-    private $_collectionManager;
+    private $traitCollectionManager;
 
     /**
-     * Устанавливает менеджер коллекций объектов
-     * @param ICollectionManager $collectionManager
+     * @see ICollectionManagerAware::setCollectionManager()
      */
     public function setCollectionManager(ICollectionManager $collectionManager)
     {
-        $this->_collectionManager = $collectionManager;
+        $this->traitCollectionManager = $collectionManager;
     }
 
     /**
@@ -37,13 +36,13 @@ trait TCollectionManagerAware
      */
     protected function getCollectionManager()
     {
-        if (!$this->_collectionManager) {
+        if (!$this->traitCollectionManager) {
             throw new RequiredDependencyException(sprintf(
                 'Collection manager is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_collectionManager;
+        return $this->traitCollectionManager;
     }
 }

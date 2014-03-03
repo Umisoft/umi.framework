@@ -28,7 +28,6 @@ interface IFactory extends ILoggerAware, ILocalizable
     /**
      * Устанавливает фабрику для создания прототипов
      * @param IPrototypeFactory $prototypeFactory
-     * @return self
      */
     public function setPrototypeFactory(IPrototypeFactory $prototypeFactory);
 }

@@ -21,27 +21,22 @@ trait TCalculableField
 {
 
     /**
-     * Возвращает php-тип данных поля. Используется для PDO.<br />
-     * http://ru2.php.net/manual/en/function.gettype.php
-     * @return string
+     * @see IField::getDataType()
      */
     abstract public function getDataType();
 
     /**
-     * Возвращает имя столбца таблицы для поля
-     * @return string
+     * @see IField::getColumnName()
      */
     abstract public function getColumnName();
 
     /**
-     * Вычисляет и возвращает значение для записи в БД.
-     * @param IObject $object объект, для которого вычисляется значение
-     * @return string|int|float
+     * @see ICalculableField::calculateDBValue()
      */
     abstract public function calculateDBValue(IObject $object);
 
     /**
-     * {@inheritdoc}
+     * @see IField::persistProperty()
      */
     public function persistProperty(IObject $object, IProperty $property, IQueryBuilder $builder)
     {

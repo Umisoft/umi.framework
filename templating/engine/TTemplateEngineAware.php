@@ -17,9 +17,9 @@ use umi\templating\exception\RequiredDependencyException;
 trait TTemplateEngineAware
 {
     /**
-     * @var ITemplateEngineFactory $_templatingFactory фабрика
+     * @var ITemplateEngineFactory $traitTemplatingFactory фабрика
      */
-    private $_templatingFactory;
+    private $traitTemplatingFactory;
 
     /**
      * Устанавливает фабрику для создания шаблонизаторов.
@@ -27,7 +27,7 @@ trait TTemplateEngineAware
      */
     public function setTemplateEngineFactory(ITemplateEngineFactory $factory)
     {
-        $this->_templatingFactory = $factory;
+        $this->traitTemplatingFactory = $factory;
     }
 
     /**
@@ -44,18 +44,18 @@ trait TTemplateEngineAware
 
     /**
      * Возвращает фабрику для создания шаблонизаторов.
-     * @return ITemplateEngineFactory фабрика
      * @throws RequiredDependencyException если фабрика не была внедрена
+     * @return ITemplateEngineFactory
      */
     private function getTemplateEngineFactory()
     {
-        if (!$this->_templatingFactory) {
+        if (!$this->traitTemplatingFactory) {
             throw new RequiredDependencyException(sprintf(
                 'Template engine factory is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_templatingFactory;
+        return $this->traitTemplatingFactory;
     }
 }

@@ -31,6 +31,10 @@ abstract class BaseField implements IField, ILocalizable
      */
     protected $name;
     /**
+     * @var string $type тип поля
+     */
+    protected $type;
+    /**
      * @var bool $isVisible флаг "видимое"
      */
     protected $isVisible = true;
@@ -66,12 +70,14 @@ abstract class BaseField implements IField, ILocalizable
     /**
      * Конструктор.
      * @param string $name имя поля
+     * @param string $type тип поля
      * @param array $config конфигурация
      * @throws UnexpectedValueException в случае некорректного конфига
      */
-    public function __construct($name, array $config = [])
+    public function __construct($name, $type, array $config = [])
     {
         $this->name = $name;
+        $this->type = $type;
         $this->applyCommonConfiguration($config);
         $this->applyConfiguration($config);
     }
@@ -82,6 +88,14 @@ abstract class BaseField implements IField, ILocalizable
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 
     /**

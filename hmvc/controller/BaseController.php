@@ -204,7 +204,7 @@ abstract class BaseController implements IController, IHttpAware
      * @param int $code код ответа
      * @return Response
      */
-    protected function redirectToRoute($routeName, array $params = [], $useQuery = false, $code = Response::HTTP_MOVED_PERMANENTLY)
+    protected function redirectToRoute($routeName, array $params = [], $useQuery = false, $code = Response::HTTP_SEE_OTHER)
     {
 
         $baseUrl = $this->getContext()->getBaseUrl();
@@ -262,13 +262,13 @@ abstract class BaseController implements IController, IHttpAware
     }
 
     /**
-     * Вызывает макрос.
-     * @param string $macrosURI путь к макросу
-     * @param array $params параметры вызова макроса
+     * Вызывает виджет.
+     * @param string $widgetURI путь к виджету
+     * @param array $params параметры вызова виджета
      * @return string|IView
      */
-    protected function callMacros($macrosURI, array $params = [])
+    protected function callWidget($widgetURI, array $params = [])
     {
-        return $this->getContext()->getDispatcher()->executeMacros($macrosURI, $params);
+        return $this->getContext()->getDispatcher()->executeWidget($widgetURI, $params);
     }
 }

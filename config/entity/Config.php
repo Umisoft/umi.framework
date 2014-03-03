@@ -9,8 +9,6 @@
 
 namespace umi\config\entity;
 
-use umi\config\entity\factory\IConfigEntityFactoryAware;
-use umi\config\entity\factory\TConfigEntityFactoryAware;
 use umi\config\entity\value\ConfigValue;
 use umi\config\entity\value\IConfigValue;
 use umi\config\exception\InvalidArgumentException;
@@ -22,12 +20,11 @@ use umi\spl\container\TArrayAccess;
 /**
  * Конфигурация.
  */
-class Config implements IConfig, ILocalizable, IConfigEntityFactoryAware
+class Config implements IConfig, ILocalizable
 {
 
     use TLocalizable;
     use TArrayAccess;
-    use TConfigEntityFactoryAware;
 
     /**
      * @var array $source данные конфигурации
@@ -166,7 +163,7 @@ class Config implements IConfig, ILocalizable, IConfigEntityFactoryAware
         if ($current instanceof IConfigValue) {
             return $current->get();
         } elseif (is_array($current)) {
-            return new self($current); // todo: is it hack or feature?
+            return new self($current);
         } else {
             return $current;
         }
@@ -296,7 +293,7 @@ class Config implements IConfig, ILocalizable, IConfigEntityFactoryAware
             if ($value instanceof IConfig) {
                 return $value;
             } elseif (is_array($value)) {
-                return new self($value); // todo: is it hack or feature?
+                return new self($value);
             } elseif ($value instanceof IConfigValue) {
                 return $value->get();
             } else {
@@ -421,7 +418,6 @@ class Config implements IConfig, ILocalizable, IConfigEntityFactoryAware
 
         if (!$keys) {
             if (($value instanceof IConfig) || is_array($value)) {
-                // todo: is it right?
                 throw new UnexpectedValueException($this->translate(
                     'Cannot delete array of values.'
                 ));

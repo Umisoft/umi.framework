@@ -17,17 +17,16 @@ use umi\orm\exception\RequiredDependencyException;
 trait TMetadataManagerAware
 {
     /**
-     * @var IMetadataManager $_metadataManager менеджер для работы с метаданными
+     * @var IMetadataManager $traitMetadataManager менеджер для работы с метаданными
      */
-    private $_metadataManager;
+    private $traitMetadataManager;
 
     /**
-     * Устанавливает менеджер для работы с метаданными
-     * @param IMetadataManager $metadataManager
+     * @see IMetadataManagerAware::setMetadataManager()
      */
     public function setMetadataManager(IMetadataManager $metadataManager)
     {
-        $this->_metadataManager = $metadataManager;
+        $this->traitMetadataManager = $metadataManager;
     }
 
     /**
@@ -37,13 +36,13 @@ trait TMetadataManagerAware
      */
     protected function getMetadataManager()
     {
-        if (!$this->_metadataManager) {
+        if (!$this->traitMetadataManager) {
             throw new RequiredDependencyException(sprintf(
                 'Metadata manager is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_metadataManager;
+        return $this->traitMetadataManager;
     }
 }

@@ -10,12 +10,12 @@
 namespace umi\pagination;
 
 /**
- * Интерфейс для внедрения пагинации.
+ * Интерфейс для внедрения постраничной навигации.
  */
 interface IPaginationAware
 {
     /**
-     * Устанавливает фабрику для создания пагинаторов.
+     * Устанавливает фабрику для создания постраничной навигации.
      * @param IPaginatorFactory $paginatorFactory
      */
     public function setPaginatorFactory(IPaginatorFactory $paginatorFactory);

@@ -16,23 +16,20 @@ use umi\event\exception\RequiredDependencyException;
 trait TEventObservant
 {
     /**
-     * @var IEventManager $_eventManager локальный менеджер событий
+     * @var IEventManager $traitEventManager локальный менеджер событий
      */
-    private $_eventManager;
+    private $traitEventManager;
     /**
-     * @var IEventFactory $_eventFactory
+     * @var IEventFactory $traitEventFactory
      */
-    private $_eventFactory;
+    private $traitEventFactory;
 
     /**
-     * Устанавливает фабрику событий и менеджеров событий
-     * @param IEventFactory $eventFactory
-     * @return $this
+     * @see IEventObservant::setEventFactory()
      */
     public function setEventFactory(IEventFactory $eventFactory)
     {
-        $this->_eventFactory = $eventFactory;
-        return $this;
+        $this->traitEventFactory = $eventFactory;
     }
 
     /**
@@ -43,14 +40,14 @@ trait TEventObservant
      */
     public function getEventManager()
     {
-        if (!$this->_eventManager) {
-            if (!$this->_eventFactory) {
-                $this->_eventFactory = new EventFactory();
+        if (!$this->traitEventManager) {
+            if (!$this->traitEventFactory) {
+                $this->traitEventFactory = new EventFactory();
             }
-            $this->_eventManager = $this->_eventFactory->createEventManager();
+            $this->traitEventManager = $this->traitEventFactory->createEventManager();
             $this->bindLocalEvents();
         }
-        return $this->_eventManager;
+        return $this->traitEventManager;
     }
 
     /**

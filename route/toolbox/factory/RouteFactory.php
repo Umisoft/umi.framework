@@ -33,7 +33,7 @@ class RouteFactory implements IRouteFactory, IFactory
     ];
 
     /**
-     * @var string $routerClass класс маршрутеризатора
+     * @var string $routerClass класс маршрутизатора
      */
     public $routerClass = 'umi\route\Router';
 
@@ -52,10 +52,10 @@ class RouteFactory implements IRouteFactory, IFactory
     }
 
     /**
-     * Возвращает правило маршрутеризации на основе массива конфигурации.
+     * Возвращает правило маршрутизации на основе массива конфигурации.
      * @param array $config конфигурация
-     * @throws \umi\route\exception\InvalidArgumentException если тип маршрута не передан
-     * @throws \umi\route\exception\OutOfBoundsException если заданный тип маршрута не существует
+     * @throws InvalidArgumentException если тип маршрута не передан
+     * @throws OutOfBoundsException если заданный тип маршрута не существует
      * @return IRoute правило маршрутизатора
      */
     protected function createRoute(array $config)
@@ -91,14 +91,22 @@ class RouteFactory implements IRouteFactory, IFactory
     }
 
     /**
-     * {@inheritdoc}
+     * Возвращает правила маршрутизации на основе массива конфигурации.
+     * @param array $config конфигурация
+     * @return IRoute[]
      */
     protected function createRoutes(array $config)
     {
         $routes = [];
 
-        foreach ($config as $name => $route) {
-            $routes[$name] = $this->createRoute($route);
+        $defaultPriority = 1;
+        foreach ($config as $name => $routeConfig) {
+
+            $route = $this->createRoute($routeConfig);
+            $priority = isset($routeConfig[IRoute::OPTION_PRIORITY]) ? $routeConfig[IRoute::OPTION_PRIORITY] : $defaultPriority;
+            $route->setPriority($priority);
+            $routes[$name] = $route;
+            $defaultPriority++;
         }
 
         return $routes;

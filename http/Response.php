@@ -19,7 +19,7 @@ class Response extends SymfonyResponse
     /**
      * @var bool $isCompleted статус доступности для обработки
      */
-    protected $isCompleted = true;
+    protected $isCompleted = false;
 
     /**
      * {@inheritdoc}
@@ -41,7 +41,7 @@ class Response extends SymfonyResponse
      */
     public function setIsCompleted()
     {
-        $this->isCompleted = false;
+        $this->isCompleted = true;
 
         return $this;
     }

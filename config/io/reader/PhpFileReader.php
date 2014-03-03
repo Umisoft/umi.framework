@@ -54,6 +54,15 @@ class PhpFileReader implements IReader, ILocalizable, IConfigAliasResolverAware,
         /** @noinspection PhpIncludeInspection */
         $config = require $masterFilename;
 
+        if (!is_array($config)) {
+            throw new UnexpectedValueException(
+                $this->translate(
+                    'Configuration file "{file}" should return an array.',
+                    ['file' => $masterFilename]
+                )
+            );
+        }
+
         array_walk_recursive(
             $config,
             function (&$v) {
@@ -65,6 +74,15 @@ class PhpFileReader implements IReader, ILocalizable, IConfigAliasResolverAware,
         if (is_readable($localFilename) && is_file($localFilename)) {
             /** @noinspection PhpIncludeInspection */
             $localSource = require $localFilename;
+
+            if (!is_array($localSource)) {
+                throw new UnexpectedValueException(
+                    $this->translate(
+                        'Configuration file "{file}" should return an array.',
+                        ['file' => $localFilename]
+                    )
+                );
+            }
 
             $this->mergeConfig($config, $localSource);
         }

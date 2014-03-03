@@ -9,35 +9,46 @@
 
 namespace umi\templating\engine\php;
 
-use umi\i18n\ILocalizable;
-use umi\i18n\TLocalizable;
-use umi\templating\engine\BaseTemplateEngine;
+use umi\templating\engine\ITemplateEngine;
 use umi\templating\exception\RuntimeException;
-use umi\templating\extension\helper\collection\IHelperCollection;
 
 /**
  * PHP шаблонизатор.
  */
-class PhpTemplateEngine extends BaseTemplateEngine implements ILocalizable
+class PhpTemplateEngine implements ITemplateEngine
 {
-    use TLocalizable;
 
     /**
-     * @var IHelperCollection $templateHelpersCollection
+     * Директория расположения шаблонов
      */
-    protected $templateHelpersCollection;
+    const OPTION_TEMPLATE_DIRECTORY = 'directory';
+    /**
+     * Расширение файлов шаблонов
+     */
+    const OPTION_TEMPLATE_FILE_EXTENSION = 'extension';
+
+    /**
+     * @var array $options опции
+     */
+    protected $options = [];
+
+    /**
+     * @var callable[] $functions
+     */
+    protected $functions = [];
+
     /**
      * @var string $baseDirectory директория с шаблонами
      */
-    protected $baseDirectory;
+    private $baseDirectory;
 
     /**
      * {@inheritdoc}
      */
-    public function __construct(array $options)
+    public function setOptions(array $options)
     {
-        parent::__construct($options);
-        $this->baseDirectory = isset($options[self::OPTION_TEMPLATE_DIRECTORY]) ? $options[self::OPTION_TEMPLATE_DIRECTORY] : '';
+        $this->options = $options;
+        return $this;
     }
 
     /**
@@ -45,23 +56,64 @@ class PhpTemplateEngine extends BaseTemplateEngine implements ILocalizable
      */
     public function render($templateFile, array $variables = [])
     {
-        return (new PhpTemplate($this->baseDirectory, [$this, 'callHelper']))
+        return (new PhpTemplate($this->getBaseDirectory(), $this))
             ->render($this->getTemplateFilename($templateFile), $variables);
     }
 
     /**
-     * Magic method: вызывает помощник шаблонов.
-     * @param string $name имя помощника шаблонов
+     * Дабавляет расширение с функциями.
+     * @param IPhpExtension $extension
+     * @return $this
+     */
+    public function addExtension(IPhpExtension $extension)
+    {
+        foreach ($extension->getFunctions() as $functionName => $function) {
+            $this->functions[$functionName] = $function;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Magic method: вызывает помошник вида.
+     * @param string $name имя помошника вида
      * @param array $arguments аргументы
-     * @throws RuntimeException если коллекция помощников шаблонов не была внедрена
+     * @throws RuntimeException если коллекция помощников вида не была внедрена
      * @return string
      */
     public function callHelper($name, array $arguments)
     {
-        return call_user_func_array(
-            $this->getExtensionAdapter()
-                ->getCallable($name),
-            $arguments
-        );
+        if (!isset($this->functions[$name])) {
+            throw new RuntimeException(sprintf('Function "%s" does not exist', $name));
+        }
+
+        return call_user_func_array($this->functions[$name], $arguments);
+    }
+
+    /**
+     * Возрващает имя файла шаблона по имени шаблона.
+     * @param string $templateName имя шаблона
+     * @return string
+     */
+    protected function getTemplateFilename($templateName)
+    {
+        if (isset($this->options[self::OPTION_TEMPLATE_FILE_EXTENSION])) {
+            $templateName .= '.' . $this->options[self::OPTION_TEMPLATE_FILE_EXTENSION];
+        }
+
+        return $templateName;
+    }
+
+    /**
+     * Возвращает директорию располения шаблонов.
+     * @return string
+     */
+    protected function getBaseDirectory()
+    {
+        if (is_null($this->baseDirectory)) {
+            $this->baseDirectory = isset($this->options[self::OPTION_TEMPLATE_DIRECTORY]) ? $this->options[self::OPTION_TEMPLATE_DIRECTORY] : '';
+        }
+
+        return $this->baseDirectory;
     }
 }

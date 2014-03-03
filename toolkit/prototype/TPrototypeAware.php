@@ -19,9 +19,9 @@ use umi\toolkit\IToolkit;
 trait TPrototypeAware
 {
     /**
-     * @var object[] $_prototypes протитипы для создания экземпляров
+     * @var object[] $traitPrototypes протитипы для создания экземпляров
      */
-    private $_prototypes = [];
+    private $traitPrototypes = [];
 
     /**
      * Возвращает фабрику прототипов сервисов.
@@ -46,7 +46,8 @@ trait TPrototypeAware
      */
     protected function getPrototype($className, array $contracts = [], callable $prototypeInitializer = null)
     {
-        if (!isset($this->_prototypes[$className])) {
+        if (!isset($this->traitPrototypes[$className])) {
+
             $prototype = $this->getPrototypeFactory()
                 ->create($className, $contracts);
 
@@ -54,7 +55,7 @@ trait TPrototypeAware
                 call_user_func_array($prototypeInitializer, [$prototype]);
             }
 
-            $this->_prototypes[$className] = $prototype;
+            $this->traitPrototypes[$className] = $prototype;
 
             $prototypeInstance = $prototype->getPrototypeInstance();
             if ($prototypeInstance instanceof IFactory) {
@@ -64,7 +65,7 @@ trait TPrototypeAware
             $prototype->resolveDependencies();
         }
 
-        return $this->_prototypes[$className];
+        return $this->traitPrototypes[$className];
     }
 }
  

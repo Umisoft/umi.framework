@@ -75,7 +75,7 @@ class PaginationHelper
     }
 
     /**
-     * Возвращает контекс пагинатора.
+     * Возвращает контекс постраничной навигации.
      * @param IPaginator $paginator
      * @return array
      */
@@ -103,7 +103,7 @@ class PaginationHelper
 
     /**
      * Возвращает массив страниц для отображения в ряду.
-     * @param IPaginator $paginator объект пагинатора
+     * @param IPaginator $paginator объект постраничной навигации
      * @param int $pagesCountInRange количество страниц отображаемых в ряду
      * @return array
      */
@@ -128,7 +128,7 @@ class PaginationHelper
 
     /**
      * Возвращает массив страниц для отображения в ряду.
-     * @param IPaginator $paginator объект пагинатора
+     * @param IPaginator $paginator объект постраничной навигации
      * @param int $pagesCountInRange количество страниц отображаемых в ряду
      * @return array массив ряда страниц для отображения
      */
@@ -148,7 +148,7 @@ class PaginationHelper
 
     /**
      * Возвращает массив номеров страниц для отображения в ряду.
-     * @param IPaginator $paginator объект пагинатора
+     * @param IPaginator $paginator объект постраничной навигации
      * @param int $pagesCountInRange количество страниц отображаемых в ряду
      * @return array
      */

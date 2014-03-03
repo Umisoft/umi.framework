@@ -17,20 +17,16 @@ use umi\i18n\exception\RequiredDependencyException;
 trait TLocalesAware
 {
     /**
-     * @var ILocalesService $_localesService сервис для работы с локалями
+     * @var ILocalesService $traitLocalesService сервис для работы с локалями
      */
-    private $_localesService;
+    private $traitLocalesService;
 
     /**
-     * Внедряет сервис для работы с локалями
-     * @param ILocalesService $localesService
-     * @return self
+     * @see ILocalesAware::setLocalesService()
      */
     public function setLocalesService(ILocalesService $localesService)
     {
-        $this->_localesService = $localesService;
-
-        return $this;
+        $this->traitLocalesService = $localesService;
     }
 
     /**
@@ -54,19 +50,41 @@ trait TLocalesAware
     }
 
     /**
+     * Устанавливает локаль по умолчанию
+     * @param string $localeId
+     * @return $this
+     */
+    protected function setDefaultLocale($localeId)
+    {
+        return $this->getLocalesService()
+            ->setDefaultLocale($localeId);
+    }
+
+    /**
+     * Устанавливает текущую локаль
+     * @param string $localeId
+     * @return $this
+     */
+    protected function setCurrentLocale($localeId)
+    {
+        return $this->getLocalesService()
+            ->setCurrentLocale($localeId);
+    }
+
+    /**
      * Возвращает сервис для работы с локалями
-     * @throws RequiredDependencyException
+     * @throws RequiredDependencyException если сервис не был внедрен
      * @return ILocalesService
      */
     private function getLocalesService()
     {
-        if (!$this->_localesService) {
+        if (!$this->traitLocalesService) {
             throw new RequiredDependencyException(sprintf(
                 'Locales service is not injected in class "%s".',
                 get_class($this)
             ));
         }
 
-        return $this->_localesService;
+        return $this->traitLocalesService;
     }
 }

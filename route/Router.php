@@ -24,25 +24,27 @@ class Router implements IRouter, ILocalizable
     use TLocalizable;
 
     /**
-     * @var string $baseUrl базовый URL
-     */
-    protected $baseUrl = '';
-    /**
      * @var array $params параметры
      */
     protected $params = [];
     /**
-     * @var IRoute[] $routes массив правил маршрутеризации
+     * @var IRoute[] $routes массив правил маршрутизации
      */
     protected $routes = [];
 
     /**
      * Конструктор.
-     * @param IRoute[] $routes массив правил маршрутеризации
+     * @param IRoute[] $routes массив правил маршрутизации
      */
     public function __construct(array $routes = [])
     {
         $this->routes = $routes;
+        uasort($this->routes, function(IRoute $first, IRoute $second){
+            if ($first->getPriority() == $second->getPriority()) {
+                return 0;
+            }
+            return ($first->getPriority() < $second->getPriority()) ? -1 : 1;
+        });
     }
 
     /**
@@ -63,13 +65,9 @@ class Router implements IRouter, ILocalizable
      */
     public function assemble($name, array $params = [])
     {
-        if (!$name) {
-            return $this->getBaseUrl();
-        }
+        $url = '';
 
         $names = explode('/', $name);
-
-        $url = '';
 
         $routes = $this->routes;
         foreach ($names as $name) {
@@ -84,14 +82,14 @@ class Router implements IRouter, ILocalizable
             $routes = $routes[$name]->getSubRoutes();
         }
 
-        return $this->baseUrl . $url;
+        return $url;
     }
 
     /**
      * Рекурсивно проверяет соответствие url маршрутам.
      * Если маршрут подошел, то пробует подобрать соответствие
      * в дочерних к нему маршрутах.
-     * @param IRoute[] $routes правила маршрутеризации
+     * @param IRoute[] $routes правила маршрутизации
      * @param string $url проверяемый URL
      * @param IRouteResultBuilder $resultBuilder
      * @return bool
@@ -116,26 +114,5 @@ class Router implements IRouter, ILocalizable
         }
 
         return false;
-    }
-
-    /**
-     * Устанавливает базовый URL для маршрутеризатора.
-     * @param string $url базовый URL
-     * @return self
-     */
-    public function setBaseUrl($url)
-    {
-        $this->baseUrl = $url;
-
-        return $this;
-    }
-
-    /**
-     * Возвращает базовый URL для маршрутеризатора.
-     * @return string базовый URL
-     */
-    public function getBaseUrl()
-    {
-        return $this->baseUrl;
     }
 }

@@ -28,7 +28,7 @@ class RouteTools implements IToolbox
     use TToolbox;
 
     /**
-     * @var string $routeFactory класс фабрики правил маршрутеризации
+     * @var string $routeFactory класс фабрики правил маршрутизации
      */
     public $routeFactoryClass = 'umi\route\toolbox\factory\RouteFactory';
 

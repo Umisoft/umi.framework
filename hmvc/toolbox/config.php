@@ -13,13 +13,13 @@ namespace umi\hmvc\toolbox;
  * Конфигурация для регистрации набора инструментов.
  */
 return [
-    'name'     => HMVCTools::NAME,
-    'class'    => __NAMESPACE__ . '\HMVCTools',
+    'name'     => HmvcTools::NAME,
+    'class'    => __NAMESPACE__ . '\HmvcTools',
     'awareInterfaces' => [
-        'umi\hmvc\IMVCEntityFactoryAware'
+        'umi\hmvc\IMvcEntityFactoryAware'
     ],
     'services' => [
-        'umi\hmvc\IMVCEntityFactory',
+        'umi\hmvc\IMvcEntityFactory',
         'umi\hmvc\dispatcher\IDispatcher'
     ]
 ];

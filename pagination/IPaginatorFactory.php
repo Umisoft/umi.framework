@@ -12,24 +12,24 @@ namespace umi\pagination;
 use umi\pagination\adapter\IPaginationAdapter;
 
 /**
- * Интерфейс фабрики для пагинатора.
+ * Интерфейс фабрики для постраничной навигации.
  */
 interface IPaginatorFactory
 {
     /**
-     * Создает пагинатор.
+     * Создает постраничную навигацию.
      * Адаптер выбирается автоматически, на основе типа переданных параметров.
      * @param mixed $objects объекты
      * @param int $itemsPerPage количество элементов на странице
-     * @return IPaginator созданный пагинатор
+     * @return IPaginator
      */
     public function createObjectPaginator($objects, $itemsPerPage);
 
     /**
-     * Создает пагинатор на основе адаптера.
+     * Создает постраничную навигацию на основе адаптера.
      * @param IPaginationAdapter $adapter адаптер
      * @param int $itemsPerPage количество элементов на странице
-     * @return IPaginator созданный пагинатор
+     * @return IPaginator
      */
     public function createPaginator(IPaginationAdapter $adapter, $itemsPerPage);
 }

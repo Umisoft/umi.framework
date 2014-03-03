@@ -13,29 +13,29 @@ use umi\pagination\adapter\IPaginationAdapter;
 use umi\pagination\exception\RequiredDependencyException;
 
 /**
- * Трейт для внедрения инструментов пагинатора.
+ * Трейт для внедрения инструментов постраничной навигации.
  */
 trait TPaginationAware
 {
     /**
-     * @var IPaginatorFactory $_paginationFactory фабрика пагинаторов
+     * @var IPaginatorFactory $traitPaginationFactory фабрика постраничной навигации
      */
-    private $_paginationFactory;
+    private $traitPaginationFactory;
 
     /**
-     * {@inheritdoc}
+     * @see IPaginationAware::setPaginatorFactory()
      */
     public function setPaginatorFactory(IPaginatorFactory $paginationFactory)
     {
-        $this->_paginationFactory = $paginationFactory;
+        $this->traitPaginationFactory = $paginationFactory;
     }
 
     /**
-     * Создает пагинатор,
+     * Создает постраничную навигацию,
      * выбирая адаптер автоматически на основе типа переданных объектов.
      * @param mixed $objects объекты
      * @param int $itemsPerPage количество элементов на странице
-     * @return IPaginator созданный пагинатор
+     * @return IPaginator
      */
     protected function createObjectPaginator($objects, $itemsPerPage)
     {
@@ -43,10 +43,10 @@ trait TPaginationAware
     }
 
     /**
-     * Создает пагинатор, используя заданный адаптер
+     * Создает постраничную навигацию, используя заданный адаптер.
      * @param IPaginationAdapter $adapter адаптер
      * @param int $itemsPerPage количество элементов на странице
-     * @return IPaginator созданный пагинатор
+     * @return IPaginator
      */
     protected function createPaginator(IPaginationAdapter $adapter, $itemsPerPage)
     {
@@ -54,18 +54,18 @@ trait TPaginationAware
     }
 
     /**
-     * Возвращает фабрику пагинаторов
+     * Возвращает фабрику постраничной навигации.
      * @throws RequiredDependencyException если фабрика не была установлена
      * @return IPaginatorFactory
      */
     private function getPaginatorFactory()
     {
-        if (!$this->_paginationFactory instanceof IPaginatorFactory) {
+        if (!$this->traitPaginationFactory instanceof IPaginatorFactory) {
             throw new RequiredDependencyException(sprintf(
                 'Paginator factory is not injected in class "%s".',
                 get_class($this)
             ));
         }
-        return $this->_paginationFactory;
+        return $this->traitPaginationFactory;
     }
 }

@@ -14,7 +14,7 @@ use umi\pagination\exception\OutOfBoundsException;
 use umi\pagination\exception\UnexpectedValueException;
 
 /**
- * Интерфейс пагинатора.
+ * Интерфейс постраничной навигации.
  */
 interface IPaginator extends ILocalizable
 {

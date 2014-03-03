@@ -69,6 +69,12 @@ interface IField
     public function getName();
 
     /**
+     * Возвращает тип поля
+     * @return string
+     */
+    public function getType();
+
+    /**
      * Возвращает признак видимости поля
      * @return bool
      */
@@ -107,7 +113,7 @@ interface IField
 
     /**
      * Возвращает значение поля по умолчанию (которое будет сохраняться в БД при создании объекта).
-     * @return string
+     * @return mixed
      */
     public function getDefaultValue();
 

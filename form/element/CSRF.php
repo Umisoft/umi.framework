@@ -29,7 +29,7 @@ class CSRF extends Hidden implements ILocalizable, ISessionAware
     /**
      * Пространство имен сессии для хранения данных о CSRF.
      */
-    const SESSION_BAG_NAME = 'csrf_protection';
+    const SESSION_NAMESPACE = 'csrf_protection';
 
     /**
      * @var string $token CSRF токен
@@ -85,8 +85,8 @@ class CSRF extends Hidden implements ILocalizable, ISessionAware
     /**
      * {@inheritdoc}
      */
-    protected function getSessionBagName()
+    protected function getSessionNamespacePath()
     {
-        return self::SESSION_BAG_NAME;
+        return self::SESSION_NAMESPACE;
     }
 }

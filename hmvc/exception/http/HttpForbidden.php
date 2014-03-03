@@ -9,6 +9,8 @@
 
 namespace umi\hmvc\exception\http;
 
+use umi\http\Response;
+
 /**
  * Исключение бросаемое при отсутвии доступа.
  */
@@ -19,6 +21,6 @@ class HttpForbidden extends HttpException
      */
     public function __construct($message, \Exception $previous = null)
     {
-        parent::__construct(self::HTTP_FORBIDDEN, $message, $previous);
+        parent::__construct(Response::HTTP_FORBIDDEN, $message, $previous);
     }
 }

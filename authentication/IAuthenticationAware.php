@@ -16,7 +16,7 @@ interface IAuthenticationAware
 {
     /**
      * Устанавливает фабрику аутентификации.
-     * @param IAuthenticationFactory $factory инструменты
+     * @param IAuthenticationFactory $factory
      */
     public function setAuthenticationFactory(IAuthenticationFactory $factory);
 }

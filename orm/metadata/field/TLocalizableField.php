@@ -31,50 +31,37 @@ trait TLocalizableField
     protected $localizations = [];
 
     /**
-     * Возвращает имя поля
-     * @return string
+     * @see IField::getName()
      */
     abstract public function getName();
 
     /**
-     * Возвращает php-тип данных поля. Используется для PDO.<br />
-     * http://ru2.php.net/manual/en/function.gettype.php
-     * @return string
+     * @see IField::getDataType()
      */
     abstract public function getDataType();
 
     /**
-     * Возвращает имя столбца таблицы для поля
-     * @return string
+     * @see IField::getColumnName()
      */
     abstract public function getColumnName();
 
     /**
-     * Возвращает значение поля по умолчанию (которое будет сохраняться в БД при создании объекта)
-     * @return string
+     * @see IField::getDefaultValue()
      */
     abstract public function getDefaultValue();
 
     /**
-     * Возвращает сообщение из указанного словаря, переведенное для текущей или указанной локали.
-     * Текст сообщения может содержать плейсхолдеры. Ex: File "{path}" not found
-     * Если идентификатор локали не указан, будет использована текущая локаль.
-     * @param string $message текст сообщения на языке разработки
-     * @param array $placeholders значения плейсхолдеров для сообщения. Ex: array('{path}' => '/path/to/file')
-     * @param string $localeId идентификатор локали в которую осуществляется перевод (ru, en_us)
-     * @return string
+     * @see TLocalizable::translate()
      */
     abstract protected function translate($message, array $placeholders = [], $localeId = null);
 
     /**
-     * Возвращает текущую локаль
-     * @return string
+     * @see TLocalesAware::getCurrentLocale()
      */
     abstract protected function getCurrentLocale();
 
     /**
-     * Проверяет, локазизовано ли поле
-     * @return bool
+     * @see ILocalizableField::getIsLocalized()
      */
     public function getIsLocalized()
     {
@@ -82,8 +69,7 @@ trait TLocalizableField
     }
 
     /**
-     * Возвращает список локализаций для поля
-     * @return array в виде array($localeId => array('column' => $columnName, 'default' => $defaultValue), ...)
+     * @see ILocalizableField::getLocalizations()
      */
     public function getLocalizations()
     {
@@ -91,9 +77,7 @@ trait TLocalizableField
     }
 
     /**
-     * Проверяет, есть ли указанная локаль у поля
-     * @param string $localeId идентификатор локали
-     * @return bool
+     * @see ILocalizableField::hasLocale()
      */
     public function hasLocale($localeId)
     {
@@ -101,10 +85,7 @@ trait TLocalizableField
     }
 
     /**
-     * Возвращает имя столбца таблицы для поля с учетом локали
-     * @param string|null $localeId идентификатор локали
-     * @throws NonexistentEntityException если не найдено имя столбца для указанной локали
-     * @return string
+     * @see ILocalizableField::getLocaleColumnName()
      */
     public function getLocaleColumnName($localeId = null)
     {
@@ -123,10 +104,7 @@ trait TLocalizableField
     }
 
     /**
-     * Возвращает значение поля по умолчанию (которое будет сохраняться в БД при создании объекта) с учетом локали
-     * @param string|null $localeId идентификатор локали
-     * @throws NonexistentEntityException если не найдено значения для указанной локали
-     * @return string
+     * @see ILocalizableField::getLocaleDefaultValue()
      */
     public function getLocaleDefaultValue($localeId = null)
     {
@@ -150,12 +128,7 @@ trait TLocalizableField
     }
 
     /**
-     * Дополняет запрос условием на изменение значения свойства в БД.
-     * @internal
-     * @param IObject $object объект, для которого выставляется значение
-     * @param IProperty $property свойство, для которого выставляется значение
-     * @param IQueryBuilder $builder построитель запросов, с помощью которого изменяется значние
-     * @return $this
+     * @see IField::persistProperty()
      */
     public function persistProperty(IObject $object, IProperty $property, IQueryBuilder $builder)
     {
@@ -183,8 +156,7 @@ trait TLocalizableField
     }
 
     /**
-     * Разбирает и применяет конфигурацию для поля
-     * @param array $config конфигурация поля
+     * @see BaseField::applyConfiguration()
      */
     protected function applyConfiguration(array $config)
     {

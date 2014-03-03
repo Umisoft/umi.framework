@@ -43,7 +43,7 @@ interface ICollection
 
     /**
      * Возвращает объект по уникальному GUID.
-     * @param integer|string $guid GUID объекта
+     * @param string $guid GUID объекта
      * @param bool $withLocalization загружать ли значения локализованных свойств объекта.
      * По умолчанию выключено.
      * @throws IException если не удалось получить объект
@@ -55,7 +55,7 @@ interface ICollection
      * Возвращает объект по уникальному идентификатору в БД.
      * Используется ORM для внутренних целей, запрещено использовать в высокоуровневом коде.
      * @internal
-     * @param integer|string $objectId
+     * @param integer $objectId
      * @param bool $withLocalization загружать ли значения локализованных свойств объекта.
      * По умолчанию выключено.
      * @throws IException если не удалось получить объект

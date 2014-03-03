@@ -15,9 +15,10 @@ use umi\acl\IAclResource;
 use umi\hmvc\component\IComponent;
 use umi\hmvc\controller\IController;
 use umi\hmvc\exception\RuntimeException;
-use umi\hmvc\macros\IMacros;
+use umi\hmvc\widget\IWidget;
 use umi\hmvc\view\IView;
 use umi\http\Request;
+use umi\http\Response;
 
 /**
  * Диспетчер MVC-компонентов.
@@ -26,9 +27,16 @@ interface IDispatcher
 {
 
     /**
-     * Разделитель пути для вызова макроса
+     * Разделитель пути для вызова виджета
      */
-    const MACROS_URI_SEPARATOR = '/';
+    const WIDGET_URI_SEPARATOR = '/';
+
+    /**
+     * Устанавливает текущий HTTP-запрос.
+     * @param Request $request
+     * @return self
+     */
+    public function setCurrentRequest(Request $request);
 
     /**
      * Возвращает текущий HTTP-запрос.
@@ -37,28 +45,42 @@ interface IDispatcher
     public function getCurrentRequest();
 
     /**
-     * Обрабатывает http-запрос с помощью указанного MVC-компонента.
-     * @param IComponent $component начальный компонент
-     * @param Request $request
+     * Устанавливает начальный компонент диспетчеризации.
+     * @param IComponent $component
+     * @return self
      */
-    public function dispatchRequest(IComponent $component, Request $request);
+    public function setInitialComponent(IComponent $component);
+
+    /**
+     * Возвращает начальный компонент диспетчеризации.
+     * @return IComponent
+     */
+    public function getInitialComponent();
+
+    /**
+     * Выполняет диспетчеризацию маршрута и формирует ответ.
+     * @param string|null $routePath маршрут, если не задан - будет взят из текущего HTTP-запроса
+     * @param string $baseUrl базовый URL марщрутизации
+     * @return Response
+     */
+    public function dispatch($routePath = null, $baseUrl = '');
 
     /**
      * Обрабатывает ошибку рендеринга.
      * @param Exception $e
      * @param IDispatchContext $failureContext контекст, в котором произошла ошибка
-     * @param IController|IMacros $viewOwner
+     * @param IController|IWidget $viewOwner
      * @return string
      */
     public function reportViewRenderError(Exception $e, IDispatchContext $failureContext, $viewOwner);
 
     /**
-     * Обрабатывает вызов макроса.
-     * @param string $macrosURI путь макроса
-     * @param array $params параметры вызова макроса
+     * Обрабатывает вызов виджета.
+     * @param string $widgetUri путь виджета
+     * @param array $params параметры вызова виджета
      * @return string|IView
      */
-    public function executeMacros($macrosURI, array $params = []);
+    public function executeWidget($widgetUri, array $params = []);
 
     /**
      * Переключает обрабатываемый контекст.

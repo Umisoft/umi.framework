@@ -117,7 +117,11 @@ class ORMTools implements IToolbox
             $this->metadataFactoryClass,
             ['umi\orm\metadata\IMetadataFactory']
         );
-        $this->registerFactory('objectFactory', $this->objectFactoryClass, ['umi\orm\object\IObjectFactory']);
+        $this->registerFactory(
+            'object',
+            $this->objectFactoryClass,
+            ['umi\orm\object\IObjectFactory']
+        );
         $this->registerFactory(
             'property',
             $this->propertyFactoryClass,

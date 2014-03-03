@@ -9,28 +9,29 @@
 
 namespace umi\hmvc\view;
 
+use ArrayIterator;
 use Serializable;
 use umi\hmvc\controller\IController;
 use umi\hmvc\dispatcher\IDispatchContext;
 use umi\hmvc\exception\ViewRenderException;
-use umi\hmvc\macros\IMacros;
+use umi\hmvc\widget\IWidget;
 use umi\spl\container\TArrayAccess;
 use umi\spl\container\TPropertyAccess;
 
 /**
- * Содержимое результата работы макроса или контроллера, требующее шаблонизации.
+ * Содержимое результата работы виджета или контроллера, требующее шаблонизации.
  */
-class View implements IView, Serializable
+class View extends ArrayIterator implements IView, Serializable
 {
     use TArrayAccess;
     use TPropertyAccess;
 
     /**
-     * @var IController|IMacros $viewOwner
+     * @var IController|IWidget $viewOwner
      */
     protected $viewOwner;
     /**
-     * @var IDispatchContext $context контекст вызова макроса
+     * @var IDispatchContext $context контекст вызова виджета
      */
     protected $context;
     /**
@@ -48,8 +49,8 @@ class View implements IView, Serializable
 
     /**
      * Конструктор.
-     * @param IController|IMacros $viewOwner
-     * @param IDispatchContext $context контекст вызова макроса
+     * @param IController|IWidget $viewOwner
+     * @param IDispatchContext $context контекст вызова виджета
      * @param string $templateName имя шаблона
      * @param array $variables переменные шаблона
      */
@@ -59,6 +60,8 @@ class View implements IView, Serializable
         $this->context = $context;
         $this->templateName = $templateName;
         $this->variables = $variables;
+
+        parent::__construct($variables);
     }
 
     /**
@@ -88,10 +91,14 @@ class View implements IView, Serializable
                 $e
             );
 
-            $result = $dispatcher->reportViewRenderError($exception, $this->context, $this->viewOwner);
+            try {
+                $result = $dispatcher->reportViewRenderError($exception, $this->context, $this->viewOwner);
 
-            if ($previousContext) {
-                $dispatcher->switchCurrentContext($previousContext);
+                if ($previousContext) {
+                    $dispatcher->switchCurrentContext($previousContext);
+                }
+            } catch (\Exception $e) {
+                $result = $e->getMessage();
             }
 
             return $result;
