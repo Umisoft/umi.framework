@@ -126,11 +126,9 @@ abstract class BaseQueryBuilder implements IQueryBuilder, ILocalizable
         if (is_null($connection)) {
             $connection = $this->connection;
         }
-        if (is_null($this->sql)) {
-            $this->sql = $this->build($connection);
-            $this->sql = $this->prepareArrayPlaceholders($this->sql);
-            $this->sql = $this->prepareExpressionPlaceholders($this->sql);
-        }
+        $this->sql = $this->build($connection);
+        $this->sql = $this->prepareArrayPlaceholders($this->sql);
+        $this->sql = $this->prepareExpressionPlaceholders($this->sql);
 
         return $this->sql;
     }
