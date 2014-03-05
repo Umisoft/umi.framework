@@ -11,6 +11,7 @@ namespace umi\orm\selector;
 
 use umi\dbal\builder\ISelectBuilder;
 use umi\orm\exception\NonexistentEntityException;
+use umi\orm\metadata\field\IField;
 use umi\orm\objectset\IObjectSet;
 use umi\orm\selector\condition\IFieldCondition;
 use umi\orm\selector\condition\IFieldConditionGroup;
@@ -81,6 +82,12 @@ interface ISelector extends \IteratorAggregate
      * @return self
      */
     public function fields(array $fieldNames = []);
+
+    /**
+     * Возвращает список явно запрошенных для выборки полей.
+     * @return IField[]
+     */
+    public function getFields();
 
     /**
      * Загрузить связанную через belongs-to сущность вместе с объектом (одним запросом).

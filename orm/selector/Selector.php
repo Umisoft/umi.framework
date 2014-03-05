@@ -210,6 +210,14 @@ class Selector implements ISelector, ILocalizable, ILocalesAware, IMetadataManag
     /**
      * {@inheritdoc}
      */
+    public function getFields()
+    {
+       return $this->fields;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function with($relationFieldPath, array $fieldNames = [])
     {
         $fieldChain = $this->resolveFieldChain($relationFieldPath);
