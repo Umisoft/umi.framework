@@ -107,6 +107,14 @@ class FieldCondition implements IFieldCondition
         return $this->selector;
     }
 
+    public function notIn(array $value)
+    {
+        $this->operator = self::OPERATOR_NOT_IN;
+        $this->expression = $value;
+
+        return $this->selector;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -235,6 +243,7 @@ class FieldCondition implements IFieldCondition
             case IFieldCondition::OPERATOR_BETWEEN:
                 return $this->applyBetweenCondition($selectBuilder);
             case IFieldCondition::OPERATOR_IN:
+            case IFieldCondition::OPERATOR_NOT_IN:
                 return $this->applyInCondition($selectBuilder);
             default:
                 return $this->applySimpleCondition($selectBuilder);

@@ -31,6 +31,10 @@ interface IFieldCondition
      */
     const OPERATOR_IN = 'IN';
     /**
+     * Оператор - не содержит.
+     */
+    const OPERATOR_NOT_IN = 'NOT IN';
+    /**
      * Оператор - эквивалентно(нечеткое сравнение).
      */
     const OPERATOR_LIKE = 'LIKE';
@@ -54,7 +58,13 @@ interface IFieldCondition
      * Оператор - между.
      */
     const OPERATOR_BETWEEN = 'BETWEEN';
+    /**
+     * Оператор - является.
+     */
     const OPERATOR_ISNULL = 'IS';
+    /**
+     * Оператор - не является.
+     */
     const OPERATOR_NOTNULL = 'IS NOT';
 
     /**
@@ -94,6 +104,16 @@ interface IFieldCondition
      * @return ISelector
      */
     public function in(array $value);
+
+    /**
+     * Устанавливает поиск c исключением заданных в массиве значений
+     * <code>
+     *     $selector->where('id')->notIn(array(1,2,3));
+     * </code>
+     * @param array $value
+     * @return ISelector
+     */
+    public function notIn(array $value);
 
     /**
      * Устанавливает поиск по значениям, отличным от заданного.
