@@ -39,17 +39,9 @@ class SqliteDialect extends SqlitePlatform implements IDialect
      */
     public function buildSelectQuery(ISelectBuilder $query)
     {
-
-        $orderBy = $this->buildOrderByPart($query);
-
-        $limitSql = '';
-        if (null != ($limit = $query->getLimit())) {
-            $limitSql = $this->buildLimitPart($limit, $query);
-        }
-
         $result = $this->buildSelectQueryBody($query)
-            . $orderBy
-            . $limitSql;
+            . $this->buildOrderByPart($query)
+            . $this->buildLimitPart($query);
 
         return $result;
     }
@@ -90,6 +82,83 @@ class SqliteDialect extends SqlitePlatform implements IDialect
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function buildDeleteQuery(IDeleteBuilder $query)
+    {
+        $fromSql = $this->quoteIdentifier($query->getTableName());
+        $whereSql = $this->buildWherePart($query);
+
+        $result = 'DELETE FROM ' . $fromSql . $whereSql;
+
+        return $result;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildSelectFoundRowsQuery(ISelectBuilder $query)
+    {
+        return 'SELECT count(*) FROM (' . $this->buildSelectQueryBody($query) . ')';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDisableKeysSQL($tableName)
+    {
+        throw new RuntimeException(
+            'Sqlite driver does not support \'alter table ... disable keys\' queries.'
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getEnableKeysSQL($tableName)
+    {
+        throw new RuntimeException(
+            'Sqlite driver does not support \'alter table ... enable keys\' queries.'
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDisableForeignKeysSQL()
+    {
+        return 'PRAGMA foreign_keys = OFF';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getEnableForeignKeysSQL()
+    {
+        return 'PRAGMA foreign_keys = ON';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildTruncateQuery($tableName, $cascade = false)
+    {
+        $this->getTruncateTableSQL($tableName, $cascade);
+    }
+
+    /**
+     * {@inheritdoc}
+     * @param \Doctrine\DBAL\Connection $connection
+     */
+    public function initConnection(Connection $connection)
+    {
+        /** @var $pdo PDO */
+        $pdo = $connection->getWrappedConnection();
+        $this->fkSupported = version_compare('3.6.19', $pdo->getAttribute(PDO::ATTR_SERVER_VERSION)) < 0;
+        $pdo->exec($this->getEnableForeignKeysSQL());
+    }
+
+    /**
      * Эмулирует INSERT ON DUPLICATE KEY UPDATE
      * @internal
      * @param IInsertBuilder $query insert-запрос
@@ -117,63 +186,6 @@ class SqliteDialect extends SqlitePlatform implements IDialect
         $result .= 'UPDATE ' . $whatSql . $setSql . $whereSql . ';';
 
         return $result;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function buildDeleteQuery(IDeleteBuilder $query)
-    {
-        $fromSql = $this->quoteIdentifier($query->getTableName());
-        $whereSql = $this->buildWherePart($query);
-
-        $result = 'DELETE FROM ' . $fromSql . $whereSql;
-
-        return $result;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function buildDisableKeysQuery($tableName)
-    {
-        throw new RuntimeException(
-            'Sqlite driver does not support \'alter table ... disable keys\' queries.'
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function buildEnableKeysQuery($tableName)
-    {
-        throw new RuntimeException(
-            'Sqlite driver does not support \'alter table ... enable keys\' queries.'
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function buildDisableForeignKeysQuery()
-    {
-        return 'PRAGMA foreign_keys = OFF';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function buildEnableForeignKeysQuery()
-    {
-        return 'PRAGMA foreign_keys = ON';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function buildSelectFoundRowsQuery(ISelectBuilder $query)
-    {
-        return 'SELECT count(*) FROM (' . $this->buildSelectQueryBody($query) . ')';
     }
 
     /**
@@ -436,69 +448,19 @@ class SqliteDialect extends SqlitePlatform implements IDialect
     }
 
     /**
-     * Строит и возвращает sql-запрос для отключения индексов в отдельной таблице
-     * @param string $tableName
-     * @return string
-     */
-    public function getDisableKeysSQL($tableName)
-    {
-        return $this->buildDisableKeysQuery($tableName);
-    }
-
-    /**
-     * Строит и возвращает sql-запрос для включения индексов в отдельной таблице
-     * @param string $tableName
-     * @return string
-     */
-    public function getEnableKeysSQL($tableName)
-    {
-        return $this->buildEnableKeysQuery($tableName);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getDisableForeignKeysSQL()
-    {
-        return $this->buildDisableForeignKeysQuery();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getEnableForeignKeysSQL()
-    {
-        return $this->buildEnableForeignKeysQuery();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function buildTruncateQuery($tableName, $cascade = false)
-    {
-        $this->getTruncateTableSQL($tableName, $cascade);
-    }
-
-    /**
-     * {@inheritdoc}
-     * @param \Doctrine\DBAL\Connection $connection
-     */
-    public function initConnection(Connection $connection)
-    {
-        /** @var $pdo PDO */
-        $pdo = $connection->getWrappedConnection();
-        $this->fkSupported = version_compare('3.6.19', $pdo->getAttribute(PDO::ATTR_SERVER_VERSION)) < 0;
-        $pdo->exec($this->buildEnableForeignKeysQuery());
-    }
-
-    /**
-     * @param int $limit
+     * Строит часть ограничительную часть запроса
      * @param ISelectBuilder $query
      * @return string
      */
-    protected function buildLimitPart($limit, ISelectBuilder $query)
+    private function buildLimitPart(ISelectBuilder $query)
     {
-        $limitSql = "\nLIMIT " . $limit . ' OFFSET ' . $query->getOffset();
+        $limitSql = '';
+        if ($query->getLimit()) {
+            $limitSql = "\nLIMIT " . $query->getLimit();
+            if ($query->getOffset()) {
+                $limitSql .= " OFFSET " . $query->getOffset();
+            }
+        }
 
         return $limitSql;
     }

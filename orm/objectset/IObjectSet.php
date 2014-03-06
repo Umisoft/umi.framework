@@ -42,7 +42,7 @@ interface IObjectSet extends Iterator, Countable
 
     /**
      * Возвращает весь список объектов IObject
-     * @return array
+     * @return IObject[]
      */
     public function fetchAll();
 

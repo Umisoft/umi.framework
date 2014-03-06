@@ -231,9 +231,7 @@ class SelectBuilder extends BaseQueryBuilder implements ISelectBuilder
     public function limit($limit, $offset = null, $useCalcFoundRows = false)
     {
         $this->limit = $limit;
-        if ($offset) {
-            $this->offset = $offset;
-        }
+        $this->offset($offset);
         $this->useCalcFoundRows = $useCalcFoundRows;
 
         return $this;

@@ -70,18 +70,11 @@ class MySqlDialect extends MySqlPlatform implements IDialect
         $noCache = $query->getCacheDisabled() ? ' SQL_NO_CACHE' : '';
         $calcFoundRows = $query->getUseCalcFoundRows() ? 'SQL_CALC_FOUND_ROWS ' : '';
 
-        $orderBy = $this->buildOrderByPart($query);
-
-        $limitSql = '';
-        if (null != ($limit = $query->getLimit())) {
-            $limitSql = "\nLIMIT " . $limit . ' OFFSET ' . $query->getOffset();
-        }
-
         $result = 'SELECT' . $noCache . $distinctSql . ' '
             . $calcFoundRows
             . $this->buildSelectQueryBody($query)
-            . $orderBy
-            . $limitSql;
+            . $this->buildOrderByPart($query)
+            . $this->buildLimitPart($query);
 
         return $result;
     }
@@ -151,24 +144,89 @@ class MySqlDialect extends MySqlPlatform implements IDialect
     }
 
     /**
-     * Строит ORDER BY часть запроса
-     * @internal
-     * @param ISelectBuilder|IDeleteBuilder|IUpdateBuilder $query
-     * @return string
+     * {@inheritdoc}
      */
-    private function buildOrderByPart($query)
+    public function buildSelectFoundRowsQuery(ISelectBuilder $query)
     {
-        $conditions = $query->getOrderConditions();
-        if (!count($conditions)) {
-            return '';
+        if ($query->getExecuted() && $query->getUseCalcFoundRows()) {
+            return 'SELECT FOUND_ROWS()';
         }
 
-        $result = [];
-        foreach ($conditions as $column => $direction) {
-            $result[] = $this->quoteIdentifier($column) . ' ' . strtoupper($direction);
-        }
+        $distinctSql = $query->getDistinct() ? ' DISTINCT' : '';
 
-        return "\nORDER BY " . implode(", ", $result);
+        return 'SELECT count(*) FROM (SELECT' . $distinctSql . ' ' . $this->buildSelectQueryBody(
+            $query
+        ) . ') AS `mainQuery`';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildTruncateQuery($tableName, $cascade = false)
+    {
+        return $this->getTruncateTableSQL($tableName, $cascade);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildDropQuery($tableName, $ifExists = true)
+    {
+        return $this->getDropTableSQL($tableName, $ifExists);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildDisableKeysQuery($tableName)
+    {
+        $tableName = $this->quoteIdentifier($tableName);
+
+        return 'ALTER TABLE ' . $tableName . ' DISABLE KEYS';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildEnableKeysQuery($tableName)
+    {
+        $tableName = $this->quoteIdentifier($tableName);
+
+        return 'ALTER TABLE ' . $tableName . ' ENABLE KEYS';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildDisableForeignKeysQuery()
+    {
+        return 'SET foreign_key_checks = 0';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildEnableForeignKeysQuery()
+    {
+        return 'SET foreign_key_checks = 1';
+    }
+
+    /**
+     * {@inheritdoc}
+     * @param \Doctrine\DBAL\Connection $connection
+     *
+     * @throws \umi\dbal\exception\RuntimeException
+     */
+    public function initConnection(Connection $connection)
+    {
+        /** @var $pdo PDO */
+        $pdo = $connection->getWrappedConnection();
+        $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
+        $params = $connection->getParams();
+        if (!isset($params['charset'])) {
+            throw new RuntimeException("No connection charset specified");
+        }
+        $pdo->exec('SET NAMES ' . $pdo->quote($params['charset']));
     }
 
     /**
@@ -371,22 +429,6 @@ class MySqlDialect extends MySqlPlatform implements IDialect
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function buildSelectFoundRowsQuery(ISelectBuilder $query)
-    {
-        if ($query->getExecuted() && $query->getUseCalcFoundRows()) {
-            return 'SELECT FOUND_ROWS()';
-        }
-
-        $distinctSql = $query->getDistinct() ? ' DISTINCT' : '';
-
-        return 'SELECT count(*) FROM (SELECT' . $distinctSql . ' ' . $this->buildSelectQueryBody(
-            $query
-        ) . ') AS `mainQuery`';
-    }
-
-    /**
      * Строит запрос для группы выражений
      * @param IExpressionGroup $exprGroup
      * @return string
@@ -413,72 +455,41 @@ class MySqlDialect extends MySqlPlatform implements IDialect
     }
 
     /**
-     * {@inheritdoc}
+     * Строит ORDER BY часть запроса
+     * @internal
+     * @param ISelectBuilder|IDeleteBuilder|IUpdateBuilder $query
+     * @return string
      */
-    public function buildTruncateQuery($tableName, $cascade = false)
+    private function buildOrderByPart($query)
     {
-        return $this->getTruncateTableSQL($tableName, $cascade);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function buildDropQuery($tableName, $ifExists = true)
-    {
-        return $this->getDropTableSQL($tableName, $ifExists);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function buildDisableKeysQuery($tableName)
-    {
-        $tableName = $this->quoteIdentifier($tableName);
-
-        return 'ALTER TABLE ' . $tableName . ' DISABLE KEYS';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function buildEnableKeysQuery($tableName)
-    {
-        $tableName = $this->quoteIdentifier($tableName);
-
-        return 'ALTER TABLE ' . $tableName . ' ENABLE KEYS';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function buildDisableForeignKeysQuery()
-    {
-        return 'SET foreign_key_checks = 0';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function buildEnableForeignKeysQuery()
-    {
-        return 'SET foreign_key_checks = 1';
-    }
-
-    /**
-     * {@inheritdoc}
-     * @param \Doctrine\DBAL\Connection $connection
-     *
-     * @throws \umi\dbal\exception\RuntimeException
-     */
-    public function initConnection(Connection $connection)
-    {
-        /** @var $pdo PDO */
-        $pdo = $connection->getWrappedConnection();
-        $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
-        $params = $connection->getParams();
-        if (!isset($params['charset'])) {
-            throw new RuntimeException("No connection charset specified");
+        $conditions = $query->getOrderConditions();
+        if (!count($conditions)) {
+            return '';
         }
-        $pdo->exec('SET NAMES ' . $pdo->quote($params['charset']));
+
+        $result = [];
+        foreach ($conditions as $column => $direction) {
+            $result[] = $this->quoteIdentifier($column) . ' ' . strtoupper($direction);
+        }
+
+        return "\nORDER BY " . implode(", ", $result);
+    }
+
+    /**
+     * Строит часть ограничительную часть запроса
+     * @param ISelectBuilder $query
+     * @return string
+     */
+    private function buildLimitPart(ISelectBuilder $query)
+    {
+        $limitSql = '';
+        if ($query->getLimit()) {
+            $limitSql = "\nLIMIT " . $query->getLimit();
+            if ($query->getOffset()) {
+                $limitSql .= " OFFSET " . $query->getOffset();
+            }
+        }
+
+        return $limitSql;
     }
 }

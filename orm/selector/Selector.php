@@ -919,12 +919,11 @@ class Selector implements ISelector, ILocalizable, ILocalesAware, IMetadataManag
             $postfix = self::PLACEHOLDER_SEPARATOR . $this->collection->getName();
 
             $limitPlaceholder = ':limit' . $postfix;
-            $offsetPlaceholder = ':offset' . $postfix;
-
             $selectBuilder
                 ->limit($limitPlaceholder)
                 ->bindInt($limitPlaceholder, $this->limit);
             if ($this->offset) {
+                $offsetPlaceholder = ':offset' . $postfix;
                 $selectBuilder
                     ->offset($offsetPlaceholder)
                     ->bindInt($offsetPlaceholder, $this->offset);

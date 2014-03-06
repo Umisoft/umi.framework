@@ -102,7 +102,7 @@ interface ISelector extends \IteratorAggregate
 
     /**
      * Возвращает информацию о загружаемых вместе с объектом belongs-to сущностях
-     * @return array в формате [$relationFieldPath => [BelongsToRelationField, $fieldNames]]
+     * @return array в формате [$relationFieldPath => [BelongsToRelationField, IField[]], ...]
      */
     public function getWithInfo();
 
