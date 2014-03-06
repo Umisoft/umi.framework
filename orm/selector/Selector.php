@@ -263,10 +263,26 @@ class Selector implements ISelector, ILocalizable, ILocalesAware, IMetadataManag
 
         $this->withFields[$relationFieldAlias . self::ALIAS_SEPARATOR . $relationField->getName()] = [
             $collection,
-            $selectiveFields
+            $selectiveFields,
+            $relationFieldPath,
+            $relationField
         ];
 
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getWithInfo()
+    {
+        $fieldsInfo = [];
+        foreach($this->withFields as $fieldInfo) {
+            list(, $selectiveFields, $fieldPath, $field) = $fieldInfo;
+            $fieldsInfo[$fieldPath] = [$field, $selectiveFields];
+        }
+
+        return $fieldsInfo;
     }
 
     /**

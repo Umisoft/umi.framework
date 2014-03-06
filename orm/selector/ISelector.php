@@ -100,6 +100,12 @@ interface ISelector extends \IteratorAggregate
     public function with($relationFieldPath, array $fieldNames = []);
 
     /**
+     * Возвращает информацию о загружаемых вместе с объектом belongs-to сущностях
+     * @return array в формате [$relationFieldPath => [BelongsToRelationField, $fieldNames]]
+     */
+    public function getWithInfo();
+
+    /**
      * Устанавливает режим загрузки всех локализованных свойств объектов.
      * По умолчанию выключено. Загружаются только свойства для текущей локали,
      * при попытке обратиться к локализованному свойству происходит ленивая загрузка
