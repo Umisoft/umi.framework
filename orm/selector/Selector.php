@@ -440,6 +440,14 @@ class Selector implements ISelector, ILocalizable, ILocalesAware, IMetadataManag
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getCollection()
+    {
+        return $this->collection;
+    }
+
+    /**
      * Возвращает итератор (IObjectSet)
      * @internal
      * @link http://php.net/manual/en/iteratoraggregate.getiterator.php

@@ -10,6 +10,7 @@
 namespace umi\orm\selector;
 
 use umi\dbal\builder\ISelectBuilder;
+use umi\orm\collection\ICollection;
 use umi\orm\exception\NonexistentEntityException;
 use umi\orm\metadata\field\IField;
 use umi\orm\objectset\IObjectSet;
@@ -184,4 +185,10 @@ interface ISelector extends \IteratorAggregate
      * @return int
      */
     public function getTotal();
+
+    /**
+     * Возвращает коллекцию выборки.
+     * @return ICollection
+     */
+    public function getCollection();
 }
