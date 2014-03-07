@@ -58,4 +58,25 @@ class Stemming implements IStemming
         $pseudoRoots = $this->phpmorphy->getPseudoRoot(mb_strtoupper($word, 'utf-8'), $type);
         return current($pseudoRoots);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSearchableRoot($word, $limit, $type = IStemming::LEMM_NORMAL)
+    {
+        $word = mb_strtoupper($word, 'utf-8');
+        $partsOfSpeech = $this->phpmorphy->getPartOfSpeech($word);
+        $commonRoot = $this->getCommonRoot($word, $type);
+        $searchableRoot = mb_strlen($commonRoot, 'utf-8') >= $limit ? $commonRoot : $word;
+        //todo if word longer than limit, find shortest form
+
+        if(count($partsOfSpeech) == 1){
+            return $searchableRoot;
+        } else {
+            if(array_search('ПРЕДЛ', $partsOfSpeech, true) !== false) {
+                return $word;
+            }
+            return $searchableRoot;
+        }
+    }
 }
