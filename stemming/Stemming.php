@@ -40,7 +40,8 @@ class Stemming implements IStemming
      */
     public function getAllForms($word, $type = IStemming::LEMM_NORMAL)
     {
-        return $this->phpmorphy->getAllForms(mb_strtoupper($word, 'utf-8'), $type);
+        $allForms = $this->phpmorphy->getAllForms(mb_strtoupper($word, 'utf-8'), $type);
+        return is_array($allForms) ? $allForms : [];
     }
 
     /**
@@ -48,7 +49,8 @@ class Stemming implements IStemming
      */
     public function getPartOfSpeech($word, $type = IStemming::LEMM_NORMAL)
     {
-        return $this->phpmorphy->getPartOfSpeech(mb_strtoupper($word, 'utf-8'), $type);
+        $partOfSpeech = $this->phpmorphy->getPartOfSpeech(mb_strtoupper($word, 'utf-8'), $type);
+        return is_array($partOfSpeech) ? $partOfSpeech : [];
     }
 
     /**
@@ -57,6 +59,9 @@ class Stemming implements IStemming
     public function getCommonRoot($word, $type = IStemming::LEMM_NORMAL)
     {
         $pseudoRoots = $this->phpmorphy->getPseudoRoot(mb_strtoupper($word, 'utf-8'), $type);
+        if (!is_array($pseudoRoots) || empty($pseudoRoots)) {
+            return $word;
+        }
         return current($pseudoRoots);
     }
 
@@ -71,10 +76,10 @@ class Stemming implements IStemming
         $searchableRoot = mb_strlen($commonRoot, 'utf-8') >= $limit ? $commonRoot : $word;
         //todo if word longer than limit, find shortest form
 
-        if(count($partsOfSpeech) == 1){
+        if (count($partsOfSpeech) == 1) {
             return $searchableRoot;
         } else {
-            if(array_search('ПРЕДЛ', $partsOfSpeech, true) !== false) {
+            if (array_search('ПРЕДЛ', $partsOfSpeech, true) !== false) {
                 return $word;
             }
             return $searchableRoot;
