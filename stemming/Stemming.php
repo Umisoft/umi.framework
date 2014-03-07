@@ -31,7 +31,8 @@ class Stemming implements IStemming
      */
     public function getBaseForm($word, $type = IStemming::LEMM_NORMAL)
     {
-        return $this->phpmorphy->getBaseForm(mb_strtoupper($word, 'utf-8'), $type);
+        $baseForms = $this->phpmorphy->getBaseForm(mb_strtoupper($word, 'utf-8'), $type);
+        return is_array($baseForms) ? $baseForms : [];
     }
 
     /**
