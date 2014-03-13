@@ -10,6 +10,7 @@
 namespace umi\hmvc\component;
 
 use umi\acl\IAclManager;
+use umi\form\IForm;
 use umi\hmvc\controller\IController;
 use umi\hmvc\dispatcher\IDispatchContext;
 use umi\hmvc\exception\OutOfBoundsException;
@@ -62,6 +63,10 @@ interface IComponent
      * Опция для конфигурирования ACL
      */
     const OPTION_ACL = 'acl';
+    /**
+     * Опция для конфигурирования форм
+     */
+    const OPTION_FORMS = 'forms';
 
     /**
      * Имя параметра маршрута для передачи управления дочернему компоненту
@@ -150,6 +155,22 @@ interface IComponent
      * @return IWidget
      */
     public function getWidget($widgetName, array $params = []);
+
+    /**
+     * Проверяет, существует ли форма в компоненте.
+     * @param string $formName имя формы
+     * @return bool
+     */
+    public function hasForm($formName);
+
+    /**
+     * Возвращает форму компонента.
+     * @param string $formName имя формы
+     * @param array|object $object объект, с которым связана форма
+     * @throws OutOfBoundsException если форма не существует
+     * @return IForm
+     */
+    public function getForm($formName, $object = null);
 
     /**
      * Возвращает рендерер шаблонов компонента.

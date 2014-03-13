@@ -10,8 +10,10 @@ namespace umi\hmvc\controller;
 
 use umi\acl\IAclManager;
 use umi\acl\IAclResource;
+use umi\form\IForm;
 use umi\hmvc\component\IComponent;
 use umi\hmvc\dispatcher\IDispatchContext;
+use umi\hmvc\exception\OutOfBoundsException;
 use umi\hmvc\exception\RequiredDependencyException;
 use umi\hmvc\view\IView;
 use umi\hmvc\view\View;
@@ -270,5 +272,17 @@ abstract class BaseController implements IController, IHttpAware
     protected function callWidget($widgetURI, array $params = [])
     {
         return $this->getContext()->getDispatcher()->executeWidget($widgetURI, $params);
+    }
+
+    /**
+     * Возвращает форму компонента.
+     * @param string $formName имя формы
+     * @param array|object $object объект, с которым связана форма
+     * @throws OutOfBoundsException если форма не существует
+     * @return IForm
+     */
+    protected function getForm($formName, $object = null)
+    {
+        return $this->getComponent()->getForm($formName, $object);
     }
 }

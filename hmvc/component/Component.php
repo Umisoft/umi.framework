@@ -12,6 +12,8 @@ namespace umi\hmvc\component;
 use umi\acl\IAclAware;
 use umi\acl\IAclManager;
 use umi\acl\TAclAware;
+use umi\form\IFormAware;
+use umi\form\TFormAware;
 use umi\hmvc\controller\IControllerFactory;
 use umi\hmvc\dispatcher\IDispatchContext;
 use umi\hmvc\exception\OutOfBoundsException;
@@ -33,13 +35,14 @@ use umi\spl\config\TConfigSupport;
 /**
  * Реализация MVC компонента системы.
  */
-class Component implements IComponent, IMvcEntityFactoryAware, IRouteAware, ILocalizable, IAclAware
+class Component implements IComponent, IMvcEntityFactoryAware, IRouteAware, ILocalizable, IAclAware, IFormAware
 {
     use TMvcEntityFactoryAware;
     use TRouteAware;
     use TLocalizable;
     use TConfigSupport;
     use TAclAware;
+    use TFormAware;
 
     /**
      * @var string $path иерархический путь компонента
@@ -130,7 +133,7 @@ class Component implements IComponent, IMvcEntityFactoryAware, IRouteAware, ILoc
 
         if (!$this->hasChildComponent($name)) {
             throw new OutOfBoundsException($this->translate(
-                'Cannot create child component "{name}". Component has not registered.',
+                'Cannot create child component "{name}". Component is not registered.',
                 ['name' => $name]
             ));
         }
@@ -207,6 +210,32 @@ class Component implements IComponent, IMvcEntityFactoryAware, IRouteAware, ILoc
         }
 
         return $this->viewRenderer;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasForm($formName)
+    {
+        return isset($this->options[self::OPTION_FORMS][$formName]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getForm($formName, $object = null)
+    {
+        if (!$this->hasForm($formName)) {
+            throw new OutOfBoundsException($this->translate(
+                'Cannot create form "{name}". Form is not registered.',
+                ['name' => $formName]
+            ));
+        }
+
+        $config = $this->configToArray($this->options[self::OPTION_FORMS][$$formName], true);
+
+        return $this->createForm($config, $object);
+
     }
 
     /**
