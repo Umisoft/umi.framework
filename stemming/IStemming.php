@@ -24,9 +24,14 @@ interface IStemming
      */
     const LEMM_IGNORE_PREDICT = \phpMorphy_MorphyInterface::IGNORE_PREDICT;
     /**
-     * Тип лемматизации с испольщованием только предсказания
+     * Тип лемматизации с использованием только предсказания
      */
     const LEMM_ONLY_PREDICT = \phpMorphy_MorphyInterface::ONLY_PREDICT;
+    /**
+     * Тип лемматизации, оставляющий максимально близкую к оригиналу основу слова.
+     * Полезно для поиска
+     */
+    const LEMM_SEARCHABLE = 64;
 
     /**
      * Определяет возможные базовые формы слова
@@ -59,4 +64,14 @@ interface IStemming
      * @return string
      */
     public function getCommonRoot($word, $type = IStemming::LEMM_NORMAL);
+
+    /**
+     * Корень слова, максимально близкий к исходному по набору символов.
+     * Полезен для поиска, где необходимо отбросить слова, слишком далекие по смыслу от искомого слова.
+     * @param string $word
+     * @param int $limit Минимальная длина возвращаемого слова
+     * @param int $type Тип лемматизации
+     * @return string
+     */
+    public function getSearchableRoot($word, $limit, $type = IStemming::LEMM_NORMAL);
 }
