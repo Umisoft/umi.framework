@@ -20,10 +20,4 @@ class Reset extends Button
      */
     const TYPE_NAME = 'reset';
 
-    /**
-     * @var array $attributes аттрибуты
-     */
-    protected $attributes = [
-        'type' => 'reset'
-    ];
 }

@@ -7,16 +7,11 @@
  * @license   http://umi-framework.ru/license/bsd-3 BSD-3 License
  */
 
-namespace umi\form\element;
+namespace umi\form\exception;
 
 /**
- * Элемент формы - Многострочное текстовое поле(textarea).
- * @example <textarea></textarea>
+ * Исключения, возникающие, когда тип полученного значения не соответствует ожидаемому.
  */
-class Textarea extends BaseFormElement
+class UnexpectedValueException extends \UnexpectedValueException implements IException
 {
-    /**
-     * Тип элемента.
-     */
-    const TYPE_NAME = 'textarea';
 }

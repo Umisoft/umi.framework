@@ -7,18 +7,17 @@
  * @license   http://umi-framework.ru/license/bsd-3 BSD-3 License
  */
 
-namespace umi\form\annotation;
-
-use umi\form\IFormEntity;
+namespace umi\form\element;
 
 /**
- * Интерфейс аннотаций конфига.
+ * Интерфейс инпута формы.
  */
-interface IAnnotation
+interface IFormInput extends IFormElement
 {
     /**
-     * Модифицирует элемент формы.
-     * @param IFormEntity $entity элемент
+     * Возвращает тип инпута.
+     * @return string
      */
-    public function transform(IFormEntity $entity);
+    public function getInputType();
 }
+ 

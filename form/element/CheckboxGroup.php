@@ -10,21 +10,31 @@
 namespace umi\form\element;
 
 /**
- * Элемент формы - Пароль(password).
- * @example <input type="password" />
+ * Группа элементов формы - флаги(checkbox).
+ * @example <input name="name[]" type="checkbox" />
  */
-class Password extends BaseFormElement implements IFormInput
+class CheckboxGroup extends BaseChoiceElement implements IFormInput
 {
     /**
      * Тип элемента.
      */
-    const TYPE_NAME = 'password';
+    const TYPE_NAME = 'multi-checkbox';
 
     /**
      * {@inheritdoc}
      */
     public function getInputType()
     {
-        return self::TYPE_NAME;
+        return Checkbox::TYPE_NAME;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getElementName()
+    {
+        $name = parent::getElementName();
+
+        return $name . '[]';
     }
 }

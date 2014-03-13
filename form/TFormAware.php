@@ -32,10 +32,11 @@ trait TFormAware
     /**
      * Создает форму на основе конфига.
      * @param array $config конфигурация
+     * @param array|object $object объект, с которым связана форма
      * @throws RequiredDependencyException если фабрика элементов формы не установлена
      * @return IForm
      */
-    protected function createForm(array $config)
+    protected function createForm(array $config, $object = null)
     {
         if (!$this->traitFormEntityFactory) {
             throw new RequiredDependencyException(sprintf(
@@ -44,6 +45,6 @@ trait TFormAware
             ));
         }
 
-        return $this->traitFormEntityFactory->createForm($config);
+        return $this->traitFormEntityFactory->createForm($config, $object);
     }
 }

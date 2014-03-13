@@ -12,6 +12,12 @@ namespace umi\form\element;
 /**
  * Интерфейс кнопочного элемента формы.
  */
-interface IButton extends IElement
+interface IFormButton extends IFormElement
 {
+    /**
+     * Возвращает тип кнопки.
+     * @return string
+     */
+    public function getButtonType();
+
 }

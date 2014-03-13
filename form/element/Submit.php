@@ -20,10 +20,4 @@ class Submit extends Button
      */
     const TYPE_NAME = 'submit';
 
-    /**
-     * @var array $attributes аттрибуты
-     */
-    protected $attributes = [
-        'type' => 'submit'
-    ];
 }

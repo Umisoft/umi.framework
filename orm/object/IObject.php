@@ -170,6 +170,15 @@ interface IObject extends ArrayAccess, Serializable, Iterator
     public function getProperty($propName, $localeId = null);
 
     /**
+     * Возвращает свойство объекта по его пути
+     * @param string $propPath путь к связанному свойству (Ex: city.country.name)
+     * @param null|string $localeId идентификатор локали свойства
+     * @throws IException если не возможно получить свойство
+     * @return IProperty
+     */
+    public function getPropertyByPath($propPath, $localeId = null);
+
+    /**
      * Возвращает значение свойства
      * @param string $propName имя свойства
      * @param null|string $localeId идентификатор локали свойства.
@@ -179,6 +188,15 @@ interface IObject extends ArrayAccess, Serializable, Iterator
      * @return mixed|null значение свойства, либо null, если свойство не существует либо не установлено
      */
     public function getValue($propName, $localeId = null);
+
+    /**
+     * Возвращает значение свойства по его пути
+     * @param string $propPath путь к связанному свойству (Ex: city.country.name)
+     * @param null|string $localeId идентификатор локали свойства.
+     * Локаль учитывается для всех локализованных свойств в пути.
+     * @return mixed|null значение свойства, либо null, если свойство не существует либо не установлено
+     */
+    public function getValueByPath($propPath, $localeId = null);
 
     /**
      * Устанавливает в качестве значения свойства значение по умолчанию
@@ -200,6 +218,18 @@ interface IObject extends ArrayAccess, Serializable, Iterator
      * @return self
      */
     public function setValue($propName, $value, $localeId = null);
+
+    /**
+     * Устанавливает значение свойства по его пути
+     * @param string $propPath путь свойства (Ex: city.country.name)
+     * @param mixed $value значение свойства
+     * @param null|string $localeId идентификатор локали свойства.
+     * Локаль учитывается для всех локализованных свойств в пути.
+     * @throws IException если не удалось получить свойство
+     * @throws ReadOnlyEntityException если свойство доступно только на чтение
+     * @return self
+     */
+    public function setValueByPath($propPath, $value, $localeId = null);
 
     /**
      * Проверяет, новый ли объект

@@ -9,23 +9,22 @@
 
 namespace umi\form\element\html5;
 
-use umi\form\element\Text;
+use umi\form\element\BaseFormElement;
+use umi\form\element\IFormInput;
 
 /**
  * HTML5 элемент формы - Телефон (phone).
  * @example <input type="tel" />
  */
-class Phone extends Text
+class Phone extends BaseFormElement implements IFormInput
 {
     /**
      * Тип элемента.
      */
     const TYPE_NAME = 'phone';
 
-    /**
-     * @var array $attributes аттрибуты
-     */
-    protected $attributes = [
-        'type' => 'tel'
-    ];
+    public function getInputType()
+    {
+        return 'tel';
+    }
 }

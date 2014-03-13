@@ -13,7 +13,7 @@ namespace umi\form\element;
  * Элемент формы - Скрытое поле(hidden).
  * @example <input type="hidden" />
  */
-class Hidden extends BaseElement
+class Hidden extends BaseFormElement implements IFormInput
 {
     /**
      * Тип элемента.
@@ -21,9 +21,10 @@ class Hidden extends BaseElement
     const TYPE_NAME = 'hidden';
 
     /**
-     * @var array $attributes аттрибуты
+     * {@inheritdoc}
      */
-    protected $attributes = [
-        'type' => 'hidden'
-    ];
+    public function getInputType()
+    {
+        return self::TYPE_NAME;
+    }
 }

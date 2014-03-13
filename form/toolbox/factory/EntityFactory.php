@@ -9,7 +9,7 @@
 
 namespace umi\form\toolbox\factory;
 
-use umi\form\annotation\IAnnotation;
+use umi\form\adapter\IDataAdapter;
 use umi\form\element\Button;
 use umi\form\element\Checkbox;
 use umi\form\element\CSRF;
@@ -26,8 +26,9 @@ use umi\form\element\html5\Search;
 use umi\form\element\html5\Time;
 use umi\form\element\html5\Url;
 use umi\form\element\html5\Week;
-use umi\form\element\IElement;
-use umi\form\element\MultiCheckbox;
+use umi\form\element\IFormElement;
+use umi\form\element\CheckboxGroup;
+use umi\form\element\MultiSelect;
 use umi\form\element\Password;
 use umi\form\element\Radio;
 use umi\form\element\Reset;
@@ -35,12 +36,14 @@ use umi\form\element\Select;
 use umi\form\element\Submit;
 use umi\form\element\Text;
 use umi\form\element\Textarea;
+use umi\form\exception\InvalidArgumentException;
 use umi\form\exception\OutOfBoundsException;
-use umi\form\fieldset\Collection;
-use umi\form\fieldset\Fieldset;
-use umi\form\fieldset\IFieldset;
+use umi\form\exception\RuntimeException;
+use umi\form\fieldset\FieldSet;
+use umi\form\fieldset\IFieldSet;
 use umi\form\Form;
 use umi\form\IEntityFactory;
+use umi\form\IForm;
 use umi\form\IFormEntity;
 use umi\i18n\TLocalizable;
 use umi\toolkit\factory\IFactory;
@@ -61,8 +64,8 @@ class EntityFactory implements IEntityFactory, IFactory
     public $elementTypes = [
         Button::TYPE_NAME        => 'umi\form\element\Button',
         Checkbox::TYPE_NAME      => 'umi\form\element\Checkbox',
+        CheckboxGroup::TYPE_NAME => 'umi\form\element\CheckboxGroup',
         Hidden::TYPE_NAME        => 'umi\form\element\Hidden',
-        MultiCheckbox::TYPE_NAME => 'umi\form\element\MultiCheckbox',
         Password::TYPE_NAME      => 'umi\form\element\Password',
         Radio::TYPE_NAME         => 'umi\form\element\Radio',
         Submit::TYPE_NAME        => 'umi\form\element\Submit',
@@ -71,6 +74,7 @@ class EntityFactory implements IEntityFactory, IFactory
         CSRF::TYPE_NAME          => 'umi\form\element\CSRF',
         Reset::TYPE_NAME         => 'umi\form\element\Reset',
         Select::TYPE_NAME        => 'umi\form\element\Select',
+        MultiSelect::TYPE_NAME   => 'umi\form\element\MultiSelect',
         /*
          * HTML5
          */
@@ -89,173 +93,177 @@ class EntityFactory implements IEntityFactory, IFactory
     ];
 
     /**
-     * @var array $annotationTypes типы аннотаций
+     * @var array $fieldSetTypes типы поддерживаемых наборов сущностей
      */
-    public $annotationTypes = [
-        'action'     => 'umi\form\annotation\ActionAnnotation',
-        'method'     => 'umi\form\annotation\MethodAnnotation',
-        'label'      => 'umi\form\annotation\LabelAnnotation',
-        'filters'    => 'umi\form\annotation\FilterAnnotation',
-        'validators' => 'umi\form\annotation\ValidatorAnnotation',
-        'required'   => 'umi\form\annotation\RequiredAnnotation',
+    public $fieldSetTypes = [
+        Form::TYPE_NAME       => 'umi\form\Form',
+        FieldSet::TYPE_NAME   => 'umi\form\fieldset\FieldSet'
     ];
 
     /**
-     * @var array $fieldsetTypes типы поддерживаемых наборов элементов
+     * @var array $dataAdapters список адаптеров данных формы
      */
-    public $fieldsetTypes = [
-        Form::TYPE_NAME       => 'umi\form\Form',
-        Fieldset::TYPE_NAME   => 'umi\form\fieldset\Fieldset',
-        Collection::TYPE_NAME => 'umi\form\fieldset\Collection',
+    public $dataAdapters = [
+        'array' => 'umi\form\adapter\ArrayFormAdapter',
+        'default' => 'umi\form\adapter\DefaultFormAdapter',
+        'umi\orm\object\IObject' => 'umi\form\adapter\orm\ObjectFormAdapter',
     ];
 
     /**
      * {@inheritdoc}
      */
-    public function createEntities(array $config)
+    public function createForm(array $config, $object = null)
     {
-        $entities = [];
+        $name = isset($config['name']) ? $config['name'] : '';
+        $config['type'] = Form::TYPE_NAME;
 
-        foreach ($config as $name => $entity) {
-            $name = (string) $name;
-            $entities[$name] = $this->createEntity($name, $entity);
-        }
+        /**
+         * @var IForm $form
+         */
+        $form = $this->createFieldSet($name, $config, ['umi\form\IForm']);
+        $form->setDataAdapter($this->createAdapter($object));
 
-        return $entities;
+        return $form;
     }
 
     /**
-     * {@inheritdoc}
+     * Создает элемент формы. Это может быть как просто элемент,
+     * так и коллекция элементов.
+     * @param string $name имя элемента
+     * @param array $config конфигурация элемента, включая аттрибуты и опции
+     * @throws RuntimeException если тип элемента не определен
+     * @throws OutOfBoundsException если тип элемента не поддерживается
+     * @return IFormEntity
      */
-    public function createEntity($name, array $config)
+    protected function createFormEntity($name, array $config)
     {
-        $type = $this->getEntityType($config);
+        if (!isset($config['type'])) {
+            throw new RuntimeException(
+                $this->translate('Cannot create form entity. Type is unknown.')
+            );
+        }
 
-        $attributes = isset($config['attributes']) ? $config['attributes'] : [];
-        $options = isset($config['options']) ? $config['options'] : [];
+        $type = $config['type'];
 
         if (isset($this->elementTypes[$type])) {
-            $entity = $this->createElementEntity($type, $name, $attributes, $options);
-        } elseif (isset($this->fieldsetTypes[$type])) {
-            $elements = isset($config['elements']) ? $this->createEntities($config['elements']) : [];
-
-            $entity = $this->createFieldsetEntity($type, $name, $attributes, $options, $elements);
+            $entity = $this->createElement($name, $config);
+        } elseif (isset($this->fieldSetTypes[$type])) {
+            $entity = $this->createFieldSet($name, $config);
         } else {
             throw new OutOfBoundsException($this->translate(
-                'Form entity type "{type}" have not supported.',
+                'Form entity type "{type}" is not supported.',
                 ['type' => $type]
             ));
         }
-
-        unset($config['type']);
-        unset($config['attributes']);
-        unset($config['options']);
-        unset($config['elements']);
-
-        $this->initEntity($entity, $config);
 
         return $entity;
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function createForm(array $config)
-    {
-        $name = isset($config['name']) ? strtolower($config['name']) : '';
-        unset($config['name']);
-
-        $config['type'] = Form::TYPE_NAME;
-
-        return $this->createEntity($name, $config);
-    }
-
-    /**
      * Создает элемент формы.
-     * @param string $type тип элемента
-     * @param string $name имя элемента
-     * @param array $attributes аттрибуты
-     * @param array $options опции
-     * @return IElement
+     * @param string $name имя
+     * @param array $config конфигурация
+     * @return IFormElement
      */
-    protected function createElementEntity($type, $name, array $attributes, array $options)
+    protected function createElement($name, array $config)
     {
-            return $this->getPrototype(
-                $this->elementTypes[$type],
-                ['umi\form\element\IElement']
-            )
+
+        $type = $config['type'];
+        $className = isset($config['className']) ? $config['className'] : $this->elementTypes[$type];
+
+        $attributes = isset($config['attributes']) ? $config['attributes'] : [];
+        $options = isset($config['options']) ? $config['options'] : [];
+
+        /**
+         * @var IFormElement $element
+         */
+        $element = $this->getPrototype(
+            $className,
+            ['umi\form\element\IFormElement']
+        )
+        ->createInstance([$name, $attributes, $options]);
+
+        if (isset($config['label'])) {
+            $element->setLabel($config['label']);
+        }
+
+        return $element;
+
+    }
+
+    /**
+     * Создает группу сущностей.
+     * @param string $name имя
+     * @param array $config конфигурация
+     * @param array $contracts список контрактов
+     * @return IFieldSet
+     */
+    protected function createFieldSet($name, array $config, array $contracts = ['umi\form\fieldset\IFieldSet'])
+    {
+        $type = $config['type'];
+        $className = isset($config['className']) ? $config['className'] : $this->fieldSetTypes[$type];
+
+        $attributes = isset($config['attributes']) ? $config['attributes'] : [];
+        $options = isset($config['options']) ? $config['options'] : [];
+
+        /**
+         * @var IFieldSet $fieldSet
+         */
+        $fieldSet = $this->getPrototype($className, $contracts)
             ->createInstance([$name, $attributes, $options]);
+
+        if (isset($config['elements']) && is_array($config['elements'])) {
+            foreach($config['elements'] as $name => $elementConfig) {
+                $fieldSet->add($this->createFormEntity($name, $elementConfig));
+            }
+        }
+
+        if (isset($config['label'])) {
+            $fieldSet->setLabel($config['label']);
+        }
+
+        return $fieldSet;
     }
 
     /**
-     * Создает группу полей формы.
-     * @param string $type тип группы полей
-     * @param string $name имя группы полей
-     * @param array $attributes аттрибуты
-     * @param array $options опции
-     * @param array $elements элементы, содержащиеся в группе
-     * @return IFieldset
+     * Выбирает и создает адаптер для данных, ассоциированных с формой.
+     * @param mixed $object данные
+     * @return IDataAdapter адаптер
      */
-    protected function createFieldsetEntity($type, $name, array $attributes, array $options, array $elements = [])
+    protected function createAdapter($object)
     {
         return $this->getPrototype(
-                $this->fieldsetTypes[$type],
-                ['umi\form\fieldset\IFieldset']
-            )
-            ->createInstance([$name, $attributes, $options, $elements]);
+            $this->selectAdapter($object),
+            ['umi\form\adapter\IDataAdapter']
+        )
+            ->createInstance([$object]);
     }
 
     /**
-     * Инициализирует элемент формы с помощью аннотаций.
-     * @param IFormEntity $entity элемент
-     * @param array $config конфигурация
+     * Выбирает класс адаптера для данных.
+     * @param mixed $object данные
+     * @throws InvalidArgumentException если адаптер не был выбран.
+     * @return string класс выбранного адаптера
      */
-    protected function initEntity(IFormEntity $entity, array $config)
+    protected function selectAdapter($object)
     {
-        foreach ($config as $name => $value) {
-            $this->createAnnotation($name, $value)
-                ->transform($entity);
+        if (is_null($object)) {
+            return $this->dataAdapters['default'];
         }
-    }
-
-    /**
-     * Возвращает экземпляр аннотации заданного типа.
-     * @param string $type тип аннотации
-     * @param mixed $value значение
-     * @throws OutOfBoundsException если аннотация заданного типа не существует
-     * @return IAnnotation
-     */
-    protected function createAnnotation($type, $value)
-    {
-        if (!isset($this->annotationTypes[$type])) {
-            throw new OutOfBoundsException($this->translate(
-                'Invalid annotation type "{type}".',
-                ['type' => $type]
-            ));
+        if (is_array($object)) {
+            return $this->dataAdapters['array'];
         }
 
-        return $this->getPrototype(
-                $this->annotationTypes[$type],
-                ['umi\form\annotation\IAnnotation']
-            )
-            ->createInstance([$value]);
-    }
-
-    /**
-     * Определяет тип элемента на основе его конфигурации.
-     * @param array $config конфигурация
-     * @return string тип элемента
-     */
-    protected function getEntityType(array $config)
-    {
-        $type = Text::TYPE_NAME;
-        if (isset($config['type'])) {
-            $type = $config['type'];
-        } elseif (isset($config['elements'])) {
-            $type = Fieldset::TYPE_NAME;
+        foreach ($this->dataAdapters as $interface => $adapter) {
+            if ($object instanceof $interface) {
+                return $adapter;
+            }
         }
 
-        return $type;
+        throw new InvalidArgumentException($this->translate(
+            'Form data adapter not found for objects({type}).',
+            ['type' => is_object($object) ? get_class($object) : gettype($object)]
+        ));
     }
 
 }

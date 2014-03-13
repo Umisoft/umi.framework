@@ -9,13 +9,14 @@
 
 namespace umi\form\element\html5;
 
-use umi\form\element\Text;
+use umi\form\element\BaseFormElement;
+use umi\form\element\IFormInput;
 
 /**
  * HTML5 элемент формы - диапазон значений (range).
  * @example <input type="range" />
  */
-class Range extends Text
+class Range extends BaseFormElement implements IFormInput
 {
     /**
      * Тип элемента.
@@ -23,9 +24,10 @@ class Range extends Text
     const TYPE_NAME = 'range';
 
     /**
-     * @var array $attributes аттрибуты
+     * {@inheritdoc}
      */
-    protected $attributes = [
-        'type' => self::TYPE_NAME
-    ];
+    public function getInputType()
+    {
+        return self::TYPE_NAME;
+    }
 }

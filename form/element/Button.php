@@ -13,7 +13,7 @@ namespace umi\form\element;
  * Элемент формы - кнопка(button).
  * @example <button>example button</button>
  */
-class Button extends BaseElement implements IButton
+class Button extends BaseFormElement implements IFormButton
 {
     /**
      * Тип элемента.
@@ -21,11 +21,12 @@ class Button extends BaseElement implements IButton
     const TYPE_NAME = 'button';
 
     /**
-     * @var \ArrayObject $options опции элемента
+     * {@inheritdoc}
      */
-    protected $options = [
-        self::OPTION_EXCLUDE => true
-    ];
+    public function setValue($value)
+    {
+        return $this;
+    }
 
     /**
      * {@inheritdoc}
@@ -33,5 +34,13 @@ class Button extends BaseElement implements IButton
     public function getValue()
     {
         return $this->getLabel();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getButtonType()
+    {
+        return static::TYPE_NAME;
     }
 }

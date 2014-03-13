@@ -9,19 +9,19 @@
 
 namespace umi\form\fieldset;
 
-use umi\form\element\IElement;
+use Iterator;
+use umi\form\element\IFormElement;
 use umi\form\exception\OutOfBoundsException;
 use umi\form\exception\RuntimeException;
-use umi\form\FormEntity;
-use umi\form\IForm;
+use umi\form\BaseFormEntity;
 use umi\form\IFormEntity;
 use umi\i18n\ILocalizable;
 use umi\i18n\TLocalizable;
 
 /**
- * Класс простой группы полей.
+ * Класс группы сущностей.
  */
-class Fieldset extends FormEntity implements \Iterator, IFieldset, ILocalizable
+class FieldSet extends BaseFormEntity implements IFieldSet, Iterator, ILocalizable
 {
 
     use TLocalizable;
@@ -32,48 +32,55 @@ class Fieldset extends FormEntity implements \Iterator, IFieldset, ILocalizable
     const TYPE_NAME = 'fieldset';
 
     /**
-     * @var IFormEntity[] $elements элементы группы полей
+     * @var IFormEntity[] $children дочерние сущности
      */
-    protected $elements = [];
+    protected $children = [];
+    /**
+     * @var bool $isSubmitted признак того, что данные группы были установлены
+     */
+    protected $isSubmitted = false;
 
     /**
-     * Конструктор.
-     * @param string $name имя формы
-     * @param array $attributes
-     * @param array $options опции
-     * @param IFormEntity[] $elements
-     * @throws RuntimeException
+     * {@inheritdoc}
      */
-    public function __construct($name, array $attributes = [], array $options = [], array $elements = [])
+    public function get($name)
     {
-        parent::__construct($name, $attributes, $options);
-
-        $this->elements = $elements;
-
-        foreach ($this->elements as $name => $element) {
-            if (!$element instanceof IFormEntity) {
-                throw new RuntimeException($this->translate(
-                        'Element "{name}" has not implemented IFormEntity.',
-                        ['name' => $name]
-                    )
-                );
-            }
+        if (!isset($this->children[$name])) {
+            throw new OutOfBoundsException($this->translate(
+                'Entity "{name}" not found in "{entity}".',
+                ['name' => $name, 'entity' => $this->getName()]
+            ));
         }
+
+        return $this->children[$name];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getElement($name)
+    public function add(IFormEntity $entity)
     {
-        if (!isset($this->elements[$name])) {
-            throw new OutOfBoundsException($this->translate(
-                'Element "{name}" not found in fieldset.',
-                ['name' => $name]
+        $name = $entity->getName();
+
+        if (!$name) {
+            throw new RuntimeException($this->translate(
+                'Cannot add form entity to "{entity}". Entity name cannot be empty.',
+                ['entity' => $this->getName()]
             ));
         }
 
-        return $this->elements[$name];
+        if (isset($this->children[$name])) {
+            throw new RuntimeException($this->translate(
+                'Cannot add form entity to "{entity}". Entity already has a child with name "{name}".',
+                ['name' => $name, 'entity' => $this->getName()]
+            ));
+        }
+
+        $entity->setParent($this);
+        $this->children[$name] = $entity;
+
+        return $this;
+
     }
 
     /**
@@ -81,28 +88,23 @@ class Fieldset extends FormEntity implements \Iterator, IFieldset, ILocalizable
      */
     public function setData(array $data)
     {
-        foreach ($this->elements as $entity) {
-            if ($entity instanceof IElement) {
-                $key = $entity->getName();
+        $this->isSubmitted = true;
+
+        foreach ($this->children as $child) {
+            if ($child instanceof IFormElement) {
+                $key = $child->getName();
                 if (isset($data[$key])) {
-                    $entity->setValue($data[$key]);
+                    $child->setValue($data[$key]);
                 }
-            } elseif ($entity instanceof IForm) {
-                // todo: is it right?
-                if (isset($data[$entity->getName()])) {
-                    $val = $data[$entity->getName()];
-                    if (is_object($val)) {
-                        $entity->bindObject($val);
-                    } else {
-                        $entity->setData($val);
-                    }
+            } elseif ($child instanceof IFieldset) {
+
+                if (isset($data[$child->getName()])) {
+                    $child->setData($data[$child->getName()]);
                 }
-            } elseif ($entity instanceof IFieldset) {
-                $entity->setData($data);
             } else {
                 throw new RuntimeException($this->translate(
-                        'Element "{name}" has not implemented IElement or IFieldset.',
-                        ['name' => $entity->getName()]
+                        'Unknown element "{name}" type.',
+                        ['name' => $child->getName()]
                     )
                 );
             }
@@ -118,21 +120,18 @@ class Fieldset extends FormEntity implements \Iterator, IFieldset, ILocalizable
     {
         $cleanData = [];
 
-        foreach ($this->elements as $key => $entity) {
-            if (isset($entity->getOptions()[self::OPTION_EXCLUDE]) && $entity->getOptions()[self::OPTION_EXCLUDE]) {
-                continue;
-            }
+        foreach ($this->children as $key => $child) {
 
-            if ($entity instanceof IElement) {
-                $cleanData[$key] = $entity->isValid() ? $entity->getValue() : null;
-            } elseif ($entity instanceof IForm) {
-                $cleanData[$key] = $entity->getData();
-            } elseif ($entity instanceof IFieldset) {
-                $cleanData += $entity->getData();
+            if ($child instanceof IFormElement) {
+                $cleanData[$key] = $child->isValid() ? $child->getValue() : null;
+
+            } elseif ($child instanceof IFieldset) {
+                $cleanData[$key] = $child->getData();
+
             } else {
                 throw new RuntimeException($this->translate(
-                        'Element "{name}" has not implemented IElement or IFieldset.',
-                        ['name' => $entity->getName()]
+                        'Unknown element "{name}" type.',
+                        ['name' => $child->getName()]
                     )
                 );
             }
@@ -148,9 +147,9 @@ class Fieldset extends FormEntity implements \Iterator, IFieldset, ILocalizable
     {
         $messages = [];
 
-        foreach ($this->elements as $element) {
-            if ($element->getMessages()) {
-                $messages[$element->getName()] = $element->getMessages();
+        foreach ($this->children as $child) {
+            if ($messages = $child->getMessages()) {
+                $messages[$child->getName()] = $messages;
             }
         }
 
@@ -164,8 +163,12 @@ class Fieldset extends FormEntity implements \Iterator, IFieldset, ILocalizable
     {
         $isValid = true;
 
-        foreach ($this->elements as $element) {
-            $isValid = $isValid && $element->isValid();
+        if (!$this->getIsSubmitted()) {
+            return $isValid;
+        }
+
+        foreach ($this->children as $child) {
+            $isValid = $isValid && $child->isValid();
         }
 
         return $isValid;
@@ -176,7 +179,7 @@ class Fieldset extends FormEntity implements \Iterator, IFieldset, ILocalizable
      */
     public function current()
     {
-        return current($this->elements);
+        return current($this->children);
     }
 
     /**
@@ -184,7 +187,7 @@ class Fieldset extends FormEntity implements \Iterator, IFieldset, ILocalizable
      */
     public function next()
     {
-        return next($this->elements);
+        return next($this->children);
     }
 
     /**
@@ -192,7 +195,7 @@ class Fieldset extends FormEntity implements \Iterator, IFieldset, ILocalizable
      */
     public function key()
     {
-        return key($this->elements);
+        return key($this->children);
     }
 
     /**
@@ -200,7 +203,7 @@ class Fieldset extends FormEntity implements \Iterator, IFieldset, ILocalizable
      */
     public function valid()
     {
-        return key($this->elements) !== null;
+        return key($this->children) !== null;
     }
 
     /**
@@ -208,18 +211,30 @@ class Fieldset extends FormEntity implements \Iterator, IFieldset, ILocalizable
      */
     public function rewind()
     {
-        return reset($this->elements);
+        return reset($this->children);
     }
 
     /**
-     * Выполняет клонирование элементов группы при клонировании группы полей.
+     * {@inheritdoc}
      */
-    public function __clone()
+    public function getDataAdapter()
     {
-        parent::__clone();
-
-        foreach ($this->elements as $key => $element) {
-            $this->elements[$key] = clone $element;
+        if (!$this->getParent()) {
+            throw new RuntimeException('Cannot get form data adapter. Parent form is unknown');
         }
+
+        return $this->getParent()->getDataAdapter();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIsSubmitted()
+    {
+        if (!$this->getParent()) {
+            throw new RuntimeException('Cannot detect whether the element was submitted. Parent form is unknown.');
+        }
+
+        return $this->getParent()->getIsSubmitted();
     }
 }

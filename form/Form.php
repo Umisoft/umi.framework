@@ -9,56 +9,30 @@
 
 namespace umi\form;
 
-use umi\event\IEvent;
-use umi\event\IEventObservant;
-use umi\event\TEventObservant;
-use umi\form\binding\IDataBinding;
-use umi\form\fieldset\Fieldset;
-use umi\i18n\ILocalizable;
-use umi\i18n\TLocalizable;
+use umi\form\adapter\IDataAdapter;
+use umi\form\exception\RuntimeException;
+use umi\form\fieldset\FieldSet;
 
 /**
  * Класс форм.
  */
-class Form extends Fieldset implements IEventObservant, IForm, \Iterator, ILocalizable
+class Form extends FieldSet implements IForm
 {
-
-    use TEventObservant;
-
     /**
      * Тип элемента формы.
      */
     const TYPE_NAME = 'form';
-
     /**
-     * @var IDataBinding $bindObject биндинг объект
+     * @var IDataAdapter $dataAdapter адаптер данных формы
      */
-    protected $bindObject;
-
-    /**
-     * Конструктор.
-     * @param string $name имя формы
-     * @param array $attributes
-     * @param array $options опции
-     * @param array $elements
-     */
-    public function __construct($name, $attributes = [], array $options = [], array $elements = [])
-    {
-        parent::__construct($name, $attributes + ['method' => 'get'], $options, $elements);
-
-        foreach ($this->elements as $element) {
-            if ($element instanceof IForm) {
-                $element->setIsSubForm(true);
-            }
-        }
-    }
+    protected $dataAdapter;
 
     /**
      * {@inheritdoc}
      */
     public function getAction()
     {
-        return isset($this->attributes['action']) ? $this->attributes['action'] : null;
+        return $this->getAttribute('action');
     }
 
     /**
@@ -66,34 +40,31 @@ class Form extends Fieldset implements IEventObservant, IForm, \Iterator, ILocal
      */
     public function getMethod()
     {
-        return isset($this->attributes['method']) ? $this->attributes['method'] : null;
+        return $this->getAttribute('method');
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setIsSubForm($isSubform)
+    public function setAction($action)
     {
-        foreach ($this->elements as $element) {
-            $name = $element->getName();
-            $element->getAttributes()['name'] = $isSubform ? $this->getSubformElementName($name) : $name;
-
-            if ($element instanceof IForm) {
-                $element->setIsSubForm($isSubform);
-            }
-        }
+        return $this->setAttribute('action', $action);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setData(array $data)
+    public function setMethod($method)
     {
-        parent::setData($data);
+        return $this->setAttribute('method', $method);
+    }
 
-        if ($this->bindObject && $this->isValid()) {
-            $this->bindObject->setData(parent::getData());
-        }
+    /**
+     * {@inheritdoc}
+     */
+    public function setDataAdapter(IDataAdapter $dataAdapter)
+    {
+        $this->dataAdapter = $dataAdapter;
 
         return $this;
     }
@@ -101,52 +72,29 @@ class Form extends Fieldset implements IEventObservant, IForm, \Iterator, ILocal
     /**
      * {@inheritdoc}
      */
-    public function getData()
+    public function getDataAdapter()
     {
-        if ($this->bindObject) {
-            return $this->bindObject;
+        if ($parent = $this->getParent()) {
+            return $parent->getDataAdapter();
         }
 
-        return parent::getData();
+        if (!$this->dataAdapter) {
+            throw new RuntimeException('Form data adapter is not set');
+        }
+
+        return $this->dataAdapter;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function bindObject(IDataBinding $object)
+    public function getIsSubmitted()
     {
-        $this->setData($object->getData());
-
-        $this->bindObject = $object;
-
-        if ($this->bindObject instanceof IEventObservant) {
-            $this->subscribeTo($this->bindObject);
+        if ($parent = $this->getParent()) {
+            return $parent->getIsSubmitted();
         }
 
-        return $this;
+        return $this->isSubmitted;
     }
 
-    /**
-     * Возвращает заданное имя, как имя элемента дочерней формы.
-     * @param string $name имя элемента
-     * @return string
-     */
-    protected function getSubformElementName($name)
-    {
-        $formName = isset($this->attributes['name']) ? $this->attributes['name'] : $this->getName();
-
-        return $formName . '[' . $name . ']';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function bindLocalEvents() {
-        $this->bindEvent(
-            IDataBinding::EVENT_UPDATE,
-            function (IEvent $e) {
-                $this->setData($e->getParams() ? : $this->bindObject->getData());
-            }
-        );
-    }
 }

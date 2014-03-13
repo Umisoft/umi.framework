@@ -9,13 +9,16 @@
 
 namespace umi\templating\helper\form;
 
-use umi\form\element\Button;
-use umi\form\element\IElement;
-use umi\form\element\IMultiElement;
+use umi\form\element\Checkbox;
+use umi\form\element\CheckboxGroup;
+use umi\form\element\IFormButton;
+use umi\form\element\IFormInput;
+use umi\form\element\MultiSelect;
 use umi\form\element\Select;
-use umi\form\element\Submit;
 use umi\form\element\Textarea;
+use umi\form\fieldset\IFieldSet;
 use umi\form\IForm;
+use umi\form\IFormEntity;
 use umi\templating\exception\InvalidArgumentException;
 
 /**
@@ -46,49 +49,98 @@ class FormHelper
     }
 
     /**
-     * Генерирует элемент формы. Выбирает нужный помощник шаблонов
-     * в зависимости от типа элемента.
-     * @param IElement $element элемент формы
-     * @throws InvalidArgumentException если элемент не может быть выведен.
+     * Генерирует открывающий тег fieldset.
+     * @param IFieldSet $fieldSet набор сущностей
      * @return string сгенерированный тэг
      */
-    public function formElement(IElement $element)
+    public function openFieldSet(IFieldSet $fieldSet)
     {
-        if ($element instanceof Textarea) {
-            return $this->formTextarea($element);
-        } elseif ($element instanceof Select) {
-            return $this->formSelect($element);
-        } elseif ($element instanceof Submit) {
-            return $this->formInput($element);
-        } elseif ($element instanceof Button) {
-            // todo: is it right?
-            throw new InvalidArgumentException("Button element should be rendered without Helper.");
-        } else {
-            return $this->formInput($element);
+        $attributes = $this->buildAttributes($fieldSet->getAttributes());
+
+        $html = '<fieldset ' . $attributes . '>';
+
+        if ($label = $fieldSet->getLabel()) {
+            $html .= '<legend>' . $label . '</legend>';
         }
+
+        return $html;
+    }
+
+    /**
+     * Генерирует закрывающий тег fieldset.
+     * @return string сгенерированный тэг
+     */
+    public function closeFieldSet()
+    {
+        return '</fieldset>';
     }
 
     /**
      * Генерирует элемент формы. Выбирает нужный помощник шаблонов
-     * в зависимости от типа элемента.
-     * @param IMultiElement $element элемент формы
+     * в зависимости от типа сущность.
+     * @param IFormEntity $element сущность формы
+     * @throws InvalidArgumentException если сущность не может быть выведена.
      * @return string сгенерированный тэг
      */
-    public function formSelect(IMultiElement $element)
+    public function formElement(IFormEntity $element)
     {
-        $attributes = $this->buildAttributes($element->getAttributes());
-        $html = '<select ' . $attributes . ' value="' . $element->getValue() . '">';
 
-        foreach ($element->getChoices() as $value => $label) {
+        switch(true)
+        {
+            case $element instanceof Textarea: {
+                return $this->formTextarea($element);
+            }
+            case $element instanceof Select: {
+                return $this->formSelect($element);
+            }
+            case $element instanceof CheckboxGroup: {
+                return $this->formCheckboxGroup($element);
+            }
+            case $element instanceof Checkbox: {
+                return $this->formCheckbox($element);
+            }
+            case $element instanceof IFormButton: {
+                return $this->formButton($element);
+            }
+            case $element instanceof IFormInput: {
+                return $this->formInput($element);
+            }
+            default:
+                throw new InvalidArgumentException(
+                    sprintf('Cannot build element "%s". Element type is unknown.', $element->getName())
+                );
+        }
+    }
+
+    /**
+     * Генерирует <select> элемент формы.
+     * @param Select $select элемент формы
+     * @return string сгенерированный тэг
+     */
+    public function formSelect(Select $select)
+    {
+        $attributes = array_merge(
+            ['name' => $select->getElementName()],
+            $select->getAttributes()
+        );
+
+        if ($select instanceof MultiSelect) {
+            $attributes['multiple'] = 'multiple';
+        }
+
+        $html = '<select ' . $this->buildAttributes($attributes) . ' >';
+        $selected = (array) $select->getValue();
+
+        foreach ($select->getChoices() as $value => $label) {
             $attr = ['value' => $value];
 
-            if ($value == $element->getValue()) {
+            if (in_array($value, $selected)) {
                 $attr += [
                     'selected' => 'selected'
                 ];
             }
 
-            $html .= '<option ' . $this->buildAttributes(new \ArrayObject($attr)) . '>' . $label . '</option>';
+            $html .= '<option ' . $this->buildAttributes($attr) . '>' . $label . '</option>';
         }
 
         $html .= '</select>';
@@ -97,36 +149,124 @@ class FormHelper
     }
 
     /**
+     * Формирует группу checkbox.
+     * @param CheckboxGroup $checkboxGroup элемент формы
+     * @return string сгенерированные тэги
+     */
+    public function formCheckboxGroup(CheckboxGroup $checkboxGroup)
+    {
+        $attributes = array_merge(
+            $checkboxGroup->getAttributes(),
+            [
+                'name' => $checkboxGroup->getElementName(),
+                'type' => $checkboxGroup->getInputType()
+            ]
+        );
+
+        $html = '';
+        $selected = (array) $checkboxGroup->getValue();
+
+        foreach ($checkboxGroup->getChoices() as $value => $label) {
+            $attr = ['value' => $value];
+
+            if (in_array($value, $selected)) {
+                $attr += [
+                    'checked' => 'checked'
+                ];
+            }
+
+            $html .= '<label><input ' . $this->buildAttributes($attributes + $attr) .' />'. $label .'</label>';
+
+        }
+
+        return $html;
+    }
+
+    /**
      * Генерирует <textarea> элемент формы.
-     * @param IElement $element элемент формы
+     * @param Textarea $textarea элемент формы
      * @return string сгенерированный тэг
      */
-    public function formTextarea(IElement $element)
+    public function formTextarea(Textarea $textarea)
     {
-        $attributes = $this->buildAttributes($element->getAttributes());
+        $attributes = array_merge(
+            $textarea->getAttributes(),
+            ['name' => $textarea->getElementName()]
+        );
 
-        return '<textarea ' . $attributes . '>' . $element->getValue() . '</textarea>';
+        return '<textarea ' . $this->buildAttributes($attributes) . ' >' . $textarea->getValue() . '</textarea>';
     }
 
     /**
      * Генерирует <input> элемент формы.
-     * @param IElement $element элемент формы
+     * @param IFormInput $input элемент формы
      * @return string сгенерированный тэг
      */
-    public function formInput(IElement $element)
+    public function formInput(IFormInput $input)
     {
-        return $this->buildInput(
-            $element->getAttributes(),
-            $element->getValue()
+        $attributes = array_merge(
+            $input->getAttributes(),
+            [
+                'type' => $input->getInputType(),
+                'name' => $input->getElementName(),
+                'value' => $input->getValue()
+            ]
         );
+
+        return '<input ' . $this->buildAttributes($attributes) .' />';
+    }
+
+    /**
+     * Генерирует <input type="checkbox"> элемент формы.
+     * @param Checkbox $input элемент формы
+     * @return string сгенерированный тэг
+     */
+    public function formCheckbox(Checkbox $input)
+    {
+        $attributes = array_merge(
+            $input->getAttributes(),
+            [
+                'type' => $input->getInputType(),
+                'name' => $input->getElementName(),
+                'value' => 1
+            ]
+        );
+
+        if ($input->getValue()) {
+            $attributes['checked'] = 'checked';
+        }
+        $html = '<input type="hidden" value="0" name="' . $input->getElementName() . '"/>';
+        $html .= '<input ' . $this->buildAttributes($attributes) .' />';
+
+        return $html;
+    }
+
+    /**
+     * Генерирует <button> элемент формы.
+     * @param IFormButton $button элемент формы
+     * @return string сгенерированный тэг
+     */
+    public function formButton(IFormButton $button)
+    {
+        $attributes = array_merge(
+            $button->getAttributes(),
+            [
+                'type' => $button->getButtonType(),
+                'name' => $button->getElementName(),
+                'value' => $button->getValue()
+            ]
+        );
+
+        return '<button ' . $this->buildAttributes($attributes) . ' />';
+
     }
 
     /**
      * Генерирует строку аттрибутов для элемента.
-     * @param \ArrayObject $attributes массив аттрибутов элемента
+     * @param array $attributes массив аттрибутов элемента
      * @return string
      */
-    protected function buildAttributes(\ArrayObject $attributes)
+    protected function buildAttributes(array $attributes)
     {
         $strings = [];
 
@@ -140,14 +280,4 @@ class FormHelper
         return implode(' ', $strings);
     }
 
-    /**
-     * Создает <input> элемент формы по аттрибутам и значению.
-     * @param \ArrayObject $attributes аттрибуты
-     * @param mixed $value значение
-     * @return string элемент формы
-     */
-    private function buildInput(\ArrayObject $attributes, $value)
-    {
-        return '<input ' . $this->buildAttributes($attributes) . ' value="' . $value . '" />';
-    }
 }

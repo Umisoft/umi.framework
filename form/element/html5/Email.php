@@ -9,14 +9,15 @@
 
 namespace umi\form\element\html5;
 
-use umi\form\element\Text;
+use umi\form\element\BaseFormElement;
+use umi\form\element\IFormInput;
 use umi\validation\IValidatorFactory;
 
 /**
  * HTML5 элемент формы - Email (email).
  * @example <input type="email" />
  */
-class Email extends Text
+class Email extends BaseFormElement implements IFormInput
 {
     /**
      * Тип элемента.
@@ -24,20 +25,20 @@ class Email extends Text
     const TYPE_NAME = 'email';
 
     /**
-     * @var array $attributes аттрибуты
+     * {@inheritdoc}
      */
-    protected $attributes = [
-        'type' => self::TYPE_NAME
-    ];
+    public function getValidators()
+    {
+        $validators = parent::getValidators();
+
+        return $validators->prependValidator($this->createValidator(IValidatorFactory::TYPE_EMAIL));
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function __construct($name, array $attributes = [], array $options = [])
+    public function getInputType()
     {
-        parent::__construct($name, $attributes, $options);
-
-        $this->getValidators()
-            ->prependValidator($this->createValidator(IValidatorFactory::TYPE_EMAIL));
+        return self::TYPE_NAME;
     }
 }

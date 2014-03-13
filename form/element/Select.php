@@ -10,10 +10,10 @@
 namespace umi\form\element;
 
 /**
- * Элемент формы - поле выбора(select).
+ * Элемент формы select.
  * @example <select name="name"></select>
  */
-class Select extends BaseMultiElement
+class Select extends BaseChoiceElement
 {
     /**
      * Тип элемента.

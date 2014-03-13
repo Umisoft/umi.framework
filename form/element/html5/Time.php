@@ -9,13 +9,14 @@
 
 namespace umi\form\element\html5;
 
-use umi\form\element\Text;
+use umi\form\element\BaseFormElement;
+use umi\form\element\IFormInput;
 
 /**
  * HTML5 элемент формы - Время (time).
  * @example <input type="time" />
  */
-class Time extends Text
+class Time extends BaseFormElement implements IFormInput
 {
     /**
      * Тип элемента.
@@ -23,9 +24,10 @@ class Time extends Text
     const TYPE_NAME = 'time';
 
     /**
-     * @var array $attributes аттрибуты
+     * {@inheritdoc}
      */
-    protected $attributes = [
-        'type' => self::TYPE_NAME
-    ];
+    public function getInputType()
+    {
+        return self::TYPE_NAME;
+    }
 }

@@ -9,46 +9,55 @@
 
 namespace umi\form;
 
+use umi\form\adapter\IDataAdapter;
+use umi\form\exception\RuntimeException;
+use umi\form\fieldset\IFieldSet;
+
 /**
- * Интерфейс HTML элемента.
+ * Интерфейс сущности формы.
  */
 interface IFormEntity
 {
     /**
-     * Опция элемента, отключающая его в выводе IFieldset::getData().
-     */
-    const OPTION_EXCLUDE = 'exclude';
-
-    /**
-     * Возвращает имя элемента.
+     * Возвращает имя сущности.
      * @return string
      */
     public function getName();
 
     /**
-     * Возвращает название элемента формы.
+     * Возвращает label для сущности.
      * @return string
      */
     public function getLabel();
 
     /**
-     * Устанавливает название элемента формы.
+     * Устанавливает label для сущности.
      * @param string $label
-     * @return string
+     * @return self
      */
     public function setLabel($label);
 
     /**
-     * Возвращает все аттрибуты в виде ассоциативного массива.
-     * @return \ArrayObject
+     * Устанавливает значение html-атрибута.
+     * @param string $attributeName имя атрибута
+     * @param mixed $value
+     * @return self
      */
-    public function getAttributes();
+    public function setAttribute($attributeName, $value);
 
     /**
-     * Возвращает массив опций.
-     * @return \ArrayObject
+     * Возвращает значение html-атрибута.
+     * @param string $attributeName имя атрибута
+     * @param mixed $default значение по умолчанию
+     * @return mixed
      */
-    public function getOptions();
+    public function getAttribute($attributeName, $default = null);
+
+    /**
+     * Возвращает все аттрибуты в виде ассоциативного массива.
+     * @return array
+     */
+    public function getAttributes();
 
     /**
      * Возвращает сообщения валидации.
@@ -57,8 +66,35 @@ interface IFormEntity
     public function getMessages();
 
     /**
-     * Возвращает значение валидности элемента.
+     * Возвращает значение валидности сущности.
      * @return bool
      */
     public function isValid();
+
+    /**
+     * Устанавливает родительскую сущность.
+     * @param IFieldSet $parent
+     * @return self
+     */
+    public function setParent(IFieldSet $parent = null);
+
+    /**
+     * Возвращает родительскую сущность.
+     * @return IFieldSet|null
+     */
+    public function getParent();
+
+    /**
+     * Возвращает адаптер данных формы, которой принадлежит сущность.
+     * @throws RuntimeException если невозможно получить адаптер
+     * @return IDataAdapter
+     */
+    public function getDataAdapter();
+
+    /**
+     * Проверяет были ли выставлены данные в форму, которой принадлежит сущность.
+     * @throws RuntimeException если невозможно выполнить проверку
+     * @return bool
+     */
+    public function getIsSubmitted();
 }

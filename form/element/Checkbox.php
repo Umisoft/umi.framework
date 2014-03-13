@@ -13,7 +13,7 @@ namespace umi\form\element;
  * Элемент формы - флаг(checkbox).
  * @example <input type="checkbox" />
  */
-class Checkbox extends BaseElement
+class Checkbox extends BaseFormElement implements IFormInput
 {
     /**
      * Тип элемента.
@@ -21,32 +21,26 @@ class Checkbox extends BaseElement
     const TYPE_NAME = 'checkbox';
 
     /**
-     * @var array $attributes аттрибуты
-     */
-    protected $attributes = [
-        'type'  => 'checkbox',
-        'value' => 1
-    ];
-
-    /**
      * {@inheritdoc}
      */
     public function getValue()
     {
-        return parent::getValue() ? $this->attributes['value'] : false;
+        return parent::getValue() ? 1 : 0;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setValue($value, $isRaw = false)
+    public function setValue($value)
     {
-        if ((bool) $value) {
-            $this->attributes['checked'] = 'checked';
-        } elseif (isset($this->attributes['checked'])) {
-            unset($this->attributes['checked']);
-        }
+        return parent::setValue((bool) $value);
+    }
 
-        return parent::setValue((bool) $value, $isRaw);
+    /**
+     * {@inheritdoc}
+     */
+    public function getInputType()
+    {
+        return self::TYPE_NAME;
     }
 }

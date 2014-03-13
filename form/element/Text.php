@@ -13,7 +13,7 @@ namespace umi\form\element;
  * Элемент формы - Текстовое поле(text).
  * @example <input type="text" />
  */
-class Text extends BaseElement
+class Text extends BaseFormElement implements IFormInput
 {
     /**
      * Тип элемента.
@@ -21,9 +21,10 @@ class Text extends BaseElement
     const TYPE_NAME = 'text';
 
     /**
-     * @var array $attributes аттрибуты
+     * {@inheritdoc}
      */
-    protected $attributes = [
-        'type' => 'text'
-    ];
+    public function getInputType()
+    {
+        return self::TYPE_NAME;
+    }
 }

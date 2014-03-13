@@ -18,26 +18,10 @@ interface IEntityFactory
 {
 
     /**
-     * Создает элементы формы на основе конфигурации.
-     * @param array $config конфигурация
-     * @return IFormEntity[] элементы формы
-     */
-    public function createEntities(array $config);
-
-    /**
-     * Создает элемент формы. Это может быть как просто элемент,
-     * так и коллекция элементов.
-     * @param string $name имя элемента
-     * @param array $config конфигурация элемента, включая аттрибуты и опции
-     * @throws OutOfBoundsException если тип элемента не поддерживается
-     * @return IFormEntity
-     */
-    public function createEntity($name, array $config);
-
-    /**
      * Создает форму на основе конфигурации.
      * @param array $config конфигурация
+     * @param array|object $object объект, с которым связана форма
      * @return IForm
      */
-    public function createForm(array $config);
+    public function createForm(array $config, $object = null);
 }

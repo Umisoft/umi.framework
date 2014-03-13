@@ -14,6 +14,7 @@ use umi\i18n\ILocalizable;
 use umi\i18n\TLocalesAware;
 use umi\i18n\TLocalizable;
 use umi\orm\collection\ICollection;
+use umi\orm\exception\InvalidArgumentException;
 use umi\orm\exception\NonexistentEntityException;
 use umi\orm\exception\ReadOnlyEntityException;
 use umi\orm\exception\RuntimeException;
@@ -28,6 +29,7 @@ use umi\orm\object\property\IProperty;
 use umi\orm\object\property\IPropertyFactory;
 use umi\orm\persister\IObjectPersisterAware;
 use umi\orm\persister\TObjectPersisterAware;
+use umi\orm\selector\ISelector;
 
 /**
  * Базовый объект данных.
@@ -378,6 +380,32 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
     /**
      * {@inheritdoc}
      */
+    public function getPropertyByPath($propPath, $localeId = null)
+    {
+        $propNameParts = explode(ISelector::FIELD_SEPARATOR, $propPath);
+
+        $propName = array_pop($propNameParts);
+        if (!count($propNameParts)) {
+            return $this->getProperty($propName, $localeId);
+        }
+
+        $object = $this->getValueByPath(implode(ISelector::FIELD_SEPARATOR, $propNameParts));
+        if (!$object instanceof IObject) {
+
+            throw new InvalidArgumentException(
+                $this->translate(
+                    'Cannot resolve property path "{path}".',
+                    ['path' => $propPath]
+                )
+            );
+        }
+
+        return $object->getProperty($propName, $localeId);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getValue($propName, $localeId = null)
     {
         if (!$this->hasProperty($propName, $localeId)) {
@@ -393,6 +421,43 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
             $value = $this->getLocalizedValue($property, $localeId);
         } else {
             $value = $property->getValue();
+        }
+
+        return $value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getValueByPath($propPath, $localeId = null)
+    {
+        $propNameParts = explode(ISelector::FIELD_SEPARATOR, $propPath);
+
+        $value = $this;
+        for ($i = 0; $i < count($propNameParts); $i++) {
+
+            if (!$value->hasProperty($propNameParts[$i])) {
+                return null;
+            }
+
+            $valueLocaleId = $localeId;
+            $field = $value->getProperty($propNameParts[$i])->getField();
+            if (!$field instanceof ILocalizableField || !$field->getIsLocalized()) {
+                $valueLocaleId = null;
+            }
+
+            $value = $value->getValue($propNameParts[$i], $valueLocaleId);
+            if (is_null($value)) return null;
+
+            if (($i < count($propNameParts) - 1) && !$value instanceof IObject) {
+                throw new InvalidArgumentException(
+                    $this->translate(
+                        'Cannot resolve property path "{path}".',
+                        ['path' => $propPath]
+                    )
+                );
+            }
+
         }
 
         return $value;
@@ -446,6 +511,31 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
         }
 
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setValueByPath($propPath, $value, $localeId = null)
+    {
+        $propNameParts = explode(ISelector::FIELD_SEPARATOR, $propPath);
+
+        $propName = array_pop($propNameParts);
+        if (!count($propNameParts)) {
+            return $this->setValue($propName, $value, $localeId);
+        }
+
+        $object = $this->getValueByPath(implode(ISelector::FIELD_SEPARATOR, $propNameParts));
+        if (!$object instanceof IObject) {
+            throw new InvalidArgumentException(
+                $this->translate(
+                    'Cannot resolve property path "{path}".',
+                    ['path' => $propPath]
+                )
+            );
+        }
+
+        return $object->setValue($value, $localeId);
     }
 
     /**

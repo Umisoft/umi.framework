@@ -35,25 +35,24 @@ class CSRF extends Hidden implements ILocalizable, ISessionAware
      * @var string $token CSRF токен
      */
     protected $token;
+    /**
+     * @var string $value значение токена из формы
+     */
+    protected $value;
 
     /**
      * {@inheritdoc}
      */
-    public function isValid()
-    {
-        return $this->token == parent::getValue();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setValue($value, $isRaw = false)
+    public function setValue($value)
     {
         if (!$this->token) {
             $this->initToken();
         }
 
-        parent::setValue($value, $isRaw);
+        $value = $this->filter($value);
+        $this->value = $value;
+
+        return $this;
     }
 
     /**
@@ -66,6 +65,14 @@ class CSRF extends Hidden implements ILocalizable, ISessionAware
         }
 
         return $this->token;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function validate($value)
+    {
+        return $this->token == $this->value;
     }
 
     /**

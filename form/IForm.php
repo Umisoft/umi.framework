@@ -9,14 +9,13 @@
 
 namespace umi\form;
 
-use umi\form\binding\IDataBinding;
-use umi\form\fieldset\IFieldset;
+use umi\form\adapter\IDataAdapter;
+use umi\form\fieldset\IFieldSet;
 
 /**
  * Интерфейс формы.
- * Форма является именнованой группой полей.
  */
-interface IForm extends IFieldset
+interface IForm extends IFieldSet
 {
     /**
      * Возвращает action формы.
@@ -25,29 +24,30 @@ interface IForm extends IFieldset
     public function getAction();
 
     /**
+     * Устанавливает action формы.
+     * @param string $action
+     * @return self
+     */
+    public function setAction($action);
+
+    /**
      * Возвращает метод отправки формы.
      * @return string
      */
     public function getMethod();
 
     /**
-     * Выставляет является ли данная форма - подформой.
-     * Вызов данного метода вызывает перестраивание имен элементов формы.
-     * @param bool $isSubform является ли форма подформой
+     * Устанавливает метод формы.
+     * @param string $method
      * @return self
      */
-    public function setIsSubForm($isSubform);
+    public function setMethod($method);
 
     /**
-     * Устанавливает связанный объект к форме.
-     * @param IDataBinding $object объект
+     * Устанавливает адаптер данных для формы.
+     * @param IDataAdapter $dataAdapter
      * @return self
      */
-    public function bindObject(IDataBinding $object);
+    public function setDataAdapter(IDataAdapter $dataAdapter);
 
-    /**
-     * Возвращает установленные данные или установленный в форму объект.
-     * @return array|object
-     */
-    public function getData();
 }

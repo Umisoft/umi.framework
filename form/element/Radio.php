@@ -13,7 +13,7 @@ namespace umi\form\element;
  * Элемент формы - Переключатель(radio).
  * @example <input type="radio" />
  */
-class Radio extends BaseMultiElement
+class Radio extends BaseChoiceElement implements IFormInput
 {
     /**
      * Тип элемента.
@@ -21,9 +21,10 @@ class Radio extends BaseMultiElement
     const TYPE_NAME = 'radio';
 
     /**
-     * @var array $attributes аттрибуты
+     * {@inheritdoc}
      */
-    protected $attributes = [
-        'type' => 'radio'
-    ];
+    public function getInputType()
+    {
+        return self::TYPE_NAME;
+    }
 }

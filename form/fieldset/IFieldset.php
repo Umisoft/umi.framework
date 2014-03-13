@@ -9,32 +9,41 @@
 
 namespace umi\form\fieldset;
 
-use umi\form\element\IElement;
+use Traversable;
+use umi\form\exception\OutOfBoundsException;
+use umi\form\exception\RuntimeException;
 use umi\form\IFormEntity;
 
 /**
- * Интерфейс группы полей.
- * Группа полей, в понимании данного компонента, набор разнотипных элементов: IElement или IFieldset.
- * Другими словами группа может хранить в себе элементы, группы полей либо под-формы.
+ * Интерфейс группы сущностей.
  */
-interface IFieldset extends IFormEntity, \Traversable
+interface IFieldSet extends IFormEntity/*, Traversable*/
 {
     /**
-     * Возвращает заданный элемент по имени.
-     * @param string $name имя элемента
-     * @return IFormEntity|IElement|IFieldset элемент
+     * Добавляет сущность.
+     * @param IFormEntity $entity
+     * @throws RuntimeException если сущность с заданным именем уже существует
+     * @return self
      */
-    public function getElement($name);
+    public function add(IFormEntity $entity);
 
     /**
-     * Устанавливает данные в форму.
+     * Возвращает сущность по имени.
+     * @param string $name
+     * @throws OutOfBoundsException если сущность с заданным именем не существует
+     * @return IFormEntity
+     */
+    public function get($name);
+
+    /**
+     * Устанавливает данные.
      * @param array $data данные
      * @return self
      */
     public function setData(array $data);
 
     /**
-     * Возвращает данные установленные в форму.
+     * Возвращает установленные данные.
      * @return array
      */
     public function getData();

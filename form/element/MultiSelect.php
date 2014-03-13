@@ -10,20 +10,25 @@
 namespace umi\form\element;
 
 /**
- * Элемент формы - флаги(checkbox).
- * @example <input name="name[]" type="checkbox" />
+ * Элемент формы select с несколькими значениями.
+ * @example <select name="name[]"></select>
  */
-class MultiCheckbox extends BaseMultiElement
+class MultiSelect extends Select
 {
+
     /**
      * Тип элемента.
      */
-    const TYPE_NAME = 'multi-checkbox';
+    const TYPE_NAME = 'multi-select';
 
     /**
-     * @var array $attributes аттрибуты
+     * {@inheritdoc}
      */
-    protected $attributes = [
-        'type' => 'checkbox'
-    ];
+    public function getElementName()
+    {
+        $name = parent::getElementName();
+
+        return $name . '[]';
+    }
 }
+ 
