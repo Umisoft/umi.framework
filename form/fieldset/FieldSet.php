@@ -21,7 +21,7 @@ use umi\i18n\TLocalizable;
 /**
  * Класс группы сущностей.
  */
-class FieldSet extends BaseFormEntity implements IFieldSet, Iterator, ILocalizable
+class FieldSet extends BaseFormEntity implements Iterator, IFieldSet, ILocalizable
 {
 
     use TLocalizable;
