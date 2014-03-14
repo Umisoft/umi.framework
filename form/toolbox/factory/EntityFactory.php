@@ -139,7 +139,10 @@ class EntityFactory implements IEntityFactory, IFactory
     {
         if (!isset($config['type'])) {
             throw new RuntimeException(
-                $this->translate('Cannot create form entity. Type is unknown.')
+                $this->translate(
+                    'Cannot create form entity "{name}". Type is unknown.',
+                    ['name' => $name]
+                )
             );
         }
 
