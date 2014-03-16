@@ -60,6 +60,12 @@ interface IFormEntity
     public function getAttributes();
 
     /**
+     * Возвращает все опции.
+     * @return array
+     */
+    public function getOptions();
+
+    /**
      * Возвращает сообщения валидации.
      * @return array
      */

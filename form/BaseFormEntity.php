@@ -107,6 +107,14 @@ abstract class BaseFormEntity implements IFormEntity
     /**
      * {@inheritdoc}
      */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function setParent(IFieldSet $parent = null)
     {
         $this->parent = $parent;
