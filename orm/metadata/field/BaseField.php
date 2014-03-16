@@ -35,10 +35,6 @@ abstract class BaseField implements IField, ILocalizable
      */
     protected $type;
     /**
-     * @var bool $isVisible флаг "видимое"
-     */
-    protected $isVisible = true;
-    /**
      * @var bool $isReadOnly флаг "доступно только на чтение"
      */
     protected $isReadOnly = false;
@@ -96,14 +92,6 @@ abstract class BaseField implements IField, ILocalizable
     public function getType()
     {
         return $this->type;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getIsVisible()
-    {
-        return $this->isVisible;
     }
 
     /**
@@ -187,9 +175,6 @@ abstract class BaseField implements IField, ILocalizable
     {
         $this->columnName = isset($config['columnName']) ? strval($config['columnName']) : $this->name;
 
-        if (isset($config['visible'])) {
-            $this->isVisible = (bool) $config['visible'];
-        }
         if (isset($config['readOnly'])) {
             $this->isReadOnly = (bool) $config['readOnly'];
         }

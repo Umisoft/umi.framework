@@ -24,6 +24,11 @@ use umi\validation\TValidationAware;
 abstract class BaseFormElement extends BaseFormEntity implements IFormElement, IValidationAware, IFilterAware
 {
 
+    /**
+     * Тип элемента.
+     */
+    const TYPE_NAME = 'text';
+
     use TValidationAware;
     use TFilterAware;
 

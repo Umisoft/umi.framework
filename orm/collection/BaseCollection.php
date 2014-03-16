@@ -70,7 +70,7 @@ abstract class BaseCollection
      * @param ISelectorFactory $selectorFactory фабрика селекторов
      * @param array $config конфигурация коллекции
      */
-    public function __construct($collectionName, IMetadata $metadata, ISelectorFactory $selectorFactory, array $config)
+    public function __construct($collectionName, IMetadata $metadata, ISelectorFactory $selectorFactory, array $config = [])
     {
         $this->name = $collectionName;
         $this->metadata = $metadata;

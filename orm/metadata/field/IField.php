@@ -75,12 +75,6 @@ interface IField
     public function getType();
 
     /**
-     * Возвращает признак видимости поля
-     * @return bool
-     */
-    public function getIsVisible();
-
-    /**
      * Проверяет, доступно ли поле на запись
      * @return boolean
      */
