@@ -271,6 +271,21 @@ class Component implements IComponent, IMvcEntityFactoryAware, IRouteAware, ILoc
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function getI18nDictionaryNames()
+    {
+        $pathParts = explode(self::PATH_SEPARATOR, $this->getPath());
+
+        $dictionaries = [];
+        for ($i = count($pathParts); $i > 0; $i--) {
+            $dictionaries[] = implode(self::PATH_SEPARATOR, array_slice($pathParts, 0, $i));
+        }
+
+        return $dictionaries;
+    }
+
+    /**
      * Возвращает фабрику контроллеров компонента.
      * @return IControllerFactory
      */

@@ -34,7 +34,7 @@ trait TLocalizable
      * данного компонента. Приоритет поиска соответсвует последовательности словарей в списке.
      * @return array
      */
-    protected function getI18nDictionaries()
+    protected function getI18nDictionaryNames()
     {
         $classParts = explode('\\', __CLASS__);
 
@@ -57,7 +57,7 @@ trait TLocalizable
      */
     protected function translate($message, array $placeholders = [], $localeId = null)
     {
-        $dictionaries = $this->getI18nDictionaries();
+        $dictionaries = $this->getI18nDictionaryNames();
         if ($this->traitTranslator) {
             return $this->traitTranslator->translate($dictionaries, $message, $placeholders, $localeId);
         }

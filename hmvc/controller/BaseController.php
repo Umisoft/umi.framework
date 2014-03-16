@@ -21,13 +21,16 @@ use umi\http\IHttpAware;
 use umi\http\Request;
 use umi\http\Response;
 use umi\http\THttpAware;
+use umi\i18n\ILocalizable;
+use umi\i18n\TLocalizable;
 
 /**
  * Базовый класс контроллера.
  */
-abstract class BaseController implements IController, IHttpAware
+abstract class BaseController implements IController, IHttpAware, ILocalizable
 {
     use THttpAware;
+    use TLocalizable;
 
     /**
      * @var string $name имя контроллера
@@ -75,6 +78,21 @@ abstract class BaseController implements IController, IHttpAware
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getI18nDictionaryNames()
+    {
+        $pathParts = explode(IComponent::PATH_SEPARATOR, $this->getComponent()->getPath());
+
+        $dictionaries = [];
+        for ($i = count($pathParts); $i > 0; $i--) {
+            $dictionaries[] = implode(IComponent::PATH_SEPARATOR, array_slice($pathParts, 0, $i));
+        }
+
+        return $dictionaries;
     }
 
     /**
