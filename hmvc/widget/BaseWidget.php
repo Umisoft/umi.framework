@@ -48,7 +48,7 @@ abstract class BaseWidget implements IWidget, ILocalizable
 
         $dictionaries = [];
         for ($i = count($pathParts); $i > 0; $i--) {
-            $dictionaries[] = implode(IComponent::PATH_SEPARATOR, array_slice($pathParts, 0, $i));
+            $dictionaries[] = implode('\\', array_slice($pathParts, 0, $i));
         }
 
         return $dictionaries;
