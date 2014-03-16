@@ -277,7 +277,7 @@ abstract class BaseProperty implements IProperty, ILocalizable, IFilterAware
      */
     protected function applyFieldFilters($propertyValue)
     {
-        $filterConfig = $this->field->getFilters();
+        $filterConfig = $this->field->getFiltersConfig();
         if (count($filterConfig)) {
             $filterCollection = $this->createFilterCollection($filterConfig);
             $propertyValue = $filterCollection->filter($propertyValue);

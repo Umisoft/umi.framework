@@ -112,16 +112,16 @@ interface IField
     public function getDefaultValue();
 
     /**
-     * Возвращает список валидаторов.
+     * Возвращает конфигурацию валидаторов.
      * @return array в формате [$validatorType => [$optionName => $value, ...], ...]
      */
-    public function getValidators();
+    public function getValidatorsConfig();
 
     /**
-     * Возвращает список фильтров.
+     * Возвращает конфигурацию фильтров.
      * @return array в формате [$filterType => [$optionName => $value, ...], ...]
      */
-    public function getFilters();
+    public function getFiltersConfig();
 
     /**
      * Проверяет, соответствует ли указанное значение типу поля.

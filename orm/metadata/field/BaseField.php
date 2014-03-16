@@ -55,13 +55,13 @@ abstract class BaseField implements IField, ILocalizable
      */
     protected $mutator;
     /**
-     * @var array $validators список валидаторов в формате [$validatorType => [$optionName => $value, ...], ...]
+     * @var array $validatorsConfig список валидаторов в формате [$validatorType => [$optionName => $value, ...], ...]
      */
-    protected $validators = [];
+    protected $validatorsConfig = [];
     /**
-     * @var array $filters список фильтров в формате [$filterType => [$optionName => $value, ...], ...]
+     * @var array $filtersConfig список фильтров в формате [$filterType => [$optionName => $value, ...], ...]
      */
-    protected $filters = [];
+    protected $filtersConfig = [];
 
     /**
      * Конструктор.
@@ -137,17 +137,17 @@ abstract class BaseField implements IField, ILocalizable
     /**
      * {@inheritdoc}
      */
-    public function getValidators()
+    public function getValidatorsConfig()
     {
-        return $this->validators;
+        return $this->validatorsConfig;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getFilters()
+    public function getFiltersConfig()
     {
-        return $this->filters;
+        return $this->filtersConfig;
     }
 
     /**
@@ -195,7 +195,7 @@ abstract class BaseField implements IField, ILocalizable
                     'Field validators configuration should be an array.'
                 ));
             }
-            $this->validators = $validators;
+            $this->validatorsConfig = $validators;
         }
 
         if (isset($config['filters'])) {
@@ -205,7 +205,7 @@ abstract class BaseField implements IField, ILocalizable
                     'Field filters configuration should be an array.'
                 ));
             }
-            $this->filters = $filters;
+            $this->filtersConfig = $filters;
         }
     }
 

@@ -203,7 +203,7 @@ class ObjectPersister implements IObjectPersister, ILocalizable, IValidationAwar
 
         foreach ($object->getAllProperties() as $property) {
             if (null != ($validators = $property->getField()
-                    ->getValidators())
+                    ->getValidatorsConfig())
             ) {
                 $validator = $this->createValidatorCollection($validators);
                 if (!$validator->isValid($property->getValue())) {
