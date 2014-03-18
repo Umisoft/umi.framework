@@ -16,7 +16,7 @@ interface ISwiftMailerAware
 {
     /**
      * Внедряет почтовую службу
-     * @param \umi\messages\SwiftMailer $mailerService
+     * @param SwiftMailer $mailerService
      */
     public function setSwiftMailer(SwiftMailer $mailerService);
 }

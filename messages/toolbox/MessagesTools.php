@@ -9,6 +9,7 @@
 
 namespace umi\messages\toolbox;
 
+use Swift_Transport;
 use umi\messages\exception\InvalidArgumentException;
 use umi\messages\exception\LogicException;
 use umi\messages\ISwiftMailerAware;
@@ -45,12 +46,13 @@ class MessagesTools implements IToolbox
     ];
 
     /**
-     * @var SwiftMailer $mailer почтовая служба
+     * Почтовая служба
+     * @var SwiftMailer $mailer
      */
     private $mailer;
     /**
-     * @var \Swift_Transport $transport транспорт для почтовой слудбы,
-     * может быть подменен до первого обращения к самой почтовой службе
+     * Транспорт для почтовой службы, может быть подменен до первого обращения к самой почтовой службе
+     * @var Swift_Transport $transport
      */
     private $transport;
 
@@ -92,8 +94,8 @@ class MessagesTools implements IToolbox
     }
 
     /**
-     * Создает сервис отправки почты в соответствии с настройками тулбокса
-     * @throws \umi\messages\exception\InvalidArgumentException
+     * Создает сервис отправки почты в соответствии с настройками тулбокса.
+     * @throws InvalidArgumentException
      * @return SwiftMailer
      */
     protected function createMailer()
@@ -111,8 +113,8 @@ class MessagesTools implements IToolbox
     }
 
     /**
-     * Создает почтовый транспорт согласно настройкам тулбокса
-     * @return \Swift_Transport
+     * Создает почтовый транспорт согласно настройкам тулбокса.
+     * @return Swift_Transport
      * @throws InvalidArgumentException
      */
     private function createTransportFromConfig()
@@ -157,8 +159,8 @@ class MessagesTools implements IToolbox
     }
 
     /**
-     * Возвращает почтовый транспорт
-     * @return \Swift_Transport
+     * Возвращает почтовый транспорт.
+     * @return Swift_Transport
      */
     protected function getTransport()
     {
@@ -169,11 +171,11 @@ class MessagesTools implements IToolbox
     }
 
     /**
-     * Устанавливает транспорт, выбрасывает исключение, если почтовый сервис уже работает
-     * @param \Swift_Transport $transport
+     * Устанавливает транспорт, выбрасывает исключение, если почтовый сервис уже работает.
+     * @param Swift_Transport $transport
      * @throws LogicException
      */
-    public function setTransport(\Swift_Transport $transport)
+    public function setTransport(Swift_Transport $transport)
     {
         if (!is_null($this->mailer)) {
             throw new LogicException("Cannot set up transport after mailer created");

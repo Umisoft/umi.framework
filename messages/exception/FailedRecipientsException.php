@@ -11,7 +11,7 @@ namespace umi\messages\exception;
 use Exception;
 
 /**
- * Исключение, возникающее при провале отправки письма хотя бы одному адресату
+ * Исключение, возникающее при провале отправки письма хотя бы одному адресату.
  */
 class FailedRecipientsException extends \RuntimeException
 {

@@ -17,14 +17,13 @@ use umi\messages\exception\RequiredDependencyException;
 trait TSwiftMailerAware
 {
     /**
-     * Ссылка на сервис отправки почты
+     * Внедренный сервис отправки почты
      * @var SwiftMailer $traitSwiftMailer
      */
     private $traitSwiftMailer;
 
     /**
-     * Внедряет почтовый сервис
-     * @param \umi\messages\SwiftMailer $mailer сервис отправки почты
+     * @see ISwiftMailerAware::setSwiftMailer()
      */
     public function setSwiftMailer(SwiftMailer $mailer)
     {
@@ -33,8 +32,8 @@ trait TSwiftMailerAware
 
     /**
      * Возвращает внедренный почтовый сервис
-     * @throws exception\RequiredDependencyException
-     * @return \umi\messages\SwiftMailer
+     * @throws RequiredDependencyException
+     * @return SwiftMailer
      */
     protected function getSwiftMailer()
     {
