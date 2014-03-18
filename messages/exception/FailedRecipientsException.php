@@ -13,7 +13,7 @@ use Exception;
 /**
  * Исключение, возникающее при провале отправки письма хотя бы одному адресату.
  */
-class FailedRecipientsException extends \RuntimeException
+class FailedRecipientsException extends \RuntimeException implements IException
 {
     /**
      * @var array $addresses

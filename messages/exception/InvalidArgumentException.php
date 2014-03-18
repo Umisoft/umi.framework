@@ -11,7 +11,7 @@ namespace umi\messages\exception;
 /**
  * Исключения, вызываемые неверной конфигурацией тулбокса
  */
-class InvalidArgumentException extends \InvalidArgumentException
+class InvalidArgumentException extends \InvalidArgumentException implements IException
 {
 
 }
