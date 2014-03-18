@@ -8,20 +8,21 @@
  */
 namespace umi\stemming;
 
+use umi\stemming\exception\RuntimeException;
+
 /**
- * Class TStemmingAware
+ * Реализация поведения {@link IStemmingAware}.
  */
 trait TStemmingAware
 {
     /**
+     * Сервис штемминга, внедренный в трейт
      * @var IStemming $traitStemming
      */
     private $traitStemming;
 
     /**
-     * Внедряет сервис штемминга
-     * @param IStemming $stemmingService
-     * @return void
+     * @see IStemmingAware::setStemming()
      */
     public function setStemming(IStemming $stemmingService)
     {
@@ -29,13 +30,14 @@ trait TStemmingAware
     }
 
     /**
-     * @throws \UnexpectedValueException
-     * @return \umi\stemming\IStemming
+     * Возвращает внедренный сервис штемминга.
+     * @throws RuntimeException
+     * @return IStemming
      */
     public function getStemming()
     {
         if (is_null($this->traitStemming)) {
-            throw new \UnexpectedValueException("Stemming service is not injected");
+            throw new RuntimeException("Stemming service is not injected");
         }
         return $this->traitStemming;
     }

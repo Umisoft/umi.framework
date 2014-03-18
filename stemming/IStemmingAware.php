@@ -9,14 +9,13 @@
 namespace umi\stemming;
 
 /**
- * Interface IStemmingAware
+ * Интерфейс объекта, требующего сервис штемминга.
  */
 interface IStemmingAware
 {
     /**
-     * Внедряет сервис штемминга
+     * Внедряет сервис штемминга.
      * @param IStemming $stemmingService
-     * @return void
      */
     public function setStemming(IStemming $stemmingService);
 }

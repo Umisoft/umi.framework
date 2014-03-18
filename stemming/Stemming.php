@@ -8,20 +8,24 @@
  */
 namespace umi\stemming;
 
+use phpMorphy;
+
 /**
- * Серви штемминга, декорирующий phpMorphy
+ * Сервис штемминга, декорирующий phpMorphy.
  */
 class Stemming implements IStemming
 {
     /**
-     * @var \phpMorphy $phpmorphy
+     * Декорируемый сервис phpMorphy
+     * @var phpMorphy $phpmorphy
      */
     private $phpmorphy;
 
     /**
-     * @param \phpMorphy $phpmorphy
+     * Конструктор. Внедряет phpMorphy
+     * @param phpMorphy $phpmorphy
      */
-    public function __construct(\phpMorphy $phpmorphy)
+    public function __construct(phpMorphy $phpmorphy)
     {
         $this->phpmorphy = $phpmorphy;
     }
@@ -74,7 +78,6 @@ class Stemming implements IStemming
         $partsOfSpeech = $this->phpmorphy->getPartOfSpeech($word);
         $commonRoot = $this->getCommonRoot($word, $type);
         $searchableRoot = mb_strlen($commonRoot, 'utf-8') >= $limit ? $commonRoot : $word;
-        //todo if word longer than limit, find shortest form
 
         if (count($partsOfSpeech) == 1) {
             return $searchableRoot;
