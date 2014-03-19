@@ -276,7 +276,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
      */
     protected function dispatchWidget(IComponent $component, $widgetUri, array $params, SplStack $callStack, $matchedWidgetUri = '')
     {
-        $routeResult = $component->getRouter()->match($widgetUri);
+        $routeResult = $component->getRouter()->match($widgetUri, $matchedWidgetUri);
         $routeMatches = $routeResult->getMatches();
 
         $context = $this->createDispatchContext($component);
@@ -332,7 +332,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
      */
     protected function processRequest(IComponent $component, $routePath, SplStack $callStack, $matchedRoutePath = '')
     {
-        $routeResult = $component->getRouter()->match($routePath);
+        $routeResult = $component->getRouter()->match($routePath, $matchedRoutePath);
         $routeMatches = $routeResult->getMatches();
 
         $context = $this->createDispatchContext($component);
