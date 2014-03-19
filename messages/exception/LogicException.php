@@ -11,7 +11,7 @@ namespace umi\messages\exception;
 /**
  * Исключения, вызываемые нарушениями логики использования API почтовой службы
  */
-class LogicException extends \LogicException
+class LogicException extends \LogicException implements IException
 {
 
 }

@@ -12,6 +12,6 @@ namespace umi\messages\exception;
 /**
  * Исключения, возникающие в случае, когда требуется обязательная зависимость.
  */
-class RequiredDependencyException extends DomainException
+class RequiredDependencyException extends DomainException implements IException
 {
 }

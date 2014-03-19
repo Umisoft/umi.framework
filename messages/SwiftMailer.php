@@ -8,11 +8,12 @@
  */
 namespace umi\messages;
 
+use Swift_Attachment;
+use Swift_Message;
 use umi\messages\exception\FailedRecipientsException;
 
 /**
- * Сервис отправки почты, расширяющий Swift_Mailer
- * {@link http://swiftmailer.org/}
+ * Сервис отправки почты, декоратор над {@link http://swiftmailer.org/ Swift_Mailer}
  */
 class SwiftMailer extends \Swift_Mailer
 {
@@ -39,7 +40,7 @@ class SwiftMailer extends \Swift_Mailer
      * @param string|array $to Адресат (1+); если не указано, используется опция delivery_address
      * @param string|array $from Отправитель (1+); если не указано, используется опция sender_address
      * @param string $charset Кодировка письма
-     * @throws exception\FailedRecipientsException
+     * @throws FailedRecipientsException
      * @return void
      */
     public function sendMail(
@@ -51,9 +52,9 @@ class SwiftMailer extends \Swift_Mailer
         $from = null,
         $charset = 'utf-8'
     ) {
-        $msg = new \Swift_Message($subject, $body, $contentType, $charset);
+        $msg = new Swift_Message($subject, $body, $contentType, $charset);
         foreach ($files as $attach) {
-            $msg->attach(\Swift_Attachment::fromPath($attach));
+            $msg->attach(Swift_Attachment::fromPath($attach));
         }
         $msg->setFrom(is_null($from) ? $this->defaultFrom : $from);
         $msg->setTo(is_null($to) ? $this->defaultTo : $to);
@@ -68,6 +69,7 @@ class SwiftMailer extends \Swift_Mailer
     /**
      * Устанавливает отправителей по умолчанию
      * @param string|array $defaultFrom
+     * @see Swift_Message::setFrom()
      */
     public function setDefaultFrom($defaultFrom)
     {
@@ -77,6 +79,7 @@ class SwiftMailer extends \Swift_Mailer
     /**
      * Устанавливает адресатов по умолчанию
      * @param string|array $defaultTo
+     * @see Swift_Message::setTo()
      */
     public function setDefaultTo($defaultTo)
     {

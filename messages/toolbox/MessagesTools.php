@@ -9,6 +9,10 @@
 
 namespace umi\messages\toolbox;
 
+use Swift_MailTransport;
+use Swift_SendmailTransport;
+use Swift_SmtpTransport;
+use Swift_Transport;
 use umi\messages\exception\InvalidArgumentException;
 use umi\messages\exception\LogicException;
 use umi\messages\ISwiftMailerAware;
@@ -30,27 +34,35 @@ class MessagesTools implements IToolbox
     use TToolbox;
 
     /**
-     * @var array $sessionStorage настройки почтовой службы
+     * @var array $mailerOptions настройки почтовой службы
      */
     public $mailerOptions = [
-        'encryption' => null,
-        'auth_mode' => null,
         'transport' => 'mail',
-        'host' => null,
-        'port' => null,
-        'username' => null,
-        'password' => null,
         'sender_address' => [],
         'delivery_address' => [],
     ];
 
+    public $transportOptions = [
+        'smtp' => [
+            'encryption' => null,
+            'auth_mode' => null,
+            'host' => null,
+            'port' => null,
+            'username' => null,
+            'password' => null,
+        ],
+        'mail' => [],
+        'sendmail' => [],
+    ];
+
     /**
-     * @var SwiftMailer $mailer почтовая служба
+     * Почтовая служба
+     * @var SwiftMailer $mailer
      */
     private $mailer;
     /**
-     * @var \Swift_Transport $transport транспорт для почтовой слудбы,
-     * может быть подменен до первого обращения к самой почтовой службе
+     * Транспорт для почтовой службы, может быть подменен до первого обращения к самой почтовой службе
+     * @var Swift_Transport $transport
      */
     private $transport;
 
@@ -92,8 +104,8 @@ class MessagesTools implements IToolbox
     }
 
     /**
-     * Создает сервис отправки почты в соответствии с настройками тулбокса
-     * @throws \umi\messages\exception\InvalidArgumentException
+     * Создает сервис отправки почты в соответствии с настройками тулбокса.
+     * @throws InvalidArgumentException
      * @return SwiftMailer
      */
     protected function createMailer()
@@ -111,8 +123,8 @@ class MessagesTools implements IToolbox
     }
 
     /**
-     * Создает почтовый транспорт согласно настройкам тулбокса
-     * @return \Swift_Transport
+     * Создает почтовый транспорт согласно настройкам тулбокса.
+     * @return Swift_Transport
      * @throws InvalidArgumentException
      */
     private function createTransportFromConfig()
@@ -120,45 +132,28 @@ class MessagesTools implements IToolbox
         if (!isset($this->mailerOptions['transport'])) {
             throw new InvalidArgumentException("Transport type is not specified");
         }
-        if ('smtp' === $this->mailerOptions['transport']) {
-            if (!isset($this->mailerOptions['host'])) {
-                throw new InvalidArgumentException("smtp mailer host must be specified");
-            }
-            $transport = \Swift_SmtpTransport::newInstance($this->mailerOptions['host']);
-            if (isset($this->mailerOptions['port'])) {
-                $transport->setPort($this->mailerOptions['port']);
-            }
-            if (isset($this->mailerOptions['encryption'])) {
-                $transport->setEncryption($this->mailerOptions['encryption']);
-            }
-            if (isset($this->mailerOptions['username'])) {
-                $transport->setUsername(isset($this->mailerOptions['username']));
-                if (isset($this->mailerOptions['password'])) {
-                    $transport->setPassword(isset($this->mailerOptions['password']));
-                }
-            }
-            if (isset($this->mailerOptions['auth_mode'])) {
-                $transport->setAuthMode(isset($this->mailerOptions['auth_mode']));
-            }
-            if (isset($this->mailerOptions['timeout'])) {
-                $transport->setTimeout(isset($this->mailerOptions['timeout']));
-            }
-            if (isset($this->mailerOptions['source_ip'])) {
-                $transport->setSourceIp(isset($this->mailerOptions['source_ip']));
-            }
-        } elseif ('sendmail' === $this->mailerOptions['transport']) {
-            $transport = \Swift_SendmailTransport::newInstance();
-        } elseif ('mail' === $this->mailerOptions['transport']) {
-            $transport = \Swift_MailTransport::newInstance();
-        } else {
-            throw new InvalidArgumentException("Transport type {$this->mailerOptions['transport']} is not supported");
+        switch ($this->mailerOptions['transport']) {
+            case 'smtp':
+                $transport = $this->createSmtpTransport();
+                break;
+            case 'mail':
+                $transport = $this->createMailTransport();
+                break;
+            case 'sendmail':
+                $transport = $this->createSendmailTransport();
+                break;
+            default:
+                throw new InvalidArgumentException(
+                    "Transport type {$this->mailerOptions['transport']} is not supported"
+                );
+                break;
         }
         return $transport;
     }
 
     /**
-     * Возвращает почтовый транспорт
-     * @return \Swift_Transport
+     * Возвращает почтовый транспорт.
+     * @return Swift_Transport
      */
     protected function getTransport()
     {
@@ -169,15 +164,71 @@ class MessagesTools implements IToolbox
     }
 
     /**
-     * Устанавливает транспорт, выбрасывает исключение, если почтовый сервис уже работает
-     * @param \Swift_Transport $transport
+     * Устанавливает транспорт, выбрасывает исключение, если почтовый сервис уже работает.
+     * @param Swift_Transport $transport
      * @throws LogicException
      */
-    public function setTransport(\Swift_Transport $transport)
+    public function setTransport(Swift_Transport $transport)
     {
         if (!is_null($this->mailer)) {
             throw new LogicException("Cannot set up transport after mailer created");
         }
         $this->transport = $transport;
+    }
+
+    /**
+     * @return Swift_SmtpTransport
+     * @throws InvalidArgumentException
+     */
+    protected function createSmtpTransport()
+    {
+        if (!isset($this->transportOptions['smtp'])) {
+            throw new InvalidArgumentException("SMTP mailer transport options not specified");
+        }
+        $transportOptions = $this->transportOptions['smtp'];
+
+        if (!isset($transportOptions['host'])) {
+            throw new InvalidArgumentException("SMTP mailer host not specified");
+        }
+        $transport = Swift_SmtpTransport::newInstance($transportOptions['host']);
+        if (isset($transportOptions['port'])) {
+            $transport->setPort($transportOptions['port']);
+        }
+        if (isset($transportOptions['encryption'])) {
+            $transport->setEncryption($transportOptions['encryption']);
+        }
+        if (isset($transportOptions['username'])) {
+            $transport->setUsername($transportOptions['username']);
+            if (isset($transportOptions['password'])) {
+                $transport->setPassword($transportOptions['password']);
+            }
+        }
+        if (isset($transportOptions['auth_mode'])) {
+            $transport->setAuthMode($transportOptions['auth_mode']);
+        }
+        if (isset($transportOptions['timeout'])) {
+            $transport->setTimeout($transportOptions['timeout']);
+        }
+        if (isset($transportOptions['source_ip'])) {
+            $transport->setSourceIp($transportOptions['source_ip']);
+            return $transport;
+        }
+        return $transport;
+    }
+
+    /**
+     * @return Swift_SendmailTransport
+     */
+    protected function createSendmailTransport()
+    {
+        return Swift_SendmailTransport::newInstance();
+    }
+
+    /**
+     * @return Swift_MailTransport
+     */
+    protected function createMailTransport()
+    {
+        return Swift_MailTransport::newInstance();
     }
 }
