@@ -279,7 +279,7 @@ class Component implements IComponent, IMvcEntityFactoryAware, IRouteAware, ILoc
 
         $dictionaries = [];
         for ($i = count($pathParts); $i > 0; $i--) {
-            $dictionaries[] = implode('\\', array_slice($pathParts, 0, $i));
+            $dictionaries[] = implode('.', array_slice($pathParts, 0, $i));
         }
 
         return $dictionaries;

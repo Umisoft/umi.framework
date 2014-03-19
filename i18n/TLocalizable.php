@@ -40,7 +40,7 @@ trait TLocalizable
 
         $dictionaries = [];
         for ($i = count($classParts); $i > 0; $i--) {
-            $dictionaries[] = implode('\\', array_slice($classParts, 0, $i));
+            $dictionaries[] = implode('.', array_slice($classParts, 0, $i));
         }
 
         return $dictionaries;
@@ -61,6 +61,7 @@ trait TLocalizable
         if ($this->traitTranslator) {
             return $this->traitTranslator->translate($dictionaries, $message, $placeholders, $localeId);
         }
+
         $replace = [];
         foreach ($placeholders as $key => $val) {
             $replace['{' . $key . '}'] = $val;
