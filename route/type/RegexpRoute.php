@@ -32,7 +32,7 @@ class RegexpRoute extends BaseRoute implements ILocalizable
     /**
      * {@inheritdoc}
      */
-    public function match($url)
+    public function match($url, $baseUrl = null)
     {
         return $this->matchRegExp("#^{$this->route}#", $url, $this->params);
     }

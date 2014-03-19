@@ -48,7 +48,7 @@ class SimpleRoute extends RegexpRoute implements IRoute, ILocalizable
     /**
      * {@inheritdoc}
      */
-    public function match($url)
+    public function match($url, $baseUrl = null)
     {
         $route = $this->getRegExpRoute($this->route);
 

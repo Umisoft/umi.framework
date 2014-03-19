@@ -30,9 +30,10 @@ interface IRoute
     /**
      * Проверяет соответствие части URL и правила маршрутизатора.
      * @param string $url часть адреса URL
+     * @param string|null $baseUrl базовый URL
      * @return int|bool длину совпадения, либо false, если совпадения нет
      */
-    public function match($url);
+    public function match($url, $baseUrl = null);
 
     /**
      * Собирает часть URL из параметров.

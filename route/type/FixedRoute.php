@@ -19,7 +19,7 @@ class FixedRoute extends BaseRoute implements IRoute
     /**
      * {@inheritdoc}
      */
-    public function match($url)
+    public function match($url, $baseUrl = null)
     {
         return (!$this->route || strpos($url, $this->route) === 0) ? strlen($this->route) : false;
     }

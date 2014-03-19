@@ -19,9 +19,10 @@ interface IRouter
     /**
      * Проверяет соответствие URL и правила маршрутизатора.
      * @param string $url часть адреса URL
+     * @param string|null $baseUrl базовый URL
      * @return IRouteResult параметры подходящего маршрута
      */
-    public function match($url);
+    public function match($url, $baseUrl = null);
 
     /**
      * Собирает URL из параметров.

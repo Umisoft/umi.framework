@@ -50,12 +50,12 @@ class Router implements IRouter, ILocalizable
     /**
      * {@inheritdoc}
      */
-    public function match($url)
+    public function match($url, $baseUrl = null)
     {
         $resultBuilder = new RouteResultBuilder();
         $resultBuilder->setUnmatchedUrl($url);
 
-        $this->matchRoutes($this->routes, $url, $resultBuilder);
+        $this->matchRoutes($this->routes, $url, $resultBuilder, $baseUrl);
 
         return $resultBuilder->getResult();
     }
@@ -92,13 +92,14 @@ class Router implements IRouter, ILocalizable
      * @param IRoute[] $routes правила маршрутизации
      * @param string $url проверяемый URL
      * @param IRouteResultBuilder $resultBuilder
+     * @param string|null $baseUrl базовый URL
      * @return bool
      */
-    protected function matchRoutes(array $routes, $url, IRouteResultBuilder $resultBuilder)
+    protected function matchRoutes(array $routes, $url, IRouteResultBuilder $resultBuilder, $baseUrl = null)
     {
         foreach ($routes as $name => $route) {
 
-            if (false === ($matchedLength = $route->match($url))) {
+            if (false === ($matchedLength = $route->match($url, $baseUrl))) {
                 continue;
             }
 
