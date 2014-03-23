@@ -16,6 +16,11 @@ use umi\hmvc\component\IComponent;
  */
 interface IComponentRoleResolver
 {
+    /**
+     * Возвращает список разрешенных ролей компонента.
+     * @param IComponent $component
+     * @return array
+     */
     public function getRoleNames(IComponent $component);
 }
  

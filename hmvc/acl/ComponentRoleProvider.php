@@ -26,6 +26,11 @@ class ComponentRoleProvider implements IAclRoleProvider
      */
     protected $identity;
 
+    /**
+     * Конструктор.
+     * @param IComponent $component
+     * @param IComponentRoleResolver $identity
+     */
     public function __construct(IComponent $component, IComponentRoleResolver $identity)
     {
         $this->component = $component;
