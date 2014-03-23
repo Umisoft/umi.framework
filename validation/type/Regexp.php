@@ -9,62 +9,37 @@
 
 namespace umi\validation\type;
 
-use umi\i18n\ILocalizable;
-use umi\i18n\TLocalizable;
+use umi\validation\BaseValidator;
 use umi\validation\exception\RuntimeException;
-use umi\validation\IValidator;
 
 /**
  * Валидатор по регулярному выражению.
  */
-class Regexp implements IValidator, ILocalizable
+class Regexp extends BaseValidator
 {
-
-    use TLocalizable;
-
-    /**
-     * @var string $pattern регулярное выражение
-     */
-    protected $pattern = null;
-    /**
-     * @var array $messages ошибки валидации
-     */
-    protected $messages = [];
-
-    /**
-     * Конструктор.
-     * @param array $options опции валидатора
-     * @throws RuntimeException если регулярное выражение не задано
-     */
-    public function __construct(array $options)
-    {
-        if (empty($options['pattern'])) {
-            throw new RuntimeException($this->translate(
-                'No regular expression pattern.'
-            ));
-        }
-        $this->pattern = $options['pattern'];
-    }
-
     /**
      * {@inheritdoc}
      */
-    public function getMessages()
-    {
-        return $this->messages;
-    }
+    protected $defaultErrorLabel = 'String does not meet regular expression.';
 
     /**
      * {@inheritdoc}
      */
     public function isValid($value)
     {
-        $this->messages = [];
+        if (empty($this->options['pattern'])) {
+            throw new RuntimeException($this->translate(
+                'No regular expression pattern.'
+            ));
+        }
 
-        $valid = filter_var($value, FILTER_VALIDATE_REGEXP, ['options' => ['regexp' => $this->pattern]]) !== false;
+        $pattern = $this->options['pattern'];
 
+        $this->message = null;
+
+        $valid = filter_var($value, FILTER_VALIDATE_REGEXP, ['options' => ['regexp' => $pattern]]) !== false;
         if (!$valid) {
-            $this->messages[] = $this->translate('String does not meet regular expression.');
+            $this->message = $this->translate($this->getErrorLabel());
         }
 
         return $valid;

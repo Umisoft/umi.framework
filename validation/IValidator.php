@@ -15,10 +15,16 @@ namespace umi\validation;
 interface IValidator
 {
     /**
-     * Возвращает сообщения ошибок валидации
+     * Возвращает сообщения ошибки валидации
      * @return array ошибки валидации
      */
-    public function getMessages();
+    public function getMessage();
+
+    /**
+     * Возвращает текст для генерации ошибки.
+     * @return string
+     */
+    public function getErrorLabel();
 
     /**
      * Проверяет, подходит ли значение для данного валидатора.

@@ -10,10 +10,23 @@
 namespace umi\validation;
 
 /**
- * Интерфейс валидации.
+ * Интерфейс коллекции валидаторов.
  */
-interface IValidatorCollection extends IValidator
+interface IValidatorCollection
 {
+    /**
+     * Возвращает сообщения ошибок валидации
+     * @return array ошибки валидации
+     */
+    public function getMessages();
+
+    /**
+     * Валидирует значение каждым валидатром коллекции
+     * @param mixed $value валидируемое значение
+     * @return bool
+     */
+    public function isValid($value);
+
     /**
      * Добавляет валидатор в конец цепочки валидаторов.
      * @param IValidator $validator валидатор

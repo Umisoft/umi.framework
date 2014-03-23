@@ -34,8 +34,7 @@ class ValidatorCollection implements IValidatorCollection
     }
 
     /**
-     * Возвращает сообщения ошибок валидаторов
-     * @return array ошибки валидации
+     * {@inheritdoc}
      */
     public function getMessages()
     {
@@ -43,9 +42,7 @@ class ValidatorCollection implements IValidatorCollection
     }
 
     /**
-     * Валидирует значение каждым валидатром коллекции
-     * @param mixed $value валидируемое значение
-     * @return bool
+     * {@inheritdoc}
      */
     public function isValid($value)
     {
@@ -54,8 +51,9 @@ class ValidatorCollection implements IValidatorCollection
 
         foreach ($this->collection as $validator) {
             $isValid = $validator->isValid($value) && $isValid;
-            $messages = $validator->getMessages();
-            $this->messages = array_merge($this->messages, $messages);
+            if ($message = $validator->getMessage()) {
+                $this->messages[] = $message;
+            }
         }
 
         return $isValid;

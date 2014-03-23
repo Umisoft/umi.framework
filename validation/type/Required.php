@@ -9,40 +9,27 @@
 
 namespace umi\validation\type;
 
-use umi\i18n\ILocalizable;
-use umi\i18n\TLocalizable;
-use umi\validation\IValidator;
+use umi\validation\BaseValidator;
 
 /**
  * Валидатор обязательного значения.
  */
-class Required implements IValidator, ILocalizable
+class Required extends BaseValidator
 {
-
-    use TLocalizable;
-
-    /**
-     * @var array $messages ошибки валидации
-     */
-    protected $messages = [];
-
     /**
      * {@inheritdoc}
      */
-    public function getMessages()
-    {
-        return $this->messages;
-    }
+    protected $defaultErrorLabel = 'Value is required.';
 
     /**
      * {@inheritdoc}
      */
     public function isValid($value)
     {
-        $this->messages = [];
+        $this->message = null;
 
         if (empty($value)) {
-            $this->messages[] = $this->translate('Value is required.');
+            $this->message = $this->translate($this->getErrorLabel());
 
             return false;
         }

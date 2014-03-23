@@ -9,40 +9,28 @@
 
 namespace umi\validation\type;
 
-use umi\i18n\ILocalizable;
-use umi\i18n\TLocalizable;
-use umi\validation\IValidator;
+use umi\validation\BaseValidator;
 
 /**
  * Валидатор E-mail.
  */
-class Email implements IValidator, ILocalizable
+class Email extends BaseValidator
 {
-
-    use TLocalizable;
-
-    /**
-     * @var array $messages ошибки валидации
-     */
-    protected $messages = [];
 
     /**
      * {@inheritdoc}
      */
-    public function getMessages()
-    {
-        return $this->messages;
-    }
+    protected $defaultErrorLabel = 'Wrong email format.';
 
     /**
      * {@inheritdoc}
      */
     public function isValid($value)
     {
-        $this->messages = [];
+        $this->message = null;
 
         if ($value !== null && filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
-            $this->messages[] = $this->translate('Wrong email format.');
+            $this->message = $this->translate($this->getErrorLabel());
 
             return false;
         }
