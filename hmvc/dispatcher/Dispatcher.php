@@ -164,11 +164,28 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
      */
     public function executeWidget($widgetUri, array $params = [])
     {
-
+        /**
+         * @var IComponent $component
+         */
         list ($component, $callStack, $componentURI) = $this->resolveWidgetContext($widgetUri);
 
         try {
+            /**
+             * @var IWidget|IAclResource $widget
+             */
             $widget = $this->dispatchWidget($component, $widgetUri, $params, $callStack, $componentURI);
+
+            if ($widget instanceof IACLResource && !$this->checkPermissions($component, $widget)) {
+                throw new HttpForbidden(
+                    $this->translate(
+                        'Cannot execute widget "{name}" for component "{path}". Access denied.',
+                        [
+                            'name' => $widget->getName(),
+                            'path' => $component->getPath()
+                        ]
+                    )
+                );
+            }
 
             return $this->invokeWidget($widget);
 

@@ -24,6 +24,19 @@ interface IWidget
     public function __invoke();
 
     /**
+     * Устанавливает имя виджета.
+     * @param string $name
+     * @return self
+     */
+    public function setName($name);
+
+    /**
+     * Возвращает имя виджета.
+     * @return string
+     */
+    public function getName();
+
+    /**
      * Внедряет контекст вызова виджета.
      * @param IDispatchContext $context
      * @return self

@@ -11,7 +11,6 @@ namespace umi\hmvc\toolbox\factory;
 
 use umi\hmvc\component\IComponent;
 use umi\hmvc\exception\OutOfBoundsException;
-use umi\hmvc\exception\RuntimeException;
 use umi\hmvc\exception\UnexpectedValueException;
 use umi\hmvc\widget\IWidget;
 use umi\hmvc\widget\IWidgetFactory;
@@ -68,7 +67,10 @@ class WidgetFactory implements IWidgetFactory, IFactory, IModelAware
             ));
         }
 
-        return $this->createWidgetByClass($this->widgetList[$name], $params);
+        $widget = $this->createWidgetByClass($this->widgetList[$name], $params);
+        $widget->setName($name);
+
+        return $widget;
     }
 
     /**

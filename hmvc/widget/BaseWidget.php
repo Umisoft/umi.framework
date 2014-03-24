@@ -25,9 +25,31 @@ abstract class BaseWidget implements IWidget, ILocalizable
     use TLocalizable;
 
     /**
+     * @var string $name имя виджета
+     */
+    protected $name;
+    /**
      * @var IDispatchContext $context контекст вызова виджета
      */
     private $context;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
     /**
      * {@inheritdoc}
