@@ -164,28 +164,10 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
      */
     public function executeWidget($widgetUri, array $params = [])
     {
-        /**
-         * @var IComponent $component
-         */
         list ($component, $callStack, $componentURI) = $this->resolveWidgetContext($widgetUri);
 
         try {
-            /**
-             * @var IWidget|IAclResource $widget
-             */
             $widget = $this->dispatchWidget($component, $widgetUri, $params, $callStack, $componentURI);
-
-            if ($widget instanceof IACLResource && !$this->checkPermissions($component, $widget)) {
-                throw new HttpForbidden(
-                    $this->translate(
-                        'Cannot execute widget "{name}" for component "{path}". Access denied.',
-                        [
-                            'name' => $widget->getName(),
-                            'path' => $component->getPath()
-                        ]
-                    )
-                );
-            }
 
             return $this->invokeWidget($widget);
 
@@ -289,6 +271,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
      * @param array $params параметры вызова виджета
      * @param SplStack $callStack стек вызова компонентов
      * @param string $matchedWidgetUri известная часть пути вызова виджета
+     * @throws HttpForbidden при отстуствии прав на вызов виджета
      * @return IWidget
      */
     protected function dispatchWidget(IComponent $component, $widgetUri, array $params, SplStack $callStack, $matchedWidgetUri = '')
@@ -312,8 +295,25 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
             return $this->dispatchWidget($childComponent, $routeResult->getUnmatchedUrl(), $params, $callStack, $matchedWidgetUri);
 
         } else {
-            return $component->getWidget(ltrim($widgetUri, self::WIDGET_URI_SEPARATOR), $params)
+            $widget = $component->getWidget(ltrim($widgetUri, self::WIDGET_URI_SEPARATOR), $params)
                 ->setContext($context);
+
+            /**
+             * @var IWidget|IAclResource $widget
+             */
+            if ($widget instanceof IACLResource && !$this->checkPermissions($component, $widget)) {
+                throw new HttpForbidden(
+                    $this->translate(
+                        'Cannot execute widget "{name}" for component "{path}". Access denied.',
+                        [
+                            'name' => $widget->getName(),
+                            'path' => $component->getPath()
+                        ]
+                    )
+                );
+            }
+
+            return $widget;
         }
     }
 
