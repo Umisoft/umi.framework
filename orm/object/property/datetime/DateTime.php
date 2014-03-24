@@ -142,9 +142,9 @@ class DateTime extends \DateTime
 
 
     /**
-     * Установить текущее время в качестве значения свойства.
+     * Установить текущие дату и время в качестве значения свойства.
      */
-    public function setCurrentTime()
+    public function setCurrent()
     {
         $this->setTimestamp(time());
     }
