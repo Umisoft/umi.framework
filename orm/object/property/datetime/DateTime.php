@@ -140,6 +140,15 @@ class DateTime extends \DateTime
         return $result;
     }
 
+
+    /**
+     * Установить текущее время в качестве значения свойства.
+     */
+    public function setCurrentTime()
+    {
+        $this->setTimestamp(time());
+    }
+
     /**
      * Оповещает свойство о смене статуса измененности.
      */
