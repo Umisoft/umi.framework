@@ -24,14 +24,14 @@ interface IEventManager
     public function attach(IEventManager $eventsManager);
 
     /**
-     * Вызывает все обработчики, зарегистрированные на событие
+     * Вызывает все обработчики, зарегистрированные на событие.
      * @param string $eventType тип события (уникальный строковый идентификатор)
      * @param mixed $target объект, в котором произошло событие
      * @param array $params список параметров события array('paramName' => 'paramVal', 'relParam' => &$var)
      * Параметр может передаваться по ссылке.
      * @param array $tags тэги, с которыми происходит событиею
      * Тэги позволяют подписаться на события, которые происходят с конкретными объектами.
-     * @return self
+     * @return bool возвращает true, если хотя бы один обработчик был вызван, false - в противном случае
      */
     public function fireEvent($eventType, $target, array $params = [], array $tags = []);
 
@@ -39,7 +39,7 @@ interface IEventManager
      * Распространяет событие по обработчикам, а так же по вложенным менеджерам
      * @param string $eventType тип события
      * @param IEvent $event событие
-     * @return self
+     * @return bool возвращает true, если хотя бы один обработчик был вызван, false - в противном случае
      */
     public function propagateEvent($eventType, IEvent $event);
 

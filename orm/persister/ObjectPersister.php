@@ -11,6 +11,8 @@ namespace umi\orm\persister;
 
 use Doctrine\DBAL\Driver\Connection;
 use SplObjectStorage;
+use umi\event\IEventObservant;
+use umi\event\TEventObservant;
 use umi\i18n\ILocalesAware;
 use umi\i18n\ILocalizable;
 use umi\i18n\TLocalesAware;
@@ -35,6 +37,7 @@ class ObjectPersister implements IObjectPersister, ILocalizable, IValidationAwar
     use TLocalesAware;
     use TObjectManagerAware;
     use TValidationAware;
+    use TEventObservant;
 
     /**
      * @var SplObjectStorage|IObject[] $newObjects список новых объектов
@@ -231,6 +234,7 @@ class ObjectPersister implements IObjectPersister, ILocalizable, IValidationAwar
             $this->startTransaction($connections);
 
             try {
+                $this->processBeforePersistingEvents();
                 $this->persist();
             } catch (\Exception $e) {
                 $this->rollback($connections);
@@ -404,6 +408,64 @@ class ObjectPersister implements IObjectPersister, ILocalizable, IValidationAwar
             $object = $storage->current();
             $object->unload();
             $storage->detach($object);
+        }
+    }
+
+    /**
+     * Поднимает события перед сохранением объектов
+     */
+    protected function processBeforePersistingEvents($processedNewObjects = [], $processedModifiedObjects = [], $processedDeletedObjects = [])
+    {
+        $eventRaised = false;
+
+        foreach($this->newObjects as $object) {
+
+            if (!in_array($object, $processedNewObjects, true)) {
+
+                $newObjectEventRaised = $this->fireEvent(
+                    self::EVENT_BEFORE_PERSISTING_NEW_OBJECT,
+                    ['object' => $object],
+                    [$object->getGUID(), $object->getCollectionName()]
+                );
+
+                $processedNewObjects[] = $object;
+                $eventRaised = $eventRaised || $newObjectEventRaised;
+
+            }
+        }
+
+        foreach($this->modifiedObjects as $object) {
+
+            if (!in_array($object, $processedModifiedObjects, true)) {
+
+                $modifiedObjectEventRaised = $this->fireEvent(
+                    self::EVENT_BEFORE_PERSISTING_MODIFIED_OBJECT,
+                    ['object' => $object],
+                    [$object->getGUID(), $object->getCollectionName()]
+                );
+
+                $processedModifiedObjects[] = $object;
+                $eventRaised = $eventRaised || $modifiedObjectEventRaised;
+            }
+        }
+
+        foreach($this->deletedObjects as $object) {
+
+            if (!in_array($object, $processedDeletedObjects, true)) {
+
+                $deletedObjectEventRaised = $this->fireEvent(
+                    self::EVENT_BEFORE_PERSISTING_DELETED_OBJECT,
+                    ['object' => $object],
+                    [$object->getGUID(), $object->getCollectionName()]
+                );
+
+                $processedDeletedObjects[] = $object;
+                $eventRaised = $eventRaised || $deletedObjectEventRaised;
+            }
+        }
+
+        if ($eventRaised) {
+            $this->processBeforePersistingEvents($processedNewObjects);
         }
     }
 }

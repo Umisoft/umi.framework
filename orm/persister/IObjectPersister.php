@@ -9,6 +9,7 @@
 
 namespace umi\orm\persister;
 
+use umi\event\IEventObservant;
 use umi\orm\exception\NotAllowedOperationException;
 use umi\orm\exception\RuntimeException;
 use umi\orm\metadata\field\relation\BelongsToRelationField;
@@ -17,8 +18,23 @@ use umi\orm\object\IObject;
 /**
  * Синхронизатор объектов бизнес-транзакций с базой данных (Unit Of Work).
  */
-interface IObjectPersister
+interface IObjectPersister extends IEventObservant
 {
+    /**
+     * Тип события, которое происходит перед сохранением нового объекта.
+     * @param IObject $object объект
+     */
+    const EVENT_BEFORE_PERSISTING_NEW_OBJECT = 'umi:orm:eventBeforePersistingNewObject';
+    /**
+     * Тип события, которое происходит перед изменением объекта.
+     * @param IObject $object объект
+     */
+    const EVENT_BEFORE_PERSISTING_MODIFIED_OBJECT = 'umi:orm:eventBeforePersistingModifiedObject';
+    /**
+     * Тип события, которое происходит перед удалением объекта.
+     * @param IObject $object объект
+     */
+    const EVENT_BEFORE_PERSISTING_DELETED_OBJECT = 'umi:orm:eventBeforePersistingDeletedObject';
 
     /**
      * Проверяет, являются ли все объекты в памяти синхронизированными с БД

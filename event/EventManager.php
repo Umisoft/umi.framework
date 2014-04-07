@@ -56,8 +56,10 @@ class EventManager implements IEventManager, ILocalizable
     public function propagateEvent($eventType, IEvent $event)
     {
         if (!isset($this->eventHandlers[$eventType]) && is_null($this->attachedManagers)) {
-            return $this;
+            return false;
         }
+
+        $eventRaised = false;
 
         // current handlers propagation
         if (isset($this->eventHandlers[$eventType])) {
@@ -73,13 +75,11 @@ class EventManager implements IEventManager, ILocalizable
                     }
                 }
 
-                if (is_array($eventHandler)) {
-                    call_user_func($eventHandler, $event);
-                } else {
-                    $eventHandler($event);
-                }
+                $eventHandler($event);
+                $eventRaised = true;
+
                 if ($event->getPropagationIsStopped()) {
-                    return $this;
+                    return true;
                 }
             }
         }
@@ -87,14 +87,15 @@ class EventManager implements IEventManager, ILocalizable
         // attached managers propagation
         if ($this->attachedManagers) {
             foreach ($this->attachedManagers as $attachedManager) {
-                $attachedManager->propagateEvent($eventType, $event);
+                $attachedManagerEventRaised = $attachedManager->propagateEvent($eventType, $event);
+                $eventRaised = $eventRaised || $attachedManagerEventRaised;
                 if ($event->getPropagationIsStopped()) {
-                    return $this;
+                    return true;
                 }
             }
         }
 
-        return $this;
+        return $eventRaised;
     }
 
     /**
@@ -103,7 +104,7 @@ class EventManager implements IEventManager, ILocalizable
     public function fireEvent($eventType, $target, array $params = [], array $tags = [])
     {
         if (!isset($this->eventHandlers[$eventType]) && is_null($this->attachedManagers)) {
-            return $this;
+            return false;
         }
         $event = $this->eventFactory->createEvent($eventType, $target, $params, $tags);
         return $this->propagateEvent($eventType, $event);

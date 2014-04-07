@@ -68,7 +68,7 @@ trait TEventObservant
      * Параметр может передаваться по ссылке.
      * @param array $tags тэги, с которыми происходит событие
      * Тэги позволяют подписаться на события, которые происходят с конкретными объектами.
-     * @return $this
+     * @return bool возвращает true, если хотя бы один обработчик был вызван, false - в противном случае
      */
     public function fireEvent($eventType, array $params = [], array $tags = [])
     {

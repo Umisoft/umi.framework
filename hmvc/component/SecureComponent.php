@@ -16,6 +16,9 @@ use umi\acl\IAclResource;
  */
 class SecureComponent extends Component implements IAclResource
 {
+    /**
+     * Префикс имени ACL-ресурса
+     */
     const ACL_RESOURCE_PREFIX = 'component:';
 
     /**
