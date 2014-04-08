@@ -90,7 +90,7 @@ trait TConfigSupport
         }
 
         foreach ($default as $name => $value) {
-            if (!isset($options[$name])) {
+            if (!array_key_exists($name, $options)) {
                 $result[$name] = $value;
             }
         }

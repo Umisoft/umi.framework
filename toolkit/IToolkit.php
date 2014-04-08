@@ -10,6 +10,7 @@
 namespace umi\toolkit;
 
 use Traversable;
+use umi\event\IEventObservant;
 use umi\toolkit\exception\AlreadyRegisteredException;
 use umi\toolkit\exception\DomainException;
 use umi\toolkit\exception\InvalidArgumentException;
@@ -21,7 +22,7 @@ use umi\toolkit\toolbox\IToolbox;
 /**
  * Тулкит.
  */
-interface IToolkit
+interface IToolkit extends IEventObservant
 {
     /**
      * Имя набора инструментов
