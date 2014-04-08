@@ -22,6 +22,7 @@
         "umi/pagination" : "self.version",
         "umi/rbac" : "self.version",
         "umi/route" : "self.version",
+        "umi/rss" : "self.version",
         "umi/session" : "self.version",
         "umi/spl" : "self.version",
         "umi/stream" : "self.version",
