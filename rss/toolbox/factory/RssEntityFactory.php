@@ -54,27 +54,27 @@ class RssEntityFactory implements IRssEntityFactory, IFactory
         try {
             $rssElement = new SimpleXMLElement($xml);
         } catch (Exception $e) {
-            throw new RuntimeException('Invalid XML');
+            throw new RuntimeException('Cannot create feed from xml. XML is not wellformed.');
         }
 
         if (!isset($rssElement->channel)) {
-            throw new RuntimeException('Channel section is not specified');
+            throw new RuntimeException('Cannot create feed. Channel section is not specified');
         }
 
         if (!isset($rssElement->channel->link)) {
-            throw new RuntimeException('Channel link is not specified');
+            throw new RuntimeException('Cannot create feed. Channel link is not specified');
         }
         if (!isset($rssElement->channel->title)) {
-            throw new RuntimeException('Channel title is not specified');
+            throw new RuntimeException('Cannot create feed. Channel title is not specified');
         }
         if (!isset($rssElement->channel->description)) {
-            throw new RuntimeException('Channel description is not specified');
+            throw new RuntimeException('Cannot create feed. Channel description is not specified');
         }
 
         $rssFeed = $this->createFeed(
-            (string)$rssElement->channel->link,
-            (string)$rssElement->channel->title,
-            (string)$rssElement->channel->description
+            (string) $rssElement->channel->link,
+            (string) $rssElement->channel->title,
+            (string) $rssElement->channel->description
         );
 
         $items = $rssElement->channel->item;
