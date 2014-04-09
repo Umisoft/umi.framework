@@ -9,6 +9,8 @@
 
 namespace umi\toolkit\prototype;
 
+use umi\event\IEventObservant;
+use umi\event\TEventObservant;
 use umi\i18n\ILocalizable;
 use umi\i18n\TLocalizable;
 use umi\log\ILoggerAware;
@@ -21,12 +23,13 @@ use umi\toolkit\TToolkitAware;
 /**
  * Прототип объекта
  */
-class Prototype implements IPrototype, ILoggerAware, ILocalizable
+class Prototype implements IPrototype, ILoggerAware, ILocalizable, IEventObservant
 {
     use TToolkitAware;
     use TLoggerAware;
     use TConfigSupport;
     use TLocalizable;
+    use TEventObservant;
 
     /**
      * @var string $className имя класса для создания прототипа
@@ -142,6 +145,10 @@ class Prototype implements IPrototype, ILoggerAware, ILocalizable
             $this->setOptions($instance, $options);
         }
 
+        if ($instance instanceof IEventObservant) {
+            $this->subscribeTo($instance);
+        }
+
         return $instance;
     }
 
@@ -153,13 +160,19 @@ class Prototype implements IPrototype, ILoggerAware, ILocalizable
         if (is_null($this->singleInstance)) {
             $singleInstance = $this->prototypeInstance;
             $this->invokeConstructor($singleInstance, $constructorArgs);
+
             if ($options) {
                 $this->setOptions($singleInstance, $options);
             }
             if (is_callable($initializer)) {
-                call_user_func_array($initializer, [$singleInstance]);
+                $initializer($singleInstance);
             }
+            if ($singleInstance instanceof IEventObservant) {
+                $this->subscribeTo($singleInstance);
+            }
+
             $this->singleInstance = $singleInstance;
+
         }
         return $this->singleInstance;
     }
@@ -209,8 +222,10 @@ class Prototype implements IPrototype, ILoggerAware, ILocalizable
     public function setOptions($object, array $options)
     {
         if (!empty($this->options) && !empty($options)) {
-            $overrideOptions = $this->mergeConfigOptions($options, $this->options);
-            foreach ($overrideOptions as $optionName => $value) {
+
+            $optionsToOverride = array_intersect_key($this->options, $options);
+            $overriddenOptions = $this->mergeConfigOptions($options, $optionsToOverride);
+            foreach ($overriddenOptions as $optionName => $value) {
                 $object->{$optionName} = $value;
             }
         }

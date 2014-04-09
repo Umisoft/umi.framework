@@ -9,6 +9,7 @@
 
 namespace umi\toolkit;
 
+use umi\event\IEventObservant;
 use umi\event\TEventObservant;
 use umi\i18n\ILocalizable;
 use umi\i18n\TLocalizable;
@@ -35,6 +36,8 @@ class Toolkit implements IToolkit, ILoggerAware, ILocalizable
     use TConfigSupport;
     use TLoggerAware;
     use TLocalizable;
+    use TEventObservant;
+
     use TPrototypeAware {
         TPrototypeAware::getPrototype as getPrototypeInternal;
     }
@@ -87,6 +90,9 @@ class Toolkit implements IToolkit, ILoggerAware, ILocalizable
     public function setPrototypeFactory(IPrototypeFactory $prototypeFactory)
     {
         $this->prototypeFactory = $prototypeFactory;
+        if ($this->prototypeFactory instanceof IEventObservant) {
+            $this->subscribeTo($this->prototypeFactory);
+        }
 
         return $this;
     }
@@ -444,6 +450,9 @@ class Toolkit implements IToolkit, ILoggerAware, ILocalizable
     {
         if (!$this->prototypeFactory) {
             $this->prototypeFactory = new PrototypeFactory($this);
+            if ($this->prototypeFactory instanceof IEventObservant) {
+                $this->subscribeTo($this->prototypeFactory);
+            }
         }
 
         return $this->prototypeFactory;

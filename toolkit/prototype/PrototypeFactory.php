@@ -11,14 +11,18 @@ namespace umi\toolkit\prototype;
 
 use ReflectionClass;
 use ReflectionProperty;
+use umi\event\IEventObservant;
+use umi\event\TEventObservant;
 use umi\toolkit\exception\RuntimeException;
 use umi\toolkit\IToolkit;
 
 /**
  * Фабрика прототипов сервисов.
  */
-class PrototypeFactory implements IPrototypeFactory
+class PrototypeFactory implements IPrototypeFactory, IEventObservant
 {
+    use TEventObservant;
+
     /**
      * @var string $prototypeClass имя класса для создания прототипа
      */
@@ -47,6 +51,10 @@ class PrototypeFactory implements IPrototypeFactory
         $prototype->checkContracts($prototype->getPrototypeInstance());
 
         $prototype->setToolkit($this->toolkit);
+
+        if ($prototype instanceof IEventObservant) {
+            $this->subscribeTo($prototype);
+        }
 
         return $prototype;
     }
