@@ -89,13 +89,13 @@ class RssEntityFactory implements IRssEntityFactory, IFactory
     /**
      * {@inheritdoc}
      */
-    public function createItem($url, $title, $content, DateTime $date)
+    public function createItem()
     {
         return $this->getPrototype(
             $this->rssItemClass,
             ['umi\rss\IRssItem']
         )
-            ->createInstance([$url, $title, $content, $date]);
+            ->createInstance();
     }
 
     /**
@@ -106,18 +106,25 @@ class RssEntityFactory implements IRssEntityFactory, IFactory
      */
     protected function createItemFromXml($item, $rssFeed)
     {
-        $pubDate = new DateTime((string)$item->pubDate);
-
         if (!isset($item->title) || !isset($item->description)) {
             throw new RuntimeException('Item title or description is not specified');
         }
 
-        $rssFeed->addItem(
-            (string)$item->link,
-            (string)$item->title,
-            (string)$item->description,
-            $pubDate
-        );
+        $newItem = $rssFeed->addItem();
+
+        if (isset($item->title)) {
+            $newItem->setTitle($item->title);
+        }
+        if (isset($item->link)) {
+            $newItem->setUrl($item->link);
+        }
+        if (isset($item->description)) {
+            $newItem->setContent($item->description);
+        }
+        if (isset($item->pubDate)) {
+            $pubDate = new DateTime((string)$item->pubDate);
+            $newItem->setDate($pubDate);
+        }
     }
 
 }

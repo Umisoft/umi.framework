@@ -12,6 +12,9 @@ namespace umi\rss;
 use DateTime;
 use XMLWriter;
 
+/**
+ * RSS-лента.
+ */
 class RssFeed implements IRssFeed, IRssFeedAware
 {
     use TRssFeedAware;
@@ -24,12 +27,12 @@ class RssFeed implements IRssFeed, IRssFeedAware
 
     /**
      * Заголовок RSS-ленты.
-     * @var  $title
+     * @var string $title
      */
     protected $title;
     /**
      * Описание RSS-ленты.
-     * @var  $description
+     * @var string $description
      */
     protected $description;
     /**
@@ -51,13 +54,12 @@ class RssFeed implements IRssFeed, IRssFeedAware
     /**
      * {@inheritdoc}
      */
-    public function addItem(
-        $url,
-        $title,
-        $content,
-        DateTime $date
-    ) {
-        $this->rssItems[] = $this->createRssItem($url, $title, $content, $date);
+    public function addItem()
+    {
+        $rssItem = $this->createRssItem();
+        $this->rssItems[] = $rssItem;
+
+        return $rssItem;
     }
 
     /**
@@ -66,6 +68,8 @@ class RssFeed implements IRssFeed, IRssFeedAware
     public function setDescription($description)
     {
         $this->description = $description;
+
+        return $this;
     }
 
     /**
@@ -90,6 +94,8 @@ class RssFeed implements IRssFeed, IRssFeedAware
     public function setTitle($title)
     {
         $this->title = $title;
+
+        return $this;
     }
 
     /**
@@ -106,6 +112,8 @@ class RssFeed implements IRssFeed, IRssFeedAware
     public function setUrl($url)
     {
         $this->url = $url;
+
+        return $this;
     }
 
     /**

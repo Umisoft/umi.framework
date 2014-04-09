@@ -11,6 +11,9 @@ namespace umi\rss;
 
 use DateTime;
 
+/**
+ * Элемент RSS-ленты.
+ */
 class RssItem implements IRssItem
 {
     /**
@@ -30,20 +33,14 @@ class RssItem implements IRssItem
      */
     protected $url;
 
-    public function __construct($url, $title, $content, DateTime $date)
-    {
-        $this->title = $title;
-        $this->content = $content;
-        $this->date = $date;
-        $this->url = $url;
-    }
-
     /**
      * {@inheritdoc}
      */
     public function setContent($content)
     {
         $this->content = $content;
+
+        return $this;
     }
 
     /**
@@ -60,6 +57,8 @@ class RssItem implements IRssItem
     public function setDate(DateTime $date)
     {
         $this->date = $date;
+
+        return $this;
     }
 
     /**
@@ -76,6 +75,8 @@ class RssItem implements IRssItem
     public function setTitle($title)
     {
         $this->title = $title;
+
+        return $this;
     }
 
     /**
@@ -92,6 +93,8 @@ class RssItem implements IRssItem
     public function setUrl($url)
     {
         $this->url = $url;
+
+        return $this;
     }
 
     /**

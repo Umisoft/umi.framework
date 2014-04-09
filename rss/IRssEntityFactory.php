@@ -9,8 +9,6 @@
 
 namespace umi\rss;
 
-use DateTime;
-
 /**
  * Фабрика для создания RSS сущностей.
  */
@@ -34,12 +32,8 @@ interface IRssEntityFactory
 
     /**
      * Создает элемент ленты.
-     * @param string $url абсолютный URL элемента
-     * @param string $title заголовок элемента
-     * @param string $content контент элемента
-     * @param DateTime $date дата публикации элемента
      * @return IRssItem
      */
-    public function createItem($url, $title, $content, DateTime $date);
+    public function createItem();
 }
  

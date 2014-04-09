@@ -11,29 +11,36 @@ namespace umi\rss;
 
 use DateTime;
 
+/**
+ * Элемент RSS-ленты.
+ */
 interface IRssItem
 {
     /**
      * Устанавливает заголовок элемента.
      * @param string $title
+     * @return self
      */
     public function setTitle($title);
 
     /**
      * Устанавливает контент элемента.
      * @param string $content
+     * @return self
      */
     public function setContent($content);
 
     /**
      * Устанавливает дату публикации элемента.
      * @param DateTime $date
+     * @return self
      */
     public function setDate(DateTime $date);
 
     /**
      * Устанавливает абсолютный URL элемента.
      * @param $url
+     * @return self
      */
     public function setUrl($url);
 

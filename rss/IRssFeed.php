@@ -9,8 +9,9 @@
 
 namespace umi\rss;
 
-use DateTime;
-
+/**
+ * RSS-лента.
+ */
 interface IRssFeed
 {
     /**
@@ -23,13 +24,9 @@ interface IRssFeed
 
     /**
      * Добавляет элемент в ленту.
-     * @param string $url абсолютный URL элемента
-     * @param string $title заголовок элемента
-     * @param string $content контент элемента
-     * @param DateTime $date дата публикации элемента
      * @return IRssItem
      */
-    public function addItem($url, $title, $content, DateTime $date);
+    public function addItem();
 
     /**
      * Генерирует XML ленты.
@@ -40,18 +37,21 @@ interface IRssFeed
     /**
      * Устанавливает заголовок RSS-ленты.
      * @param $title
+     * @return self
      */
     public function setTitle($title);
 
     /**
      * Устанавливает URL проекта.
      * @param $url
+     * @return self
      */
     public function setUrl($url);
 
     /**
      * Устанавливает описание RSS-ленты.
      * @param $description
+     * @return self
      */
     public function setDescription($description);
 

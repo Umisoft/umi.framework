@@ -9,7 +9,6 @@
 
 namespace umi\rss;
 
-use DateTime;
 use umi\toolkit\exception\RequiredDependencyException;
 
 /**
@@ -44,15 +43,11 @@ trait TRssFeedAware
 
     /**
      * Создает элемент ленты.
-     * @param string $url абсолютный URL элемента
-     * @param string $title заголовок элемента
-     * @param string $content контент элемента
-     * @param DateTime $date дата публикации элемента
      * @return IRssItem
      */
-    protected function createRssItem($url, $title, $content, DateTime $date)
+    protected function createRssItem()
     {
-        return $this->getRssEntityFactory()->createItem($url, $title, $content, $date);
+        return $this->getRssEntityFactory()->createItem();
     }
 
     /**
