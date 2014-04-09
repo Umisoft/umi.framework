@@ -9,6 +9,10 @@
 namespace umi\rss\toolbox\factory;
 
 use DateTime;
+use Exception;
+use SimpleXMLElement;
+use umi\rss\exception\RuntimeException;
+use umi\rss\IRssFeed;
 use umi\toolkit\factory\IFactory;
 use umi\toolkit\factory\TFactory;
 use umi\rss\IRssEntityFactory;
@@ -45,9 +49,41 @@ class RssEntityFactory implements IRssEntityFactory, IFactory
     /**
      * {@inheritdoc}
      */
-    public function loadFeed($url)
+    public function createFeedFromXml($xml)
     {
-        // TODO:
+        try {
+            $rssElement = new SimpleXMLElement($xml);
+        } catch (Exception $e) {
+            throw new RuntimeException('Invalid XML');
+        }
+
+        if (!isset($rssElement->channel)) {
+            throw new RuntimeException('Channel section is not specified');
+        }
+
+        if (!isset($rssElement->channel->link)) {
+            throw new RuntimeException('Channel link is not specified');
+        }
+        if (!isset($rssElement->channel->title)) {
+            throw new RuntimeException('Channel title is not specified');
+        }
+        if (!isset($rssElement->channel->description)) {
+            throw new RuntimeException('Channel description is not specified');
+        }
+
+        $rssFeed = $this->createFeed(
+            (string)$rssElement->channel->link,
+            (string)$rssElement->channel->title,
+            (string)$rssElement->channel->description
+        );
+
+        $items = $rssElement->channel->item;
+
+        foreach ($items as $item) {
+            $this->createItemFromXml($item, $rssFeed);
+        }
+
+        return $rssFeed;
     }
 
     /**
@@ -60,6 +96,28 @@ class RssEntityFactory implements IRssEntityFactory, IFactory
             ['umi\rss\IRssItem']
         )
             ->createInstance([$url, $title, $content, $date]);
+    }
+
+    /**
+     * Создаёт элемент на основе XML RSS-ленты
+     * @param SimpleXMLElement $item
+     * @param IRssFeed $rssFeed
+     * @throws RuntimeException
+     */
+    protected function createItemFromXml($item, $rssFeed)
+    {
+        $pubDate = new DateTime((string)$item->pubDate);
+
+        if (!isset($item->title) || !isset($item->description)) {
+            throw new RuntimeException('Item title or description is not specified');
+        }
+
+        $rssFeed->addItem(
+            (string)$item->link,
+            (string)$item->title,
+            (string)$item->description,
+            $pubDate
+        );
     }
 
 }

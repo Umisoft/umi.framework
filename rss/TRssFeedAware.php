@@ -56,6 +56,16 @@ trait TRssFeedAware
     }
 
     /**
+     * Создание RssFeed на основе XML RSS-ленты
+     * @param string $xml
+     * @return IRssFeed
+     */
+    protected function createRssFeedFromXml($xml)
+    {
+        return $this->getRssEntityFactory()->createFeedFromXml($xml);
+    }
+
+    /**
      * Возвращает фабрику RSS-сущностей.
      * @throws RequiredDependencyException если фабрика не внедрена
      * @return IRssEntityFactory

@@ -26,11 +26,11 @@ interface IRssEntityFactory
     public function createFeed($url, $title, $description);
 
     /**
-     * Загружает RSS-ленту по URL.
-     * @param string $url абсолютный URL ленты
+     * Создаёт RssFeed на основе XML RSS-ленты.
+     * @param string $xml XML RSS-ленты
      * @return IRssFeed
      */
-    public function loadFeed($url);
+    public function createFeedFromXml($xml);
 
     /**
      * Создает элемент ленты.
