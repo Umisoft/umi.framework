@@ -10,7 +10,7 @@
 namespace umi\rss\exception;
 
 /**
- * Исключения, связанные с работой конфигурации.
+ * Исключения, связанные с работой RSS.
  */
 interface IException
 {

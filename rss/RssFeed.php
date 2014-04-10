@@ -160,15 +160,20 @@ class RssFeed implements IRssFeed, IRssFeedAware
     protected function generateRssItem(XMLWriter $xmlWriter, RssItem $item)
     {
         $xmlWriter->startElement('item');
-        $xmlWriter->writeElement('title', $item->getTitle());
-        $xmlWriter->writeElement(
-            'link',
-            $item->getUrl()
-        );
-        $xmlWriter->startElement('description');
-        $xmlWriter->writeCdata($item->getContent());
-        $xmlWriter->endElement();
-        $xmlWriter->writeElement('pubDate', $item->getDate()->format(DateTime::RSS));
+        if ($item->getTitle()) {
+            $xmlWriter->writeElement('title', $item->getTitle());
+        }
+        if ($item->getUrl()) {
+            $xmlWriter->writeElement('link', $item->getUrl());
+        }
+        if ($item->getContent()) {
+            $xmlWriter->startElement('description');
+            $xmlWriter->writeCdata($item->getContent());
+            $xmlWriter->endElement();
+        }
+        if ($item->getDate()) {
+            $xmlWriter->writeElement('pubDate', $item->getDate()->format(DateTime::RSS));
+        }
         $xmlWriter->endElement();
     }
 }

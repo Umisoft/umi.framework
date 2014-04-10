@@ -54,21 +54,21 @@ class RssEntityFactory implements IRssEntityFactory, IFactory
         try {
             $rssElement = new SimpleXMLElement($xml);
         } catch (Exception $e) {
-            throw new RuntimeException('Cannot create feed from xml. XML is not wellformed.');
+            throw new RuntimeException('Cannot create RSS feed from xml. XML is not wellformed.');
         }
 
         if (!isset($rssElement->channel)) {
-            throw new RuntimeException('Cannot create feed. Channel section is not specified');
+            throw new RuntimeException('Cannot create RSS feed. Channel section is not specified.');
         }
 
         if (!isset($rssElement->channel->link)) {
-            throw new RuntimeException('Cannot create feed. Channel link is not specified');
+            throw new RuntimeException('Cannot create RSS feed. Channel link is not specified.');
         }
         if (!isset($rssElement->channel->title)) {
-            throw new RuntimeException('Cannot create feed. Channel title is not specified');
+            throw new RuntimeException('Cannot create RSS feed. Channel title is not specified.');
         }
         if (!isset($rssElement->channel->description)) {
-            throw new RuntimeException('Cannot create feed. Channel description is not specified');
+            throw new RuntimeException('Cannot create RSS feed. Channel description is not specified.');
         }
 
         $rssFeed = $this->createFeed(
@@ -106,8 +106,8 @@ class RssEntityFactory implements IRssEntityFactory, IFactory
      */
     protected function createItemFromXml($item, $rssFeed)
     {
-        if (!isset($item->title) || !isset($item->description)) {
-            throw new RuntimeException('Item title or description is not specified');
+        if (!isset($item->title) && !isset($item->description)) {
+            throw new RuntimeException('Cannot create RSS item. Item title or description is not specified.');
         }
 
         $newItem = $rssFeed->addItem();
