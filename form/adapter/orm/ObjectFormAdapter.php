@@ -278,7 +278,7 @@ class ObjectFormAdapter implements IDataAdapter
         $objectSet->detachAll();
 
         foreach ($data as $id) {
-            $objectSet->attach($targetCollection->getById($id));
+            $objectSet->link($targetCollection->getById($id));
         }
     }
 
