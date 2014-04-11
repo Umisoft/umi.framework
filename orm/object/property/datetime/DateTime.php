@@ -90,7 +90,10 @@ class DateTime extends \DateTime
      */
     public function setTimezone($timezone)
     {
-        $result = parent::setTimezone($timezone);
+        // php bugfix https://bugs.php.net/bug.php?id=45543
+        $timeZone = new \DateTimeZone($timezone->getName());
+
+        $result = parent::setTimezone($timeZone);
         $this->update();
 
         return $result;
