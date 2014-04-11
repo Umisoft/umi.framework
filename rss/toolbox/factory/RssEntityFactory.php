@@ -113,16 +113,16 @@ class RssEntityFactory implements IRssEntityFactory, IFactory
         $newItem = $rssFeed->addItem();
 
         if (isset($item->title)) {
-            $newItem->setTitle($item->title);
+            $newItem->setTitle((string) $item->title);
         }
         if (isset($item->link)) {
-            $newItem->setUrl($item->link);
+            $newItem->setUrl((string) $item->link);
         }
         if (isset($item->description)) {
-            $newItem->setContent($item->description);
+            $newItem->setContent((string) $item->description);
         }
         if (isset($item->pubDate)) {
-            $pubDate = new DateTime((string)$item->pubDate);
+            $pubDate = new DateTime((string) $item->pubDate);
             $newItem->setDate($pubDate);
         }
     }
