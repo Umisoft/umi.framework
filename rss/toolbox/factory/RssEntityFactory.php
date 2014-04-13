@@ -57,6 +57,14 @@ class RssEntityFactory implements IRssEntityFactory, IFactory
             throw new RuntimeException('Cannot create RSS feed from xml. XML is not wellformed.');
         }
 
+        return $this->createFeedFromSimpleXml($rssElement);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createFeedFromSimpleXml(SimpleXMLElement $rssElement)
+    {
         if (!isset($rssElement->channel)) {
             throw new RuntimeException('Cannot create RSS feed. Channel section is not specified.');
         }
