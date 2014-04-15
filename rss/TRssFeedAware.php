@@ -9,6 +9,7 @@
 
 namespace umi\rss;
 
+use SimpleXMLElement;
 use umi\toolkit\exception\RequiredDependencyException;
 
 /**
@@ -51,13 +52,23 @@ trait TRssFeedAware
     }
 
     /**
-     * Создание RssFeed на основе XML RSS-ленты
+     * Создание RssFeed на основе XML RSS-ленты.
      * @param string $xml
      * @return IRssFeed
      */
     protected function createRssFeedFromXml($xml)
     {
         return $this->getRssEntityFactory()->createFeedFromXml($xml);
+    }
+
+    /**
+     * Создание RssFeed на основе SimpleXmlElement RSS-ленты.
+     * @param SimpleXMLElement $xml
+     * @return IRssFeed
+     */
+    protected function createRssFeedFromSimpleXml(SimpleXMLElement $xml)
+    {
+        return $this->getRssEntityFactory()->createFeedFromSimpleXml($xml);
     }
 
     /**

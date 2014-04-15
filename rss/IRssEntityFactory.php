@@ -9,6 +9,8 @@
 
 namespace umi\rss;
 
+use SimpleXMLElement;
+
 /**
  * Фабрика для создания RSS сущностей.
  */
@@ -29,6 +31,13 @@ interface IRssEntityFactory
      * @return IRssFeed
      */
     public function createFeedFromXml($xml);
+
+    /**
+     * Создаёт RssFeed на основе SimpleXMLElement
+     * @param SimpleXMLElement $xml
+     * @return IRssFeed
+     */
+    public function createFeedFromSimpleXml(SimpleXMLElement $xml);
 
     /**
      * Создает элемент ленты.
