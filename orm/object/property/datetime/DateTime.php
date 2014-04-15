@@ -58,7 +58,7 @@ class DateTime extends \DateTime
     {
         $this->timeIsSet = false;
         $this->oldValue = 0;
-        $this->property->update();
+        $this->property->update($this);
 
         return $this;
     }
@@ -157,7 +157,7 @@ class DateTime extends \DateTime
         if (!$this->timeIsSet || $this->oldValue != $this->getTimestamp()) {
             $this->oldValue = $this->getTimestamp();
             $this->timeIsSet = true;
-            $this->property->update();
+            $this->property->update($this);
         }
     }
 

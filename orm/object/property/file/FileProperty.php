@@ -32,13 +32,11 @@ class FileProperty extends BaseProperty implements IFileProperty
     /**
      * {@inheritdoc}
      */
-    public function update()
+    public function update($value)
     {
         $this->dbValue = $this->field->prepareDbValue($this->object, $this->value);
         $this->isModified = true;
         $this->object->setIsModified();
     }
-
-
 }
  

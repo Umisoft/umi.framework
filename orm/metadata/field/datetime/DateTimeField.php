@@ -9,7 +9,6 @@
 
 namespace umi\orm\metadata\field\datetime;
 
-use umi\orm\exception\NotAllowedOperationException;
 use umi\orm\metadata\field\BaseField;
 use umi\orm\object\IObject;
 use umi\orm\object\property\datetime\DateTime;
@@ -33,10 +32,7 @@ class DateTimeField extends BaseField
      */
     public function validateInputPropertyValue($propertyValue)
     {
-        throw new NotAllowedOperationException($this->translate(
-            'Cannot set value for property "{name}". Use DateTime methods to set value.',
-            ['name' => $this->getName()]
-        ));
+        return ($propertyValue instanceof \DateTime);
     }
 
     /**

@@ -27,7 +27,7 @@ class EventFactory implements IEventFactory, IFactory
     /**
      * @var string $eventClass класс события
      */
-    public $eventClass = '\umi\event\Event';
+    public $eventClass = 'umi\event\Event';
 
     /**
      * {@inheritdoc}

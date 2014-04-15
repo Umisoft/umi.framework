@@ -99,7 +99,7 @@ class File
             $relativePath = str_replace($this->sourcePath, '', $realFilePath);
             $this->fileURI = $this->sourceURI . $relativePath;
 
-            $this->property->update();
+            $this->property->update($this);
         }
 
         return $this;
@@ -126,7 +126,7 @@ class File
     {
         $this->splFileInfo = null;
         $this->fileURI = null;
-        $this->property->update();
+        $this->property->update($this);
 
         return $this;
     }

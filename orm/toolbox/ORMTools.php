@@ -207,7 +207,7 @@ class ORMTools implements IToolbox
     }
 
     /**
-     * Возвращает менеджер метаданных
+     * Возвращает менеджер коллекций
      * @return ICollectionManager
      */
     protected function getCollectionManager()

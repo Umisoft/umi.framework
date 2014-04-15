@@ -166,12 +166,7 @@ abstract class BaseProperty implements IProperty, ILocalizable, IFilterAware
             }
         }
 
-        if ($this->getValue() !== $value) {
-            $this->dbValue = $this->field->prepareDbValue($this->object, $value);
-            $this->value = $value;
-            $this->isModified = true;
-            $this->object->setIsModified();
-        }
+        $this->update($value);
 
         return $this;
     }
@@ -271,6 +266,21 @@ abstract class BaseProperty implements IProperty, ILocalizable, IFilterAware
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function update($value)
+    {
+        if ($this->getValue() !== $value) {
+            $this->dbValue = $this->field->prepareDbValue($this->object, $value);
+            $this->value = $value;
+            $this->isModified = true;
+            $this->object->setIsModified();
+        }
+
+        return $this;
+    }
+
+    /**
      * Применяет фильтры поля к значению свойства
      * @param mixed $propertyValue
      * @return mixed
@@ -285,4 +295,6 @@ abstract class BaseProperty implements IProperty, ILocalizable, IFilterAware
 
         return $propertyValue;
     }
+
+
 }

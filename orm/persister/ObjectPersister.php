@@ -11,7 +11,6 @@ namespace umi\orm\persister;
 
 use Doctrine\DBAL\Driver\Connection;
 use SplObjectStorage;
-use umi\event\IEventObservant;
 use umi\event\TEventObservant;
 use umi\i18n\ILocalesAware;
 use umi\i18n\ILocalizable;

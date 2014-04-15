@@ -16,11 +16,6 @@ use umi\orm\object\property\IProperty;
  */
 interface IFileProperty extends IProperty
 {
-    /**
-     * Помечает свойство как модифицированное и обновляет внутреннюю информацию.
-     * @internal
-     * @return self
-     */
-    public function update();
+
 }
  

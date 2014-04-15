@@ -136,4 +136,12 @@ interface IProperty
      * @return bool
      */
     public function getIsValuePrepared();
+
+    /**
+     * Обновляет внутренне состояние свойства.
+     * @internal
+     * @param mixed $value новое значение
+     * @return self
+     */
+    public function update($value);
 }

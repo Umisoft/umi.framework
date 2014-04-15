@@ -9,16 +9,12 @@
 
 namespace umi\orm\object\property\datetime;
 
+use umi\orm\object\property\IProperty;
+
 /**
  * Интерфейс для свойства со значением типа DateTime.
  */
-interface IDateTimeProperty
+interface IDateTimeProperty extends IProperty
 {
-    /**
-     * Помечает свойство как модифицированное и обновляет внутреннюю информацию.
-     * @internal
-     * @return self
-     */
-    public function update();
 }
  

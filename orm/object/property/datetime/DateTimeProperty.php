@@ -32,11 +32,21 @@ class DateTimeProperty extends BaseProperty implements IDateTimeProperty
     /**
      * {@inheritdoc}
      */
-    public function update()
+    public function update($value)
     {
+        /**
+         * @var \DateTime $value
+         */
+        if ($this->getValue() !== $value) {
+            $this->value->setTimeStamp($value->getTimestamp());
+            $this->value->setTimezone($value->getTimezone());
+        }
+
         $this->dbValue = $this->field->prepareDbValue($this->object, $this->value);
         $this->isModified = true;
         $this->object->setIsModified();
+
+        return $this;
     }
 }
  
