@@ -56,10 +56,7 @@ class ObjectManager implements IObjectManager, ILocalizable, IObjectPersisterAwa
     }
 
     /**
-     * Возвращает загруженный ранее объект коллекции по его идентификатору, либо NULL
-     * @param ICollection $collection коллекция
-     * @param string|integer $objectId уникальный идентификатор объекта
-     * @return IObject|null если объект не найден
+     * {@inheritdoc}
      */
     public function getObjectInstanceById(ICollection $collection, $objectId)
     {
@@ -72,9 +69,7 @@ class ObjectManager implements IObjectManager, ILocalizable, IObjectPersisterAwa
     }
 
     /**
-     * Возвращает загруженный ранее объект коллекции по его GUID, либо NULL
-     * @param string $guid уникальный GUID объекта
-     * @return IObject|null если объект не найден
+     * {@inheritdoc}
      */
     public function getObjectInstanceByGuid($guid)
     {
@@ -83,6 +78,19 @@ class ObjectManager implements IObjectManager, ILocalizable, IObjectPersisterAwa
         } else {
             return null;
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function changeObjectGuid(IObject $object, $oldGuid)
+    {
+        if (isset($this->objectsByGuid[$oldGuid])) {
+            unset($this->objectsByGuid[$oldGuid]);
+        }
+        $this->objectsByGuid[$object->getGUID()] = $object;
+
+        return $this;
     }
 
     /**

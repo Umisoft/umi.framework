@@ -16,7 +16,7 @@ interface IChoiceFormElement extends IFormElement
 {
     /**
      * Возвращает список возможных значений элемента.
-     * @return array
+     * @return array в формате [$value => $label, ...]
      */
     public function getChoices();
 

@@ -37,6 +37,14 @@ interface IObjectManager
     public function getObjectInstanceByGuid($guid);
 
     /**
+     * Делает перерегистрацию объекта при смене его GUID
+     * @param IObject $object измененный объект
+     * @param string $oldGuid предыдущее значение GUID
+     * @return self
+     */
+    public function changeObjectGuid(IObject $object, $oldGuid);
+
+    /**
      * Создает и регистрирует новый экземпляр объекта
      * @param ICollection $collection коллекция объектов
      * @param IObjectType $objectType тип объекта

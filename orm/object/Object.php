@@ -16,6 +16,7 @@ use umi\i18n\TLocalizable;
 use umi\orm\collection\ICollection;
 use umi\orm\exception\InvalidArgumentException;
 use umi\orm\exception\NonexistentEntityException;
+use umi\orm\exception\NotAllowedOperationException;
 use umi\orm\exception\ReadOnlyEntityException;
 use umi\orm\exception\RuntimeException;
 use umi\orm\manager\IObjectManagerAware;
@@ -244,8 +245,19 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
      */
     public function setGUID($guid)
     {
+        if (!$this->getIsNew()) {
+            throw new NotAllowedOperationException(
+                $this->translate(
+                    'Cannot set GUID. GUID can be set only for new objects.'
+                )
+            );
+        }
+
         $guidProperty = $this->getProperty(self::FIELD_GUID);
+        $oldGuid = $guidProperty->getValue();
         $guidProperty->setValue($guid);
+
+        $this->getObjectManager()->changeObjectGuid($this, $oldGuid);
 
         return $this;
     }

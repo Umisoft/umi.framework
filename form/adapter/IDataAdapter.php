@@ -35,7 +35,7 @@ interface IDataAdapter
     /**
      * Возвращает список вариантов значений на выбор.
      * @param IChoiceFormElement $element элемент формы с выбором значений
-     * @return array
+     * @return array в формате [$value => $label, ...]
      */
     public function getChoices(IChoiceFormElement $element);
 }
