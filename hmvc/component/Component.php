@@ -133,8 +133,8 @@ class Component implements IComponent, IMvcEntityFactoryAware, IRouteAware, ILoc
 
         if (!$this->hasChildComponent($name)) {
             throw new OutOfBoundsException($this->translate(
-                'Cannot create child component "{name}". Component is not registered.',
-                ['name' => $name]
+                'Cannot create component "{path}". Component is not registered.',
+                ['path' => $this->getPath() . self::PATH_SEPARATOR . $name]
             ));
         }
 
