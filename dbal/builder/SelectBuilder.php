@@ -354,7 +354,7 @@ class SelectBuilder extends BaseQueryBuilder implements ISelectBuilder
         $result = $preparedStatement->fetch(\PDO::FETCH_NUM);
         $preparedStatement->closeCursor();
 
-        return !empty($result) ? $result[0] : 0;
+        return $result ? (int) $result[0] : 0;
     }
 
     /**
