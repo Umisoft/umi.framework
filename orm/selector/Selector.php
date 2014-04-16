@@ -382,6 +382,22 @@ class Selector implements ISelector, ILocalizable, ILocalesAware, IMetadataManag
     /**
      * {@inheritdoc}
      */
+    public function getLimit()
+    {
+        return $this->limit;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getOffset()
+    {
+        return $this->offset;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getSelectBuilder()
     {
         if (!$this->selectBuilder) {

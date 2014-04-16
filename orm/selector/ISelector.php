@@ -160,6 +160,18 @@ interface ISelector extends \IteratorAggregate
     public function limit($limit, $offset = null);
 
     /**
+     * Возвращает установленный для выборки limit
+     * @return int|null
+     */
+    public function getLimit();
+
+    /**
+     * Возвращает установленный для выборки offset
+     * @return int|null
+     */
+    public function getOffset();
+
+    /**
      * Формирует и возвращает билдер Select-запросов по установленным условиям для селектора.
      * Билдер можно дополнить низкоуровнеми условиями для сложных запросов.
      * @return ISelectBuilder

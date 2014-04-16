@@ -159,9 +159,7 @@ abstract class BaseCollection
      */
     public function getById($objectId, $withLocalization = false)
     {
-        if (!$object = $this->getObjectManager()
-            ->getObjectInstanceById($this, $objectId)
-        ) {
+        if (!$object = $this->getObjectManager()->getObjectInstanceById($this, $objectId)) {
             $objectsSet = $this->select()
                 ->where(
                     $this->getIdentifyField()
