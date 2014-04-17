@@ -32,12 +32,13 @@ abstract class BaseHierarchicCollection extends BaseCollection implements IHiera
     /**
      * {@inheritdoc}
      */
-    public function getByUri($uri)
+    public function getByUri($uri, $withLocalization = false)
     {
         $object =  $this->select()
             ->where(IHierarchicObject::FIELD_URI)
                 ->equals(UriField::URI_START_SYMBOL . $uri)
             ->limit(1)
+            ->withLocalization($withLocalization)
             ->result()
                 ->fetch();
 
