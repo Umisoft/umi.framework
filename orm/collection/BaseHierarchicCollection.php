@@ -13,12 +13,10 @@ use umi\dbal\builder\IExpressionGroup;
 use umi\dbal\builder\ISelectBuilder;
 use umi\dbal\builder\IUpdateBuilder;
 use umi\dbal\builder\SelectBuilder;
-use umi\orm\exception\NonexistentEntityException;
 use umi\orm\exception\NotAllowedOperationException;
 use umi\orm\exception\RuntimeException;
 use umi\orm\metadata\field\relation\BelongsToRelationField;
 use umi\orm\metadata\field\special\MaterializedPathField;
-use umi\orm\metadata\field\special\UriField;
 use umi\orm\object\IHierarchicObject;
 use umi\orm\object\IObject;
 use umi\orm\object\property\calculable\ICounterProperty;
@@ -28,32 +26,6 @@ use umi\orm\object\property\calculable\ICounterProperty;
  */
 abstract class BaseHierarchicCollection extends BaseCollection implements IHierarchicCollection
 {
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getByUri($uri, $withLocalization = false)
-    {
-        $object =  $this->select()
-            ->where(IHierarchicObject::FIELD_URI)
-                ->equals(UriField::URI_START_SYMBOL . $uri)
-            ->limit(1)
-            ->withLocalization($withLocalization)
-            ->result()
-                ->fetch();
-
-        if (!$object instanceof IHierarchicObject) {
-            throw new NonexistentEntityException(
-                $this->translate(
-                    'Object with URI "{uri}" does not exist in collection "{collection}".',
-                    ['uri' => $uri, 'collection' => $this->getName()]
-                )
-            );
-        }
-
-        return $object;
-    }
-
     /**
      * {@inheritdoc}
      */

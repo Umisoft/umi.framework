@@ -23,16 +23,6 @@ use umi\orm\selector\ISelector;
  */
 interface IHierarchicCollection extends ICollection
 {
-
-    /**
-     * Возвращает объект по URI.
-     * @param string $uri URI
-     * @param bool $withLocalization загружать ли значения локализованных свойств объекта.
-     * @throws NonexistentEntityException если не удалось получить объект
-     * @return IHierarchicObject
-     */
-    public function getByUri($uri, $withLocalization = false);
-
     /**
      * Возвращает максимальный порядок в указанной ветке.
      * @param IHierarchicObject|null $branch если ветка не указана, вернет максимальный порядок в корне
