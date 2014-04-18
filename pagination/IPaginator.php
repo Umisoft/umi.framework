@@ -16,7 +16,7 @@ use umi\pagination\exception\UnexpectedValueException;
 /**
  * Интерфейс постраничной навигации.
  */
-interface IPaginator extends ILocalizable
+interface IPaginator extends ILocalizable, \Traversable
 {
 
     /**
