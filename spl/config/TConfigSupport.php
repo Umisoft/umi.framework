@@ -38,7 +38,7 @@ trait TConfigSupport
 
         if ($fullDepth) {
             foreach ($config as $key => $value) {
-                if (!is_scalar($value)) {
+                if (is_array($value) || $value instanceof Traversable) {
                     $config[$key] = $this->configToArray($value, $fullDepth);
                 }
             }
