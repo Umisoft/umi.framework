@@ -19,7 +19,7 @@ use umi\pagination\exception\UnexpectedValueException;
 /**
  * Класс постраничной навигации.
  */
-class Paginator implements IPaginator
+class Paginator implements \IteratorAggregate, IPaginator
 {
 
     use TLocalizable;
@@ -117,4 +117,19 @@ class Paginator implements IPaginator
 
         return $items;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIterator()
+    {
+        $items = $this->getPageItems();
+
+        if (is_array($items)) {
+            return new \ArrayIterator($items);
+        }
+
+        return $items;
+    }
+
 }
