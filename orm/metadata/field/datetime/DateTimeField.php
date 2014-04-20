@@ -9,10 +9,9 @@
 
 namespace umi\orm\metadata\field\datetime;
 
+use DateTime;
 use umi\orm\metadata\field\BaseField;
 use umi\orm\object\IObject;
-use umi\orm\object\property\datetime\DateTime;
-use umi\orm\object\property\datetime\IDateTimeProperty;
 
 /**
  * Класс поля для даты с учетом времени.
@@ -32,7 +31,7 @@ class DateTimeField extends BaseField
      */
     public function validateInputPropertyValue($propertyValue)
     {
-        return ($propertyValue instanceof \DateTime);
+        return ($propertyValue instanceof DateTime);
     }
 
     /**
@@ -40,12 +39,11 @@ class DateTimeField extends BaseField
      */
     public function preparePropertyValue(IObject $object, $internalDbValue)
     {
-        /**
-         * @var IDateTimeProperty $property
-         */
-        $property = $object->getProperty($this->getName());
+        if (is_null($internalDbValue)) {
+            return null;
+        }
 
-        return new DateTime($internalDbValue, null, $property);
+        return new DateTime($internalDbValue);
     }
 
     /**
@@ -54,7 +52,7 @@ class DateTimeField extends BaseField
     public function prepareDbValue(IObject $object, $propertyValue)
     {
         $dbValue = null;
-        if ($propertyValue instanceof DateTime && $propertyValue->getIsTimeSet()) {
+        if ($propertyValue instanceof DateTime) {
 
             $dbValue = $propertyValue->format('Y-m-d H:i:s');
         }

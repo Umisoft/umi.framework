@@ -13,7 +13,6 @@ use umi\i18n\ILocalesAware;
 use umi\i18n\ILocalizable;
 use umi\i18n\TLocalesAware;
 use umi\i18n\TLocalizable;
-use umi\orm\exception\IException;
 use umi\orm\exception\InvalidArgumentException;
 use umi\orm\exception\LoadEntityException;
 use umi\orm\exception\NonexistentEntityException;
