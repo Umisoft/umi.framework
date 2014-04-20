@@ -160,7 +160,7 @@ class PhpFileReader implements IReader, ILocalizable, IConfigAliasResolverAware,
      */
     protected function createEntity($masterValue)
     {
-        if (!is_scalar($masterValue)) {
+        if (!is_scalar($masterValue) && !is_null($masterValue)) {
             throw new UnexpectedValueException($this->translate(
                 'Unexpected configuration value. Configuration can contain only scalar values.'
             ));
