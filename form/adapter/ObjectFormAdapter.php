@@ -7,9 +7,8 @@
  * @license   http://umi-framework.ru/license/bsd-3 BSD-3 License
  */
 
-namespace umi\form\adapter\orm;
+namespace umi\form\adapter;
 
-use umi\form\adapter\IDataAdapter;
 use umi\form\element\IFormElement;
 use umi\form\element\IChoiceFormElement;
 use umi\form\exception\UnexpectedValueException;
