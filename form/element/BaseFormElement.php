@@ -76,6 +76,9 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
         return $this->filters;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getFiltersConfig()
     {
         return isset($this->options['filters']) ? $this->options['filters'] : [];
