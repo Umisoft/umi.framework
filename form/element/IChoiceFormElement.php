@@ -21,6 +21,12 @@ interface IChoiceFormElement extends IFormElement
     public function getChoices();
 
     /**
+     * Возвращает список возможных значений элемента явно заданных в конфигурации.
+     * @return array в формате [$value => $label, ...]
+     */
+    public function getStaticChoices();
+
+    /**
      * Возвращает идентификатор источника данных для возможных значений.
      * @return string|null
      */
