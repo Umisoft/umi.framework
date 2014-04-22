@@ -232,7 +232,7 @@ class Component implements IComponent, IMvcEntityFactoryAware, IRouteAware, ILoc
             ));
         }
 
-        $config = $this->configToArray($this->options[self::OPTION_FORMS][$$formName], true);
+        $config = $this->configToArray($this->options[self::OPTION_FORMS][$formName], true);
 
         return $this->createForm($config, $object);
 
