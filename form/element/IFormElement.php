@@ -45,6 +45,18 @@ interface IFormElement extends IFormEntity
     public function getValidators();
 
     /**
+     * Возвращает конфигурацию валидаторов.
+     * @return array в формате [$validatorType => [$optionName => $value, ...], ...]
+     */
+    public function getValidatorsConfig();
+
+    /**
+     * Возвращает конфигурацию фильтров.
+     * @return array в формате [$filterType => [$optionName => $value, ...], ...]
+     */
+    public function getFiltersConfig();
+
+    /**
      * Возвращает идентификатор источника данных для элемента.
      * @return string|null
      */

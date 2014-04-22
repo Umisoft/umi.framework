@@ -27,11 +27,12 @@ class Email extends BaseFormElement implements IFormInput
     /**
      * {@inheritdoc}
      */
-    public function getValidators()
+    public function getValidatorsConfig()
     {
-        $validators = parent::getValidators();
+        $config = parent::getValidatorsConfig();
+        $config['validators'][IValidatorFactory::TYPE_EMAIL] = [];
 
-        return $validators->prependValidator($this->createValidator(IValidatorFactory::TYPE_EMAIL));
+        return $config;
     }
 
     /**

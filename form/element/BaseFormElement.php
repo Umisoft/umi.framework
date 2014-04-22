@@ -65,17 +65,20 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
     }
 
     /**
-     * Возвращает установленные валидаторы для формы.
-     * @return IFilterCollection
+     * {@inheritdoc}
      */
     public function getFilters()
     {
         if (!$this->filters) {
-            $filtersConfig = isset($this->options['filters']) ? $this->options['filters'] : [];
-            $this->filters = $this->createFilterCollection($filtersConfig);
+            $this->filters = $this->createFilterCollection($this->getFiltersConfig());
         }
 
         return $this->filters;
+    }
+
+    public function getFiltersConfig()
+    {
+        return isset($this->options['filters']) ? $this->options['filters'] : [];
     }
 
     /**
@@ -84,11 +87,18 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
     public function getValidators()
     {
         if (!$this->validators) {
-            $validatorsConfig = isset($this->options['validators']) ? $this->options['validators'] : [];
-            $this->validators = $this->createValidatorCollection($validatorsConfig);
+            $this->validators = $this->createValidatorCollection($this->getValidatorsConfig());
         }
 
         return $this->validators;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getValidatorsConfig()
+    {
+        return isset($this->options['validators']) ? $this->options['validators'] : [];
     }
 
     /**
