@@ -19,11 +19,11 @@ class PhpTemplateEngine implements ITemplateEngine
 {
 
     /**
-     * Директория расположения шаблонов
+     * Опция для задания директорий расположения шаблонов
      */
-    const OPTION_TEMPLATE_DIRECTORY = 'directory';
+    const OPTION_TEMPLATE_DIRECTORIES = 'directories';
     /**
-     * Расширение файлов шаблонов
+     * Опция для задания расширения файлов шаблонов
      */
     const OPTION_TEMPLATE_FILE_EXTENSION = 'extension';
 
@@ -38,9 +38,9 @@ class PhpTemplateEngine implements ITemplateEngine
     protected $functions = [];
 
     /**
-     * @var string $baseDirectory директория с шаблонами
+     * @var array $templateDirectories директории расположения шаблонов
      */
-    private $baseDirectory;
+    private $templateDirectories;
 
     /**
      * {@inheritdoc}
@@ -56,7 +56,7 @@ class PhpTemplateEngine implements ITemplateEngine
      */
     public function render($templateFile, array $variables = [])
     {
-        return (new PhpTemplate($this->getBaseDirectory(), $this))
+        return (new PhpTemplate($this))
             ->render($this->getTemplateFilename($templateFile), $variables);
     }
 
@@ -91,6 +91,19 @@ class PhpTemplateEngine implements ITemplateEngine
     }
 
     /**
+     * Возвращает директории расположения шаблонов.
+     * @return array
+     */
+    public function getTemplateDirectories()
+    {
+        if (is_null($this->templateDirectories)) {
+            $this->templateDirectories = isset($this->options[self::OPTION_TEMPLATE_DIRECTORIES]) ? $this->options[self::OPTION_TEMPLATE_DIRECTORIES] : [];
+        }
+
+        return (array) $this->templateDirectories;
+    }
+
+    /**
      * Возрващает имя файла шаблона по имени шаблона.
      * @param string $templateName имя шаблона
      * @return string
@@ -102,18 +115,5 @@ class PhpTemplateEngine implements ITemplateEngine
         }
 
         return $templateName;
-    }
-
-    /**
-     * Возвращает директорию располения шаблонов.
-     * @return string
-     */
-    protected function getBaseDirectory()
-    {
-        if (is_null($this->baseDirectory)) {
-            $this->baseDirectory = isset($this->options[self::OPTION_TEMPLATE_DIRECTORY]) ? $this->options[self::OPTION_TEMPLATE_DIRECTORY] : '';
-        }
-
-        return $this->baseDirectory;
     }
 }

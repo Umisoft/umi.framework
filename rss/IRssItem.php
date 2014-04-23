@@ -32,10 +32,10 @@ interface IRssItem
 
     /**
      * Устанавливает дату публикации элемента.
-     * @param DateTime $date
+     * @param DateTime|null $date
      * @return self
      */
-    public function setDate(DateTime $date);
+    public function setDate(DateTime $date = null);
 
     /**
      * Устанавливает абсолютный URL элемента.
@@ -58,7 +58,7 @@ interface IRssItem
 
     /**
      * Возвращает дату публикации элемента.
-     * @return DateTime
+     * @return DateTime|null
      */
     public function getDate();
 

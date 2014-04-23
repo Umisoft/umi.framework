@@ -106,7 +106,8 @@ class EntityFactory implements IEntityFactory, IFactory
     public $dataAdapters = [
         'array' => 'umi\form\adapter\ArrayFormAdapter',
         'default' => 'umi\form\adapter\DefaultFormAdapter',
-        'umi\orm\object\IObject' => 'umi\form\adapter\orm\ObjectFormAdapter',
+        'umi\orm\object\IObject' => 'umi\form\adapter\ObjectFormAdapter',
+        'umi\config\entity\IConfig' => 'umi\form\adapter\ConfigFormAdapter',
     ];
 
     /**

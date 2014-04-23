@@ -22,11 +22,23 @@ abstract class BaseChoiceElement extends BaseFormElement implements IChoiceFormE
      */
     public function getChoices()
     {
+        if ($choices = $this->getStaticChoices()) {
+            return $choices;
+        }
+
+        return $this->getDataAdapter()->getChoices($this);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getStaticChoices()
+    {
         if (isset($this->options['choices'])) {
             return $this->options['choices'];
         }
 
-        return $this->getDataAdapter()->getChoices($this);
+        return [];
     }
 
     /**

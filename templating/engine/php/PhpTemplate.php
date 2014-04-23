@@ -17,22 +17,16 @@ use umi\templating\exception\RuntimeException;
 class PhpTemplate
 {
     /**
-     * @var string $templatingDirectory директория с шаблонами
-     */
-    protected $templatingDirectory;
-    /**
      * @var PhpTemplateEngine $templateEngine
      */
     protected $templateEngine;
 
     /**
      * Конструктор
-     * @param string $directory
      * @param PhpTemplateEngine $templateEngine
      */
-    public function __construct($directory = '.', PhpTemplateEngine $templateEngine)
+    public function __construct(PhpTemplateEngine $templateEngine)
     {
-        $this->templatingDirectory = $directory;
         $this->templateEngine = $templateEngine;
     }
 
@@ -41,13 +35,12 @@ class PhpTemplate
      */
     public function render($templateName, array $templateVariables = [])
     {
-        $templateFilename = $this->templatingDirectory . DIRECTORY_SEPARATOR . $templateName;
-
-        if (!is_readable($templateFilename)) {
+        $templateFilePath = $this->findTemplate($templateName);
+        if (!is_readable($templateFilePath)) {
             throw new RuntimeException(sprintf(
                 'Cannot render template "%s". PHP template file "%s" is not readable.',
                 $templateName,
-                $templateFilename
+                $templateFilePath
             ));
         }
 
@@ -56,7 +49,7 @@ class PhpTemplate
         ob_start();
         try {
             /** @noinspection PhpIncludeInspection */
-            require $templateFilename;
+            require $templateFilePath;
         } catch (\Exception $e) {
             ob_end_clean();
             throw $e;
@@ -74,5 +67,20 @@ class PhpTemplate
     public function __call($name, array $arguments)
     {
         return $this->templateEngine->callHelper($name, $arguments);
+    }
+
+    protected function findTemplate($templateName)
+    {
+        $directories = $this->templateEngine->getTemplateDirectories();
+
+        foreach($directories as $directory) {
+            $templateFilePath = $directory . DIRECTORY_SEPARATOR . $templateName;
+            if (is_file($templateFilePath)) {
+                return $templateFilePath;
+            }
+        }
+        throw new RuntimeException(
+            sprintf('Unable to find template "%s" (looked into: %s).', $templateName, implode(', ', $directories))
+        );
     }
 }

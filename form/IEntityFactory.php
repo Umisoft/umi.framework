@@ -9,8 +9,6 @@
 
 namespace umi\form;
 
-use umi\form\exception\OutOfBoundsException;
-
 /**
  * Интерфейс фабрики элементов формы.
  */

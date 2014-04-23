@@ -54,7 +54,7 @@ class RssItem implements IRssItem
     /**
      * {@inheritdoc}
      */
-    public function setDate(DateTime $date)
+    public function setDate(DateTime $date = null)
     {
         $this->date = $date;
 
