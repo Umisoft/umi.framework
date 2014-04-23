@@ -45,7 +45,6 @@ class SelectorPaginationAdapter implements IPaginationAdapter
     public function getItems($limit, $offset)
     {
         return $this->selector
-            ->limit($limit, $offset)
-            ->result();
+            ->limit($limit, $offset);
     }
 }
