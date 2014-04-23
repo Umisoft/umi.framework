@@ -12,7 +12,7 @@ namespace umi\hmvc\view;
 /**
  * Отображение результата работы виджета или контроллера, которое может автоматически рендериться в строку.
  */
-interface IView extends \ArrayAccess, \Traversable
+interface IView extends \ArrayAccess, \Traversable, \Serializable
 {
     /**
      * Возвращает контент в виде строки.
