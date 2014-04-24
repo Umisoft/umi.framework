@@ -151,6 +151,9 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
     public function reportViewRenderError(Exception $e, IDispatchContext $failureContext, $viewOwner)
     {
         if ($viewOwner instanceof IWidget) {
+            if ($viewOwner->getName() === IComponent::ERROR_WIDGET) {
+                return $e->getMessage();
+            }
             return $this->processWidgetError($e, $failureContext);
         }
 
