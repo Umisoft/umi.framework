@@ -262,7 +262,18 @@ abstract class BaseController implements IController, IHttpAware, ILocalizable
      */
     protected function createViewResponse($templateName, array $variables = [])
     {
-        return $this->createResponse(new View($this, $this->getContext(), $templateName, $variables));
+        return $this->createResponse($this->createView($templateName, $variables));
+    }
+
+    /**
+     * Создает View, требующий шаблонизации.
+     * @param string $templateName имя шаблона
+     * @param array $variables переменные
+     * @return IView
+     */
+    protected function createView($templateName, array $variables = [])
+    {
+        return new View($this, $this->getContext(), $templateName, $variables);
     }
 
     /**

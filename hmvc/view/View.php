@@ -10,7 +10,6 @@
 namespace umi\hmvc\view;
 
 use ArrayIterator;
-use Serializable;
 use umi\hmvc\controller\IController;
 use umi\hmvc\dispatcher\IDispatchContext;
 use umi\hmvc\exception\ViewRenderException;
@@ -21,7 +20,7 @@ use umi\spl\container\TPropertyAccess;
 /**
  * Содержимое результата работы виджета или контроллера, требующее шаблонизации.
  */
-class View extends ArrayIterator implements IView, Serializable
+class View extends ArrayIterator implements IView
 {
     use TArrayAccess;
     use TPropertyAccess;
