@@ -31,9 +31,14 @@ class PhpTemplate
     }
 
     /**
-     * {@inheritdoc}
+     * Отображает заданный шаблон используя переменные.
+     * @param string $templateName имя шаблона
+     * @param array $scope
+     * @throws RuntimeException
+     * @throws \Exception
+     * @return string отображение
      */
-    public function render($templateName, array $templateVariables = [])
+    public function render($templateName, array $scope = [])
     {
         $templateFilePath = $this->findTemplate($templateName);
         if (!is_readable($templateFilePath)) {
@@ -44,7 +49,7 @@ class PhpTemplate
             ));
         }
 
-        extract($templateVariables);
+        extract($scope);
 
         ob_start();
         try {
