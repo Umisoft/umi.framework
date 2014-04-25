@@ -30,7 +30,7 @@ class Email extends BaseFormElement implements IFormInput
     public function getValidatorsConfig()
     {
         $config = parent::getValidatorsConfig();
-        $config['validators'][IValidatorFactory::TYPE_EMAIL] = [];
+        $config[IValidatorFactory::TYPE_EMAIL] = [];
 
         return $config;
     }
