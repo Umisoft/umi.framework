@@ -30,10 +30,10 @@ trait THttpAware
     }
 
     /**
-     * Создает HTTP-запрос к серверу из глобальных переменных.
+     * Возвращает HTTP-запрос к серверу из глобальных переменных.
      * @return Request
      */
-    protected function createHttpRequest()
+    protected function getHttpRequest()
     {
         return $this->getHttpFactory()
             ->getRequest();
