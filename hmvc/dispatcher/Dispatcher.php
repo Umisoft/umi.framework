@@ -20,7 +20,7 @@ use umi\hmvc\acl\ComponentRoleProvider;
 use umi\hmvc\acl\IComponentRoleResolver;
 use umi\hmvc\component\IComponent;
 use umi\hmvc\controller\IController;
-use umi\hmvc\exception\http\HttpForbidden;
+use umi\hmvc\exception\acl\ResourceAccessForbiddenException;
 use umi\hmvc\exception\http\HttpNotFound;
 use umi\hmvc\exception\RuntimeException;
 use umi\hmvc\exception\UnexpectedValueException;
@@ -274,7 +274,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
      * @param array $params параметры вызова виджета
      * @param SplStack $callStack стек вызова компонентов
      * @param string $matchedWidgetUri известная часть пути вызова виджета
-     * @throws HttpForbidden при отстуствии прав на вызов виджета
+     * @throws ResourceAccessForbiddenException при отстуствии прав на вызов виджета
      * @return IWidget
      */
     protected function dispatchWidget(IComponent $component, $widgetUri, array $params, SplStack $callStack, $matchedWidgetUri = '')
@@ -305,7 +305,8 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
              * @var IWidget|IAclResource $widget
              */
             if ($widget instanceof IACLResource && !$this->checkPermissions($component, $widget)) {
-                throw new HttpForbidden(
+                throw new ResourceAccessForbiddenException(
+                    $widget,
                     $this->translate(
                         'Cannot execute widget "{name}" for component "{path}". Access denied.',
                         [
@@ -347,7 +348,6 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
      * @param SplStack $callStack
      * @param string $matchedRoutePath обработанная часть начального маршрута
      * @throws HttpNotFound если невозможно сформировать результат.
-     * @throws HttpForbidden если доступ к ресурсу не разрешен.
      * @return Response
      */
     protected function processRequest(IComponent $component, $routePath, SplStack $callStack, $matchedRoutePath = '')
@@ -497,8 +497,8 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
      * @param IRouteResult $routeResult
      * @param SplStack $callStack
      * @param string $matchedRoutePath
-     * @throws HttpForbidden если дочерний компонент не существует
-     * @throws HttpNotFound если доступ к дочернему компоненту не разрешен
+     * @throws HttpNotFound если дочерний компонент не существует
+     * @throws ResourceAccessForbiddenException если доступ к дочернему компоненту не разрешен
      * @return Response
      */
     private function processChildComponentRequest(IComponent $component, IRouteResult $routeResult, SplStack $callStack, $matchedRoutePath)
@@ -521,7 +521,8 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
 
         if ($childComponent instanceof IACLResource && !$this->checkPermissions($component, $childComponent)) {
 
-            throw new HttpForbidden(
+            throw new ResourceAccessForbiddenException(
+                $childComponent,
                 $this->translate(
                     'Cannot execute component "{path}". Access denied.',
                     ['path' => $childComponent->getPath()]
@@ -540,7 +541,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
      * @param IDispatchContext $context
      * @param SplStack $callStack
      * @param array $routeMatches
-     * @throws HttpForbidden
+     * @throws ResourceAccessForbiddenException
      * @throws HttpNotFound
      * @return Response
      */
@@ -563,7 +564,8 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
             ->setRequest($this->getCurrentRequest());
 
         if ($controller instanceof IACLResource && !$this->checkPermissions($component, $controller)) {
-            throw new HttpForbidden(
+            throw new ResourceAccessForbiddenException(
+                $controller,
                 $this->translate(
                     'Cannot execute controller "{name}" for component "{path}". Access denied.',
                     [
