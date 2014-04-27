@@ -492,6 +492,40 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
     }
 
     /**
+     * Возвращает информацию о контексте вызова виджета.
+     * @param string $widgetUri путь виджета
+     * @throws RuntimeException если контекст не существует
+     * @return array
+     */
+    protected function resolveWidgetContext(&$widgetUri)
+    {
+        if (strpos($widgetUri, self::WIDGET_URI_SEPARATOR) !== 0) {
+            if (!$this->currentContext) {
+                throw new RuntimeException(
+                    $this->translate(
+                        'Context for executing widget "{widget}" is unknown.',
+                        ['widget' => $widgetUri]
+                    )
+                );
+            }
+
+            $widgetUri = self::WIDGET_URI_SEPARATOR . $widgetUri;
+
+            return [
+                $this->currentContext->getComponent(),
+                clone $this->currentContext->getCallStack(),
+                $this->currentContext->getBaseUrl()
+            ];
+        }
+
+        return [
+            $this->getInitialComponent(),
+            $this->createCallStack(),
+            ''
+        ];
+    }
+
+    /**
      * Возвращает результат работы дочернего компонента.
      * @param IComponent $component
      * @param IRouteResult $routeResult
@@ -579,40 +613,6 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
         $componentResponse = $this->invokeController($controller);
 
         return $this->processResponse($componentResponse, $callStack);
-    }
-
-    /**
-     * Возвращает информацию о контексте вызова виджета.
-     * @param string $widgetUri путь виджета
-     * @throws RuntimeException если контекст не существует
-     * @return array
-     */
-    private function resolveWidgetContext(&$widgetUri)
-    {
-        if (strpos($widgetUri, self::WIDGET_URI_SEPARATOR) !== 0) {
-            if (!$this->currentContext) {
-                throw new RuntimeException(
-                    $this->translate(
-                        'Context for executing widget "{widget}" is unknown.',
-                        ['widget' => $widgetUri]
-                    )
-                );
-            }
-
-            $widgetUri = self::WIDGET_URI_SEPARATOR . $widgetUri;
-
-            return [
-                $this->currentContext->getComponent(),
-                clone $this->currentContext->getCallStack(),
-                $this->currentContext->getBaseUrl()
-            ];
-        }
-
-        return [
-            $this->getInitialComponent(),
-            $this->createCallStack(),
-            ''
-        ];
     }
 
     /**
