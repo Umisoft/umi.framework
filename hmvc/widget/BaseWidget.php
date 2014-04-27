@@ -108,7 +108,7 @@ abstract class BaseWidget implements IWidget, ILocalizable
      * @param array $variables переменные
      * @return IView
      */
-    protected function createResult($templateName, array $variables)
+    protected function createResult($templateName, array $variables = [])
     {
         return new View($this, $this->getContext(), $templateName, $variables);
     }
