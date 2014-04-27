@@ -36,7 +36,7 @@ trait THttpAware
     protected function createHttpRequest()
     {
         return $this->getHttpFactory()
-            ->createRequest();
+            ->getRequest();
     }
 
     /**
