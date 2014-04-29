@@ -14,6 +14,14 @@ namespace umi\i18n;
  */
 interface ILocalesService
 {
+    /**
+     * Текущая локаль
+     */
+    const LOCALE_CURRENT = 'current';
+    /**
+     * Все локали
+     */
+    const LOCALE_ALL = 'all';
 
     /**
      * Возвращает локаль по умолчанию

@@ -91,7 +91,7 @@ class ORMAdapter implements IAuthAdapter, ICollectionManagerAware, ILocalizable
         }
         $usersSelector->end();
         $usersSelector->limit(1);
-        $usersSelector->withLocalization();
+        $usersSelector->localization();
 
         $user = $usersSelector->result()
             ->fetch();

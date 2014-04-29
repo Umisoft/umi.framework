@@ -12,6 +12,7 @@ namespace umi\orm\selector;
 use umi\dbal\builder\IExpressionGroup;
 use umi\dbal\builder\ISelectBuilder;
 use umi\i18n\ILocalesAware;
+use umi\i18n\ILocalesService;
 use umi\i18n\ILocalizable;
 use umi\i18n\TLocalesAware;
 use umi\i18n\TLocalizable;
@@ -92,9 +93,9 @@ class Selector implements ISelector, ILocalizable, ILocalesAware, IMetadataManag
      */
     protected $offset = 0;
     /**
-     * @var bool $withLocalization режим загрузки  всех локализованных свойств объектов
+     * @var string $localization локаль для загрузки объектов
      */
-    protected $withLocalization = false;
+    protected $localization = ILocalesService::LOCALE_CURRENT;
     /**
      * @var ISelectorFactory $selectorFactory
      */
@@ -180,11 +181,19 @@ class Selector implements ISelector, ILocalizable, ILocalesAware, IMetadataManag
     /**
      * {@inheritdoc}
      */
-    public function withLocalization($withLocalization = true)
+    public function localization($localization = ILocalesService::LOCALE_ALL)
     {
-        $this->withLocalization = $withLocalization;
+        $this->localization = $localization;
 
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLocalization()
+    {
+        return $this->localization;
     }
 
     /**
@@ -857,16 +866,21 @@ class Selector implements ISelector, ILocalizable, ILocalesAware, IMetadataManag
 
         foreach ($fields as $fieldName => $field) {
             if ($field instanceof ILocalizableField && $field->getIsLocalized()) {
-                $currentLocaleId = $this->getCurrentLocale();
+
+                $currentLocaleId = ($this->localization === ILocalesService::LOCALE_CURRENT) ?
+                    $this->getCurrentLocale() : $this->localization;
+
                 $defaultLocaleId = $this->getDefaultLocale();
 
-                if ($this->withLocalization) {
+                if ($this->localization === ILocalesService::LOCALE_ALL) {
+
                     foreach ($field->getLocalizations() as $localeId => $localeInfo) {
                         $columnName = $fieldSourceAlias . self::FIELD_SEPARATOR . $localeInfo['columnName'];
                         $alias = $fieldSourceAlias . self::ALIAS_SEPARATOR . $fieldName
                             . ILocalizedProperty::LOCALE_SEPARATOR . $localeId;
                         $columns[] = [$columnName, $alias];
                     }
+
                 } else {
                     $columnName = $fieldSourceAlias . self::FIELD_SEPARATOR
                         . $field->getLocaleColumnName($currentLocaleId);

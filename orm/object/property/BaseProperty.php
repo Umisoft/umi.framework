@@ -115,7 +115,7 @@ abstract class BaseProperty implements IProperty, ILocalizable, IFilterAware
     public function getDbValue()
     {
         if (!$this->getIsLoaded()) {
-            $this->object->fullyLoad();
+            $this->object->fullyLoad($this->object->getLoadLocalization());
         }
 
         return $this->dbValue;

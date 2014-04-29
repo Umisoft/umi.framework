@@ -10,6 +10,7 @@
 namespace umi\orm\selector;
 
 use umi\dbal\builder\ISelectBuilder;
+use umi\i18n\ILocalesService;
 use umi\orm\collection\ICollection;
 use umi\orm\exception\NonexistentEntityException;
 use umi\orm\metadata\field\IField;
@@ -107,14 +108,19 @@ interface ISelector extends \IteratorAggregate
     public function getWithInfo();
 
     /**
-     * Устанавливает режим загрузки всех локализованных свойств объектов.
-     * По умолчанию выключено. Загружаются только свойства для текущей локали,
-     * при попытке обратиться к локализованному свойству происходит ленивая загрузка
-     * всех локализованных свойств объекта.
-     * @param bool $withLocalization
+     * Устанавливает настройки для загрузки локализованных свойств объектов.
+     * @param string $localization указание на локаль, в которой загружаются объекты.
+     * По умолчанию объекты загружаются в текущей локали. Можно указать конкретную локаль
+     * или ILocalesService::LOCALE_ALL для загрузки объектов во всех локалях.
      * @return self
      */
-    public function withLocalization($withLocalization = true);
+    public function localization($localization = ILocalesService::LOCALE_ALL);
+
+    /**
+     * Возвращает настройки для загрузки локализованных свойств объектов.
+     * @return string
+     */
+    public function getLocalization();
 
     /**
      * Начинает новую группу выражений.<br />

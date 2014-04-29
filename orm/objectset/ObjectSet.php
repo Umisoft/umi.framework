@@ -237,6 +237,8 @@ class ObjectSet implements IObjectSet, ILocalizable, ICollectionManagerAware
     protected function loadObjects(array $row)
     {
 
+        $loadLocalization = $this->getSelector()->getLocalization();
+
         $objectsInfo = [];
         foreach ($row as $alias => $value) {
             $pos = strrpos($alias, ISelector::ALIAS_SEPARATOR);
@@ -266,6 +268,8 @@ class ObjectSet implements IObjectSet, ILocalizable, ICollectionManagerAware
 
             if (!is_null($objectInfo[IObject::FIELD_TYPE])) {
                 $object = $this->loadObject($objectInfo[IObject::FIELD_TYPE], $objectInfo);
+                $object->setLoadLocalization($loadLocalization);
+
                 if (!$mainObject && !substr_count($collectionPath, ISelector::FIELD_SEPARATOR)) {
                     $mainObject = $object;
                 }

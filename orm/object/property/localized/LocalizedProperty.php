@@ -10,6 +10,7 @@
 namespace umi\orm\object\property\localized;
 
 use umi\i18n\ILocalesAware;
+use umi\i18n\ILocalesService;
 use umi\i18n\TLocalesAware;
 use umi\orm\metadata\field\IField;
 use umi\orm\object\IObject;
@@ -63,9 +64,15 @@ class LocalizedProperty extends BaseProperty implements ILocalizedProperty, ILoc
     public function getDbValue()
     {
         if (!$this->getIsLoaded()) {
-            $loadLocalization = $this->localeId !== $this->getCurrentLocale()
-                && $this->localeId !== $this->getDefaultLocale();
-            $this->object->fullyLoad($loadLocalization);
+
+            $localization = $this->object->getLoadLocalization();
+            $currentLocaleId = ($localization === ILocalesService::LOCALE_CURRENT) ? $this->getCurrentLocale() : $localization;
+
+            if ($this->localeId !== $currentLocaleId && $this->localeId !== $this->getDefaultLocale()) {
+                $localization = ILocalesService::LOCALE_ALL;
+            }
+
+            $this->object->fullyLoad($localization);
         }
 
         return $this->dbValue;
