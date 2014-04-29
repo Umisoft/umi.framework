@@ -646,7 +646,7 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
     /**
      * {@inheritdoc}
      */
-    public function fullyLoad($localization = false)
+    public function fullyLoad($localization = ILocalesService::LOCALE_CURRENT)
     {
         $this->collection->fullyLoadObject($this, $localization);
     }
