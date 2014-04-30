@@ -42,6 +42,12 @@ interface ILocalesService
     public function getCurrentDataLocale();
 
     /**
+     * Возвращает локаль для загрузки данных по умолчанию.
+     * @return string
+     */
+    public function getDefaultDataLocale();
+
+    /**
      * Устанавливает локаль по умолчанию.
      * @param string $localeId
      * @return self
@@ -61,6 +67,13 @@ interface ILocalesService
      * @return self
      */
     public function setCurrentDataLocale($localeId);
+
+    /**
+     * Устанавливает локаль для загрузки данных по умолчанию.
+     * @param string $localeId
+     * @return self
+     */
+    public function setDefaultDataLocale($localeId);
 
 }
  

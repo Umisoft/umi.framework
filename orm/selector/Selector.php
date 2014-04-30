@@ -871,7 +871,7 @@ class Selector implements ISelector, ILocalizable, ILocalesAware, IMetadataManag
                 $currentLocaleId = ($this->localization === ILocalesService::LOCALE_CURRENT) ?
                     $this->getCurrentDataLocale() : $this->localization;
 
-                $defaultLocaleId = $this->getDefaultLocale();
+                $defaultLocaleId = $this->getDefaultDataLocale();
 
                 if ($this->localization === ILocalesService::LOCALE_ALL) {
 

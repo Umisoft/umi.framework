@@ -902,10 +902,10 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
     protected function getLocalizedValue(ILocalizedProperty $property, $localeId)
     {
 
-        if ($localeId || !is_null($property->getValue()) || $property->getLocaleId() === $this->getDefaultLocale()) {
+        if ($localeId || !is_null($property->getValue()) || $property->getLocaleId() === $this->getDefaultDataLocale()) {
             return $property->getValue();
         }
-        $defaultProperty = $this->getProperty($property->getName(), $this->getDefaultLocale());
+        $defaultProperty = $this->getProperty($property->getName(), $this->getDefaultDataLocale());
 
         return $defaultProperty->getValue();
 
