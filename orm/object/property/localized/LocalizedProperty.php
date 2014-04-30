@@ -66,7 +66,8 @@ class LocalizedProperty extends BaseProperty implements ILocalizedProperty, ILoc
         if (!$this->getIsLoaded()) {
 
             $localization = $this->object->getLoadLocalization();
-            $currentLocaleId = ($localization === ILocalesService::LOCALE_CURRENT) ? $this->getCurrentLocale() : $localization;
+            $currentLocaleId = ($localization === ILocalesService::LOCALE_CURRENT) ?
+                $this->getCurrentDataLocale() : $localization;
 
             if ($this->localeId !== $currentLocaleId && $this->localeId !== $this->getDefaultLocale()) {
                 $localization = ILocalesService::LOCALE_ALL;

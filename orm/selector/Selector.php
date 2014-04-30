@@ -346,7 +346,8 @@ class Selector implements ISelector, ILocalizable, ILocalesAware, IMetadataManag
                 ["localeId" => $localeId, "path" => $fieldPath]
             ));
         } elseif (!$localeId) {
-            $localeId = $this->getCurrentLocale();
+            $localeId = ($this->localization === ILocalesService::LOCALE_CURRENT) ?
+                $this->getCurrentDataLocale() : $this->localization;
         }
 
         $fieldCondition = $this->selectorFactory->createFieldCondition(
@@ -868,7 +869,7 @@ class Selector implements ISelector, ILocalizable, ILocalesAware, IMetadataManag
             if ($field instanceof ILocalizableField && $field->getIsLocalized()) {
 
                 $currentLocaleId = ($this->localization === ILocalesService::LOCALE_CURRENT) ?
-                    $this->getCurrentLocale() : $this->localization;
+                    $this->getCurrentDataLocale() : $this->localization;
 
                 $defaultLocaleId = $this->getDefaultLocale();
 

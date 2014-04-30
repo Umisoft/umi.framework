@@ -24,30 +24,43 @@ interface ILocalesService
     const LOCALE_ALL = 'all';
 
     /**
-     * Возвращает локаль по умолчанию
+     * Возвращает локаль по умолчанию.
      * @return string
      */
     public function getDefaultLocale();
 
     /**
-     * Возвращает текущую локаль
+     * Возвращает текущую локаль.
      * @return string
      */
     public function getCurrentLocale();
 
     /**
-     * Устанавливает локаль по умолчанию
+     * Возвращает текущую локаль для загрузки данных.
+     * @return string
+     */
+    public function getCurrentDataLocale();
+
+    /**
+     * Устанавливает локаль по умолчанию.
      * @param string $localeId
      * @return self
      */
     public function setDefaultLocale($localeId);
 
     /**
-     * Устанавливает текущую локаль
+     * Устанавливает текущую локаль.
      * @param string $localeId
      * @return self
      */
     public function setCurrentLocale($localeId);
+
+    /**
+     * Устанавливает текущую локаль для загрузки данных.
+     * @param string $localeId
+     * @return self
+     */
+    public function setCurrentDataLocale($localeId);
 
 }
  

@@ -22,7 +22,11 @@ class LocalesService implements ILocalesService
     /**
      * @var string $currentLocale текущая локаль
      */
-    protected $currentLocale = 'en-US';
+    protected $currentLocale;
+    /**
+     * @var string $currentDataLocale текущая локаль загрузки данных
+     */
+    protected $currentDataLocale;
 
     /**
      * {@inheritdoc}
@@ -47,6 +51,16 @@ class LocalesService implements ILocalesService
     /**
      * {@inheritdoc}
      */
+    public function setCurrentDataLocale($localeId)
+    {
+        $this->currentDataLocale = $localeId;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getDefaultLocale()
     {
         return $this->defaultLocale;
@@ -58,10 +72,22 @@ class LocalesService implements ILocalesService
     public function getCurrentLocale()
     {
         if (!$this->currentLocale) {
-            return $this->defaultLocale;
+            return $this->getDefaultLocale();
         }
 
         return $this->currentLocale;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCurrentDataLocale()
+    {
+        if (!$this->currentDataLocale) {
+            return $this->getCurrentLocale();
+        }
+
+        return $this->currentDataLocale;
     }
 }
  
