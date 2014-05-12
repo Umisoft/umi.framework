@@ -20,7 +20,6 @@ use umi\orm\collection\ICollection;
 use umi\orm\exception\InvalidArgumentException;
 use umi\orm\exception\NonexistentEntityException;
 use umi\orm\metadata\field\IField;
-use umi\orm\metadata\field\ILocalizableField;
 use umi\orm\metadata\field\IRelationField;
 use umi\orm\metadata\field\relation\BelongsToRelationField;
 use umi\orm\metadata\field\relation\HasManyRelationField;
@@ -30,7 +29,7 @@ use umi\orm\metadata\IMetadata;
 use umi\orm\metadata\IMetadataManagerAware;
 use umi\orm\metadata\IObjectType;
 use umi\orm\metadata\TMetadataManagerAware;
-use umi\orm\object\property\localized\ILocalizedProperty;
+use umi\orm\object\property\IProperty;
 use umi\orm\objectset\IObjectSet;
 use umi\orm\selector\condition\IFieldConditionGroup;
 
@@ -332,7 +331,7 @@ class Selector implements ISelector, ILocalizable, ILocalesAware, IMetadataManag
     {
         $fieldsChain = $this->resolveFieldChain($fieldPath);
         /**
-         * @var IField|ILocalizableField $conditionField поле по которому формируется условие
+         * @var IField $conditionField поле по которому формируется условие
          */
         list($conditionField, $fieldSourceAlias) = end($fieldsChain);
 
@@ -340,7 +339,7 @@ class Selector implements ISelector, ILocalizable, ILocalesAware, IMetadataManag
             $this->begin();
         }
 
-        if ($localeId && (!$conditionField instanceof ILocalizableField || !$conditionField->hasLocale($localeId))) {
+        if ($localeId && !$conditionField->hasLocale($localeId)) {
             throw new NonexistentEntityException($this->translate(
                 'Cannot set condition. Locale "{localeId}" for field "{path}" does not exist.',
                 ["localeId" => $localeId, "path" => $fieldPath]
@@ -857,7 +856,7 @@ class Selector implements ISelector, ILocalizable, ILocalesAware, IMetadataManag
 
     /**
      * Возвращает имя и alias колонок для выборки полей
-     * @param array $fields список выбираемых полей
+     * @param IField[] $fields список выбираемых полей
      * @param string $fieldSourceAlias alias таблицы коллекции
      * @return array
      */
@@ -866,7 +865,8 @@ class Selector implements ISelector, ILocalizable, ILocalesAware, IMetadataManag
         $columns = [];
 
         foreach ($fields as $fieldName => $field) {
-            if ($field instanceof ILocalizableField && $field->getIsLocalized()) {
+
+            if ($field->getIsLocalized()) {
 
                 $currentLocaleId = ($this->localization === ILocalesService::LOCALE_CURRENT) ?
                     $this->getCurrentDataLocale() : $this->localization;
@@ -878,22 +878,22 @@ class Selector implements ISelector, ILocalizable, ILocalesAware, IMetadataManag
                     foreach ($field->getLocalizations() as $localeId => $localeInfo) {
                         $columnName = $fieldSourceAlias . self::FIELD_SEPARATOR . $localeInfo['columnName'];
                         $alias = $fieldSourceAlias . self::ALIAS_SEPARATOR . $fieldName
-                            . ILocalizedProperty::LOCALE_SEPARATOR . $localeId;
+                            . IProperty::LOCALE_SEPARATOR . $localeId;
                         $columns[] = [$columnName, $alias];
                     }
 
                 } else {
                     $columnName = $fieldSourceAlias . self::FIELD_SEPARATOR
-                        . $field->getLocaleColumnName($currentLocaleId);
+                        . $field->getColumnName($currentLocaleId);
                     $alias = $fieldSourceAlias . self::ALIAS_SEPARATOR . $fieldName
-                        . ILocalizedProperty::LOCALE_SEPARATOR . $currentLocaleId;
+                        . IProperty::LOCALE_SEPARATOR . $currentLocaleId;
                     $columns[] = [$columnName, $alias];
 
                     if ($currentLocaleId !== $defaultLocaleId) {
                         $columnName = $fieldSourceAlias . self::FIELD_SEPARATOR
-                            . $field->getLocaleColumnName($defaultLocaleId);
+                            . $field->getColumnName($defaultLocaleId);
                         $alias = $fieldSourceAlias . self::ALIAS_SEPARATOR . $fieldName
-                            . ILocalizedProperty::LOCALE_SEPARATOR . $defaultLocaleId;
+                            . IProperty::LOCALE_SEPARATOR . $defaultLocaleId;
                         $columns[] = [$columnName, $alias];
                     }
                 }

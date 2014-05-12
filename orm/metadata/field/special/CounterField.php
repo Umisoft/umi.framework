@@ -46,9 +46,9 @@ class CounterField extends BaseField implements IScalarField, ICalculableField
     /**
      * {@inheritdoc}
      */
-    public function calculateDBValue(IObject $object)
+    public function calculateDBValue(IObject $object, $localeId = null)
     {
-        return $object->getProperty($this->getName())
+        return $object->getProperty($this->getName(), $localeId)
             ->getDbValue();
     }
 
@@ -57,6 +57,11 @@ class CounterField extends BaseField implements IScalarField, ICalculableField
      */
     public function persistProperty(IObject $object, IProperty $property, IQueryBuilder $builder)
     {
+        $localeId = $property->getLocaleId();
+
+        if ($localeId && !$this->hasLocale($localeId)) {
+            return $this;
+        }
 
         /**
          * @var IUpdateBuilder $builder
@@ -68,13 +73,14 @@ class CounterField extends BaseField implements IScalarField, ICalculableField
                 $incrementExpression = $builder->getConnection()
                         ->quoteIdentifier($this->getColumnName()) . ' + (' . $increment . ')';
                 $builder
-                    ->set($this->getColumnName(), ':new' . $this->getColumnName())
-                    ->bindExpression(':new' . $this->getColumnName(), $incrementExpression);
+                    ->set($this->getColumnName($localeId), ':new' . $this->getColumnName($localeId))
+                    ->bindExpression(':new' . $this->getColumnName($localeId), $incrementExpression);
             }
         } elseif ($builder instanceof IInsertBuilder) {
-            $builder->set($this->getColumnName());
-            $builder->bindValue(':' . $this->getColumnName(), $this->calculateDBValue($object), $this->getDataType());
+            $builder->set($this->getColumnName($localeId));
+            $builder->bindValue(':' . $this->getColumnName($localeId), $this->calculateDBValue($object, $localeId), $this->getDataType());
         }
+        
         return $this;
     }
 }

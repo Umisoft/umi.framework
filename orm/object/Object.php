@@ -22,11 +22,9 @@ use umi\orm\exception\ReadOnlyEntityException;
 use umi\orm\exception\RuntimeException;
 use umi\orm\manager\IObjectManagerAware;
 use umi\orm\manager\TObjectManagerAware;
-use umi\orm\metadata\field\ILocalizableField;
 use umi\orm\metadata\field\IRelationField;
 use umi\orm\metadata\field\relation\BelongsToRelationField;
 use umi\orm\metadata\IObjectType;
-use umi\orm\object\property\localized\ILocalizedProperty;
 use umi\orm\object\property\IProperty;
 use umi\orm\object\property\IPropertyFactory;
 use umi\orm\persister\IObjectPersisterAware;
@@ -324,7 +322,7 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
     public function getAllProperties()
     {
         foreach ($this->type->getFields() as $fieldName => $field) {
-            if ($field instanceof ILocalizableField && $field->getIsLocalized()) {
+            if ($field->getIsLocalized()) {
                 foreach ($field->getLocalizations() as $localeId => $fieldInfo) {
                     $this->getProperty($fieldName, $localeId);
                 }
@@ -345,7 +343,7 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
             return false;
         }
         $field = $this->type->getField($propName);
-        if (!$field instanceof ILocalizableField || !$field->getIsLocalized()) {
+        if (!$field->getIsLocalized()) {
             return is_null($localeId);
         } else {
             if (is_null($localeId)) {
@@ -372,12 +370,12 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
         $fullPropName = $propName;
         $field = $this->type->getField($propName);
 
-        if (!$localeId && $field instanceof ILocalizableField && $field->getIsLocalized()) {
+        if (!$localeId && $field->getIsLocalized()) {
             $localeId = ($this->getLoadLocalization() === ILocalesService::LOCALE_CURRENT) ?
                 $this->getCurrentDataLocale() : $this->getLoadLocalization();
         }
         if ($localeId) {
-            $fullPropName .= ILocalizedProperty::LOCALE_SEPARATOR . $localeId;
+            $fullPropName .= IProperty::LOCALE_SEPARATOR . $localeId;
         }
 
         if (isset($this->properties[$fullPropName])) {
@@ -438,7 +436,7 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
             return $this->$accessorMethod($propName, $localeId);
         }
 
-        if ($property instanceof ILocalizedProperty) {
+        if ($property->getField()->getIsLocalized()) {
             $value = $this->getLocalizedValue($property, $localeId);
         } else {
             $value = $property->getValue();
@@ -463,7 +461,7 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
 
             $valueLocaleId = $localeId;
             $field = $value->getProperty($propNameParts[$i])->getField();
-            if (!$field instanceof ILocalizableField || !$field->getIsLocalized()) {
+            if (!$field->getIsLocalized()) {
                 $valueLocaleId = null;
             }
 
@@ -870,7 +868,7 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
      */
     protected function splitFullPropName($fullPropName)
     {
-        $propInfo = explode(ILocalizedProperty::LOCALE_SEPARATOR, $fullPropName);
+        $propInfo = explode(IProperty::LOCALE_SEPARATOR, $fullPropName);
         $propName = $propInfo[0];
         $localeId = isset($propInfo[1]) ? $propInfo[1] : null;
 
@@ -893,13 +891,13 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
     }
 
     /**
-     * Возвращает значение локализуемого свойства. <br/>
+     * Возвращает значение локализованого свойства. <br/>
      * Если поле локализовано, и значение в текущей локали отсутствует, возвращается значение дефолтной локали.
-     * @param ILocalizedProperty $property
+     * @param IProperty $property
      * @param string $localeId идентификатор локали
      * @return mixed
      */
-    protected function getLocalizedValue(ILocalizedProperty $property, $localeId)
+    protected function getLocalizedValue(IProperty $property, $localeId)
     {
 
         if ($localeId || !is_null($property->getValue()) || $property->getLocaleId() === $this->getDefaultDataLocale()) {

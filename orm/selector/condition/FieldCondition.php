@@ -11,7 +11,6 @@ namespace umi\orm\selector\condition;
 
 use umi\dbal\builder\ISelectBuilder;
 use umi\orm\metadata\field\IField;
-use umi\orm\metadata\field\ILocalizableField;
 use umi\orm\object\IObject;
 use umi\orm\selector\ISelector;
 
@@ -56,9 +55,7 @@ class FieldCondition implements IFieldCondition
      */
     public function __construct(ISelector $selector, IField $field, $collectionAlias, $placeholder, $localeId = null)
     {
-        $columnName = $field instanceof ILocalizableField && $field->getIsLocalized() ? $field->getColumnName(
-            $localeId
-        ) : $field->getColumnName();
+        $columnName = $field->getIsLocalized() ? $field->getColumnName($localeId) : $field->getColumnName();
         $this->selector = $selector;
         $this->field = $field;
         $this->fieldColumn = $collectionAlias . ISelector::FIELD_SEPARATOR . $columnName;

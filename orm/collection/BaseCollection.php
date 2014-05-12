@@ -22,7 +22,6 @@ use umi\orm\exception\RuntimeException;
 use umi\orm\manager\IObjectManagerAware;
 use umi\orm\manager\TObjectManagerAware;
 use umi\orm\metadata\field\IField;
-use umi\orm\metadata\field\ILocalizableField;
 use umi\orm\metadata\field\relation\ManyToManyRelationField;
 use umi\orm\metadata\IMetadata;
 use umi\orm\metadata\IObjectType;
@@ -211,7 +210,7 @@ abstract class BaseCollection
         foreach ($object->getType()->getFields() as $fieldName => $field) {
 
             if (!array_key_exists($fieldName, $loadedValues) ||
-                ($localization === ILocalesService::LOCALE_ALL && $field instanceof ILocalizableField && $field->getIsLocalized())
+                ($localization === ILocalesService::LOCALE_ALL && $field->getIsLocalized())
             ) {
                 $fieldsToLoad[] = $fieldName;
             }

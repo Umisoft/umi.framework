@@ -20,7 +20,8 @@ interface ICalculableField extends IField
     /**
      * Вычисляет и возвращает значение для записи в БД.
      * @param IObject $object объект, для которого вычисляется значение
+     * @param string|null $localeId идентификатор локали
      * @return string|int|float
      */
-    public function calculateDBValue(IObject $object);
+    public function calculateDBValue(IObject $object, $localeId = null);
 }

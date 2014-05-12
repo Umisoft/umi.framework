@@ -9,26 +9,13 @@
 
 namespace umi\orm\object\property\file;
 
-use umi\orm\metadata\field\IField;
-use umi\orm\object\IObject;
-use umi\orm\object\property\BaseProperty;
+use umi\orm\object\property\Property;
 
 /**
  * Класс свойства со значением типа файл
  */
-class FileProperty extends BaseProperty implements IFileProperty
+class FileProperty extends Property implements IFileProperty
 {
-    /**
-     * Конструктор
-     * @param IObject $object владелец свойства
-     * @param IField $field поле типа данных
-     */
-    public function __construct(IObject $object, IField $field)
-    {
-        $this->object = $object;
-        $this->field = $field;
-    }
-
     /**
      * {@inheritdoc}
      */

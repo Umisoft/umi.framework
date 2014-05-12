@@ -10,23 +10,17 @@
 namespace umi\orm\metadata\field\string;
 
 use Doctrine\DBAL\Types\Type;
-use umi\i18n\ILocalesAware;
-use umi\i18n\TLocalesAware;
 use umi\orm\metadata\field\BaseField;
-use umi\orm\metadata\field\ILocalizableField;
 use umi\orm\metadata\field\IScalarField;
-use umi\orm\metadata\field\TLocalizableField;
 use umi\orm\metadata\field\TScalarField;
 
 /**
  * Класс поля для строковых данных переменной длины.
  */
-class StringField extends BaseField implements IScalarField, ILocalizableField, ILocalesAware
+class StringField extends BaseField implements IScalarField
 {
 
     use TScalarField;
-    use TLocalizableField;
-    use TLocalesAware;
 
     /**
      * {@inheritdoc}
