@@ -55,10 +55,9 @@ class FieldCondition implements IFieldCondition
      */
     public function __construct(ISelector $selector, IField $field, $collectionAlias, $placeholder, $localeId = null)
     {
-        $columnName = $field->getIsLocalized() ? $field->getColumnName($localeId) : $field->getColumnName();
         $this->selector = $selector;
         $this->field = $field;
-        $this->fieldColumn = $collectionAlias . ISelector::FIELD_SEPARATOR . $columnName;
+        $this->fieldColumn = $collectionAlias . ISelector::FIELD_SEPARATOR . $field->getColumnName($localeId);
         $this->placeholder = $placeholder;
     }
 
