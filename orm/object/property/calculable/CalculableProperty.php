@@ -9,26 +9,13 @@
 
 namespace umi\orm\object\property\calculable;
 
-use umi\orm\metadata\field\IField;
-use umi\orm\object\IObject;
-use umi\orm\object\property\BaseProperty;
+use umi\orm\object\property\Property;
 
 /**
  * Класс свойства с вычисляемым значением
  */
-class CalculableProperty extends BaseProperty implements ICalculableProperty
+class CalculableProperty extends Property implements ICalculableProperty
 {
-
-    /**
-     * Конструктор
-     * @param IObject $object владелец свойства
-     * @param IField $field поле типа данных
-     */
-    public function __construct(IObject $object, IField $field)
-    {
-        $this->object = $object;
-        $this->field = $field;
-    }
 
     /**
      * {@inheritdoc}

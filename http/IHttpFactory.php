@@ -15,10 +15,10 @@ namespace umi\http;
 interface IHttpFactory
 {
     /**
-     * Создает HTTP-запрос к серверу из глобальных переменных.
+     * Возвращает текущий HTTP-запрос к серверу из глобальных переменных.
      * @return Request
      */
-    public function createRequest();
+    public function getRequest();
 
     /**
      * Создает HTTP-ответ к серверу.

@@ -14,11 +14,9 @@ use umi\i18n\TLocalizable;
 use umi\orm\collection\ICollection;
 use umi\orm\collection\ICollectionManagerAware;
 use umi\orm\collection\TCollectionManagerAware;
-use umi\orm\metadata\field\ILocalizableField;
 use umi\orm\metadata\IObjectType;
 use umi\orm\object\IObject;
 use umi\orm\object\IObjectFactory;
-use umi\orm\object\property\localized\ILocalizedProperty;
 use umi\orm\persister\IObjectPersisterAware;
 use umi\orm\persister\TObjectPersisterAware;
 
@@ -103,14 +101,7 @@ class ObjectManager implements IObjectManager, ILocalizable, IObjectPersisterAwa
 
         foreach ($object->getAllProperties() as $property) {
             $field = $property->getField();
-            if ($property instanceof ILocalizedProperty) {
-                /**
-                 * @var ILocalizableField $field
-                 */
-                $property->setInitialValue($field->getLocaleDefaultValue($property->getLocaleId()));
-            } else {
-                $property->setInitialValue($field->getDefaultValue());
-            }
+            $property->setInitialValue($field->getDefaultValue($property->getLocaleId()));
         }
 
         $guidField = $collection->getGUIDField();

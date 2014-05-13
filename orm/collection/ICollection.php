@@ -9,6 +9,7 @@
 
 namespace umi\orm\collection;
 
+use umi\i18n\ILocalesService;
 use umi\orm\exception\IException;
 use umi\orm\exception\LoadEntityException;
 use umi\orm\exception\NonexistentEntityException;
@@ -44,24 +45,26 @@ interface ICollection
     /**
      * Возвращает объект по уникальному GUID.
      * @param string $guid GUID объекта
-     * @param bool $withLocalization загружать ли значения локализованных свойств объекта.
-     * По умолчанию выключено.
+     * @param string $localization указание на локаль, в которой загружается объект.
+     * По умолчанию объект загружается в текущей локали. Можно указать другую конкретную локаль
+     * или ILocalesService::LOCALE_ALL для загрузки объекта во всех локалях
      * @throws IException если не удалось получить объект
      * @return IObject|IHierarchicObject
      */
-    public function get($guid, $withLocalization = false);
+    public function get($guid, $localization = ILocalesService::LOCALE_CURRENT);
 
     /**
      * Возвращает объект по уникальному идентификатору в БД.
      * Используется ORM для внутренних целей, запрещено использовать в высокоуровневом коде.
      * @internal
      * @param integer $objectId
-     * @param bool $withLocalization загружать ли значения локализованных свойств объекта.
-     * По умолчанию выключено.
+     * @param string $localization указание на локаль, в которой загружается объект.
+     * По умолчанию объект загружается в текущей локали. Можно указать другую конкретную локаль
+     * или ILocalesService::LOCALE_ALL для загрузки объекта во всех локалях
      * @throws IException если не удалось получить объект
      * @return IObject|IHierarchicObject
      */
-    public function getById($objectId, $withLocalization = false);
+    public function getById($objectId, $localization = ILocalesService::LOCALE_CURRENT);
 
     /**
      * Возвращает новый селектор для формирования выборки объектов коллекции.
@@ -102,9 +105,11 @@ interface ICollection
     /**
      * Догружает все свойства объекта.
      * @param IObject $object
-     * @param bool $withLocalization загружать ли все локализованные поля
+     * @param string $localization указание на локаль, в которой загружается объект.
+     * По умолчанию объект загружается в текущей локали. Можно указать другую конкретную локаль
+     * или ILocalesService::LOCALE_ALL для загрузки объекта во всех локалях
      */
-    public function fullyLoadObject(IObject $object, $withLocalization = false);
+    public function fullyLoadObject(IObject $object, $localization = ILocalesService::LOCALE_CURRENT);
 
     /**
      * Возвращает поля, которые обязательны для загрузки объекта коллекции.

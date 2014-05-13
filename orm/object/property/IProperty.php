@@ -18,6 +18,11 @@ use umi\orm\metadata\field\IField;
 interface IProperty
 {
     /**
+     * Разделитель для локали поля
+     */
+    const LOCALE_SEPARATOR = '#';
+
+    /**
      * Возвращает имя свойства
      * @return string
      */
@@ -108,6 +113,12 @@ interface IProperty
      * @return boolean
      */
     public function getIsReadOnly();
+
+    /**
+     * Возвращает идентификатор локали для локализованного свойства
+     * @return null|string null, если свойство не локализовано
+     */
+    public function getLocaleId();
 
     /**
      * Откатывает состояние свойства. Устанавливает свойству старое значение,

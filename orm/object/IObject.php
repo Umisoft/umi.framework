@@ -12,6 +12,7 @@ namespace umi\orm\object;
 use ArrayAccess;
 use Iterator;
 use Serializable;
+use umi\i18n\ILocalesService;
 use umi\orm\collection\IHierarchicCollection;
 use umi\orm\collection\ILinkedHierarchicCollection;
 use umi\orm\collection\ISimpleCollection;
@@ -290,10 +291,12 @@ interface IObject extends ArrayAccess, Serializable, Iterator
     /**
      * Догружает объект из базы полностью
      * @internal
-     * @param bool $withLocalization загружать ли все локализованные поля
+     * @param string $localization указание на локаль, в которой загружается объект.
+     * По умолчанию объект загружается в текущей локали. Можно указать другую конкретную локаль
+     * или ILocalesService::LOCALE_ALL для загрузки объекта во всех локалях
      * @throws LoadEntityException если у загружаемого объекта нет идентификатора
      */
-    public function fullyLoad($withLocalization = false);
+    public function fullyLoad($localization = ILocalesService::LOCALE_CURRENT);
 
     /**
      * Возвращает список ошибок валидации объекта
@@ -329,6 +332,23 @@ interface IObject extends ArrayAccess, Serializable, Iterator
      * @return self
      */
     public function reset();
+
+    /**
+     * Выставляет объекту локаль, в которой изначально загружается объект.
+     * По умолчанию объект загружается в текущей локали. Может быть указана конкретная локаль
+     * или ILocalesService::LOCALE_ALL, если объект загружался во всех локалях
+     * @internal
+     * @param string $localization локализация
+     * @return self
+     */
+    public function setLoadLocalization($localization = ILocalesService::LOCALE_CURRENT);
+
+    /**
+     * Возвращает настройки локализации, с которыми объект изначально был загружен.
+     * @internal
+     * @return string
+     */
+    public function getLoadLocalization();
 
     /**
      * Магический setter ($object->propName = $someValue)

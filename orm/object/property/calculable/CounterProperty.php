@@ -9,25 +9,11 @@
 
 namespace umi\orm\object\property\calculable;
 
-use umi\orm\metadata\field\IField;
-use umi\orm\object\IObject;
-
 /**
  * Класс свойства счетчика.
  */
 class CounterProperty extends CalculableProperty implements ICounterProperty
 {
-
-    /**
-     * Конструктор
-     * @param IObject $object владелец свойства
-     * @param IField $field поле типа данных
-     */
-    public function __construct(IObject $object, IField $field)
-    {
-        $this->object = $object;
-        $this->field = $field;
-    }
 
     /**
      * {@inheritdoc}

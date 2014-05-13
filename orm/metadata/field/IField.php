@@ -11,6 +11,7 @@ namespace umi\orm\metadata\field;
 
 use umi\dbal\builder\IQueryBuilder;
 use umi\orm\exception\InvalidArgumentException;
+use umi\orm\exception\NonexistentEntityException;
 use umi\orm\object\IObject;
 use umi\orm\object\property\IProperty;
 
@@ -89,9 +90,11 @@ interface IField
 
     /**
      * Возвращает имя столбца таблицы для поля
+     * @param string|null $localeId идентификатор локали
+     * @throws NonexistentEntityException если не найдено имя столбца для указанной локали
      * @return string
      */
-    public function getColumnName();
+    public function getColumnName($localeId = null);
 
     /**
      * Возвращает имя getter'а для доступа к значению поля
@@ -107,9 +110,11 @@ interface IField
 
     /**
      * Возвращает значение поля по умолчанию (которое будет сохраняться в БД при создании объекта).
+     * @param string|null $localeId идентификатор локали
+     * @throws NonexistentEntityException если не найдено значения для указанной локали
      * @return mixed
      */
-    public function getDefaultValue();
+    public function getDefaultValue($localeId = null);
 
     /**
      * Возвращает конфигурацию валидаторов.
@@ -122,6 +127,25 @@ interface IField
      * @return array в формате [$filterType => [$optionName => $value, ...], ...]
      */
     public function getFiltersConfig();
+
+    /**
+     * Проверяет, локазизовано ли поле
+     * @return bool
+     */
+    public function getIsLocalized();
+
+    /**
+     * Возвращает список локализаций для поля
+     * @return array в виде array($localeId => array('column' => $columnName, 'default' => $defaultValue), ...)
+     */
+    public function getLocalizations();
+
+    /**
+     * Проверяет, есть ли указанная локаль у поля
+     * @param string $localeId идентификатор локали
+     * @return bool
+     */
+    public function hasLocale($localeId);
 
     /**
      * Проверяет, соответствует ли указанное значение типу поля.

@@ -28,7 +28,12 @@ trait TCalculableField
     /**
      * @see IField::getColumnName()
      */
-    abstract public function getColumnName();
+    abstract public function getColumnName($localeId = null);
+
+    /**
+     * @see IField::hasLocale()
+     */
+    abstract public function hasLocale($localeId);
 
     /**
      * @see ICalculableField::calculateDBValue()
@@ -42,9 +47,16 @@ trait TCalculableField
     {
 
         if ($builder instanceof IUpdateBuilder) {
-            $builder->set($this->getColumnName());
+
+            $localeId = $property->getLocaleId();
+
+            if ($localeId && !$this->hasLocale($localeId)) {
+                return $this;
+            }
+
+            $builder->set($this->getColumnName($localeId));
             $value = $this->calculateDBValue($object);
-            $builder->bindValue(':' . $this->getColumnName(), $value, $this->getDataType());
+            $builder->bindValue(':' . $this->getColumnName($localeId), $value, $this->getDataType());
             $property->setValue($value);
         }
 

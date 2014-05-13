@@ -50,6 +50,16 @@ trait TLocalesAware
     }
 
     /**
+     * Возвращает текущую локаль для загрузки данных.
+     * @return string
+     */
+    protected function getCurrentDataLocale()
+    {
+        return $this->getLocalesService()
+            ->getCurrentDataLocale();
+    }
+
+    /**
      * Устанавливает локаль по умолчанию
      * @param string $localeId
      * @return $this
@@ -69,6 +79,38 @@ trait TLocalesAware
     {
         return $this->getLocalesService()
             ->setCurrentLocale($localeId);
+    }
+
+    /**
+     * Устанавливает текущую локаль для загрузки данных.
+     * @param string $localeId
+     * @return self
+     */
+    protected function setCurrentDataLocale($localeId)
+    {
+        return $this->getLocalesService()
+            ->setCurrentDataLocale($localeId);
+    }
+
+    /**
+     * Устанавливает локаль для загрузки данных по умолчанию.
+     * @param string $localeId
+     * @return self
+     */
+    protected function setDefaultDataLocale($localeId)
+    {
+        return $this->getLocalesService()
+            ->setDefaultDataLocale($localeId);
+    }
+
+    /**
+     * Возвращает локаль для загрузки данных по умолчанию.
+     * @return string
+     */
+    protected function getDefaultDataLocale()
+    {
+        return $this->getLocalesService()
+            ->getDefaultDataLocale();
     }
 
     /**

@@ -14,7 +14,6 @@ use umi\i18n\TLocalizable;
 use umi\orm\exception\NonexistentEntityException;
 use umi\orm\exception\UnexpectedValueException;
 use umi\orm\metadata\field\IField;
-use umi\orm\metadata\field\ILocalizableField;
 
 /**
  * Тип данных.
@@ -107,7 +106,7 @@ class ObjectType implements IObjectType, ILocalizable
         $localizedFields = [];
 
         foreach ($this->getFields() as $field) {
-            if ($field instanceof ILocalizableField && $field->getIsLocalized()) {
+            if ($field->getIsLocalized()) {
                 $localizedFields[$field->getName()] = $field;
             }
         }

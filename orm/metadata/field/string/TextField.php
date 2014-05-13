@@ -9,8 +9,6 @@
 
 namespace umi\orm\metadata\field\string;
 
-use umi\orm\metadata\field\TLocalizableField;
-
 /**
  * Текстовое поле.
  */

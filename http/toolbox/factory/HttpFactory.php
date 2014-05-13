@@ -32,15 +32,24 @@ class HttpFactory implements IHttpFactory, IFactory
     public $responseClass = 'umi\http\Response';
 
     /**
+     * @var Request $request
+     */
+    private $request;
+
+    /**
      * {@inheritdoc}
      */
-    public function createRequest()
+    public function getRequest()
     {
-        /**
-         * @var Request $requestClass
-         */
-        $requestClass = $this->requestClass;
-        return $requestClass::createFromGlobals();
+        if (is_null($this->request)) {
+            /**
+             * @var Request $requestClass
+             */
+            $requestClass = $this->requestClass;
+            $this->request = $requestClass::createFromGlobals();
+        }
+
+        return $this->request;
     }
 
     /**

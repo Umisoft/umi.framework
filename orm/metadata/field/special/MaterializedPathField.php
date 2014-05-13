@@ -55,7 +55,7 @@ class MaterializedPathField extends BaseField implements IScalarField, ICalculab
     /**
      * {@inheritdoc}
      */
-    public function calculateDBValue(IObject $object)
+    public function calculateDBValue(IObject $object, $localeId = null)
     {
 
         if (!$object instanceof IHierarchicObject) {

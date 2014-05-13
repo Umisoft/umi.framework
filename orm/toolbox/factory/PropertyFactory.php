@@ -11,14 +11,12 @@ namespace umi\orm\toolbox\factory;
 
 use umi\orm\metadata\field\ICalculableField;
 use umi\orm\metadata\field\IField;
-use umi\orm\metadata\field\ILocalizableField;
 use umi\orm\metadata\field\special\CounterField;
 use umi\orm\metadata\field\special\FileField;
 use umi\orm\object\IObject;
 use umi\orm\object\property\calculable\ICalculableProperty;
 use umi\orm\object\property\calculable\ICounterProperty;
 use umi\orm\object\property\file\IFileProperty;
-use umi\orm\object\property\localized\ILocalizedProperty;
 use umi\orm\object\property\IProperty;
 use umi\orm\object\property\IPropertyFactory;
 use umi\toolkit\factory\IFactory;
@@ -41,10 +39,6 @@ class PropertyFactory implements IPropertyFactory, IFactory
      */
     public $defaultCalculablePropertyClass = 'umi\orm\object\property\calculable\CalculableProperty';
     /**
-     * @var string $defaultLocalizedPropertyClass класс локализованного свойства
-     */
-    public $defaultLocalizedPropertyClass = 'umi\orm\object\property\localized\LocalizedProperty';
-    /**
      * @var string $defaultCounterPropertyClass класс свойства-счетчика
      */
     public $defaultCounterPropertyClass = 'umi\orm\object\property\calculable\CounterProperty';
@@ -58,26 +52,25 @@ class PropertyFactory implements IPropertyFactory, IFactory
      */
     public function createProperty(IObject $object, IField $field, $localeId = null)
     {
+        /**
+         * @var CounterField|FileField|ICalculableField|IField $field
+         */
         switch (true) {
             case ($field instanceof CounterField):
             {
-                return $this->createCounterProperty($object, $field);
+                return $this->createCounterProperty($object, $field, $localeId);
             }
             case ($field instanceof FileField):
             {
-                return $this->createFileProperty($object, $field);
+                return $this->createFileProperty($object, $field, $localeId);
             }
             case ($field instanceof ICalculableField):
             {
-                return $this->createCalculableProperty($object, $field);
-            }
-            case ($field instanceof ILocalizableField && $field->getIsLocalized()):
-            {
-                return $this->createLocalizedProperty($object, $field, $localeId);
+                return $this->createCalculableProperty($object, $field, $localeId);
             }
             default:
             {
-                return $this->createCommonProperty($object, $field);
+                return $this->createCommonProperty($object, $field, $localeId);
             }
         }
     }
@@ -86,31 +79,14 @@ class PropertyFactory implements IPropertyFactory, IFactory
      * Создает экземпляр обычного свойства для указанного объекта
      * @param IObject $object объект
      * @param IField $field поле типа данных
+     * @param string $localeId идентификатор локали для свойства
      * @return IProperty
      */
-    protected function createCommonProperty(IObject $object, IField $field)
+    protected function createCommonProperty(IObject $object, IField $field, $localeId = null)
     {
         $property = $this->getPrototype(
             $this->defaultPropertyClass,
             ['umi\orm\object\property\IProperty']
-        )
-        ->createInstance([$object, $field]);
-
-        return $property;
-    }
-
-    /**
-     * Создает экземпляр локализованного свойства для указанного объекта
-     * @param IObject $object объект
-     * @param ILocalizableField $field поле типа данных
-     * @param string $localeId идентификатор локали для свойства
-     * @return ILocalizedProperty
-     */
-    protected function createLocalizedProperty(IObject $object, ILocalizableField $field, $localeId)
-    {
-        $property = $this->getPrototype(
-            $this->defaultLocalizedPropertyClass,
-            ['umi\orm\object\property\localized\ILocalizedProperty']
         )
         ->createInstance([$object, $field, $localeId]);
 
@@ -121,15 +97,16 @@ class PropertyFactory implements IPropertyFactory, IFactory
      * Создает экземпляр вычисляемого свойства для указанного объекта
      * @param IObject $object объект
      * @param ICalculableField $field поле типа данных
+     * @param string $localeId идентификатор локали для свойства
      * @return ICalculableProperty
      */
-    protected function createCalculableProperty(IObject $object, ICalculableField $field)
+    protected function createCalculableProperty(IObject $object, ICalculableField $field, $localeId = null)
     {
         $property = $this->getPrototype(
             $this->defaultCalculablePropertyClass,
             ['umi\orm\object\property\calculable\ICalculableProperty']
         )
-        ->createInstance([$object, $field]);
+        ->createInstance([$object, $field, $localeId]);
 
         return $property;
     }
@@ -138,15 +115,16 @@ class PropertyFactory implements IPropertyFactory, IFactory
      * Создает экземпляр обычного свойства для указанного объекта
      * @param IObject $object объект
      * @param CounterField $field поле типа данных
+     * @param string $localeId идентификатор локали для свойства
      * @return ICounterProperty
      */
-    protected function createCounterProperty(IObject $object, CounterField $field)
+    protected function createCounterProperty(IObject $object, CounterField $field, $localeId = null)
     {
         $property = $this->getPrototype(
             $this->defaultCounterPropertyClass,
             ['umi\orm\object\property\calculable\ICounterProperty']
         )
-        ->createInstance([$object, $field]);
+        ->createInstance([$object, $field, $localeId]);
 
         return $property;
     }
@@ -155,15 +133,16 @@ class PropertyFactory implements IPropertyFactory, IFactory
      * Создает экземпляр свойства со значением типа файл для указанного объекта
      * @param IObject $object объект
      * @param FileField $field поле типа данных
+     * @param string $localeId идентификатор локали для свойства
      * @return IFileProperty
      */
-    protected function createFileProperty(IObject $object, FileField $field)
+    protected function createFileProperty(IObject $object, FileField $field, $localeId = null)
     {
         $property = $this->getPrototype(
             $this->defaultFilePropertyClass,
             ['umi\orm\object\property\file\IFileProperty']
         )
-            ->createInstance([$object, $field]);
+            ->createInstance([$object, $field, $localeId]);
 
         return $property;
     }

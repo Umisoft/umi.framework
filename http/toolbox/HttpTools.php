@@ -52,7 +52,7 @@ class HttpTools implements IToolbox
         switch ($serviceInterfaceName) {
             case 'umi\http\Request':
                 return $this->getHttpFactory()
-                    ->createRequest();
+                    ->getRequest();
 
             case 'umi\http\Response':
                 return $this->getHttpFactory()

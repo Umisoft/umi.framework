@@ -10,6 +10,7 @@
 namespace umi\orm\collection;
 
 use umi\i18n\ILocalesAware;
+use umi\i18n\ILocalesService;
 use umi\i18n\ILocalizable;
 use umi\i18n\TLocalesAware;
 use umi\i18n\TLocalizable;
@@ -21,7 +22,6 @@ use umi\orm\exception\RuntimeException;
 use umi\orm\manager\IObjectManagerAware;
 use umi\orm\manager\TObjectManagerAware;
 use umi\orm\metadata\field\IField;
-use umi\orm\metadata\field\ILocalizableField;
 use umi\orm\metadata\field\relation\ManyToManyRelationField;
 use umi\orm\metadata\IMetadata;
 use umi\orm\metadata\IObjectType;
@@ -104,7 +104,7 @@ abstract class BaseCollection
     /**
      * {@inheritdoc}
      */
-    public function get($guid, $withLocalization = false)
+    public function get($guid, $localization = ILocalesService::LOCALE_CURRENT)
     {
         if (!$this->getGUIDField()->checkGUIDFormat($guid)) {
             throw new InvalidArgumentException($this->translate(
@@ -120,7 +120,7 @@ abstract class BaseCollection
                         ->getName()
                 )
                 ->equals(strtolower($guid))
-                ->withLocalization($withLocalization)
+                ->localization($localization)
                 ->result();
 
             //closing cursor explicitly for SQLite
@@ -141,7 +141,7 @@ abstract class BaseCollection
     /**
      * {@inheritdoc}
      */
-    public function getById($objectId, $withLocalization = false)
+    public function getById($objectId, $localization = ILocalesService::LOCALE_CURRENT)
     {
         if (!$object = $this->getObjectManager()->getObjectInstanceById($this, $objectId)) {
             $objectsSet = $this->select()
@@ -150,7 +150,7 @@ abstract class BaseCollection
                         ->getName()
                 )
                 ->equals($objectId)
-                ->withLocalization($withLocalization)
+                ->localization($localization)
                 ->result();
 
             //closing cursor explicitly for SQLite
@@ -196,7 +196,7 @@ abstract class BaseCollection
     /**
      * {@inheritdoc}
      */
-    public function fullyLoadObject(IObject $object, $withLocalization = false)
+    public function fullyLoadObject(IObject $object, $localization = ILocalesService::LOCALE_CURRENT)
     {
         if (!$object->getId()) {
             throw new LoadEntityException($this->translate(
@@ -209,8 +209,8 @@ abstract class BaseCollection
 
         foreach ($object->getType()->getFields() as $fieldName => $field) {
 
-            if ((!$withLocalization && !isset($loadedValues[$fieldName]))
-                || ($withLocalization && $field instanceof ILocalizableField && $field->getIsLocalized())
+            if (!array_key_exists($fieldName, $loadedValues) ||
+                ($localization === ILocalesService::LOCALE_ALL && $field->getIsLocalized())
             ) {
                 $fieldsToLoad[] = $fieldName;
             }
@@ -222,7 +222,7 @@ abstract class BaseCollection
 
             $objectsSet = $this->select()
                 ->fields($fieldsToLoad)
-                ->withLocalization($withLocalization)
+                ->localization($localization)
                 ->where($pkFiledName)
                 ->equals($object->getId())
                 ->result();

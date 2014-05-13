@@ -20,7 +20,7 @@ use umi\hmvc\acl\ComponentRoleProvider;
 use umi\hmvc\acl\IComponentRoleResolver;
 use umi\hmvc\component\IComponent;
 use umi\hmvc\controller\IController;
-use umi\hmvc\exception\http\HttpForbidden;
+use umi\hmvc\exception\acl\ResourceAccessForbiddenException;
 use umi\hmvc\exception\http\HttpNotFound;
 use umi\hmvc\exception\RuntimeException;
 use umi\hmvc\exception\UnexpectedValueException;
@@ -274,7 +274,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
      * @param array $params параметры вызова виджета
      * @param SplStack $callStack стек вызова компонентов
      * @param string $matchedWidgetUri известная часть пути вызова виджета
-     * @throws HttpForbidden при отстуствии прав на вызов виджета
+     * @throws ResourceAccessForbiddenException при отстуствии прав на вызов виджета
      * @return IWidget
      */
     protected function dispatchWidget(IComponent $component, $widgetUri, array $params, SplStack $callStack, $matchedWidgetUri = '')
@@ -305,7 +305,8 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
              * @var IWidget|IAclResource $widget
              */
             if ($widget instanceof IACLResource && !$this->checkPermissions($component, $widget)) {
-                throw new HttpForbidden(
+                throw new ResourceAccessForbiddenException(
+                    $widget,
                     $this->translate(
                         'Cannot execute widget "{name}" for component "{path}". Access denied.',
                         [
@@ -347,7 +348,6 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
      * @param SplStack $callStack
      * @param string $matchedRoutePath обработанная часть начального маршрута
      * @throws HttpNotFound если невозможно сформировать результат.
-     * @throws HttpForbidden если доступ к ресурсу не разрешен.
      * @return Response
      */
     protected function processRequest(IComponent $component, $routePath, SplStack $callStack, $matchedRoutePath = '')
@@ -492,100 +492,12 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
     }
 
     /**
-     * Возвращает результат работы дочернего компонента.
-     * @param IComponent $component
-     * @param IRouteResult $routeResult
-     * @param SplStack $callStack
-     * @param string $matchedRoutePath
-     * @throws HttpForbidden если дочерний компонент не существует
-     * @throws HttpNotFound если доступ к дочернему компоненту не разрешен
-     * @return Response
-     */
-    private function processChildComponentRequest(IComponent $component, IRouteResult $routeResult, SplStack $callStack, $matchedRoutePath)
-    {
-        $routeMatches = $routeResult->getMatches();
-        if (!$component->hasChildComponent($routeMatches[IComponent::MATCH_COMPONENT])) {
-
-            throw new HttpNotFound(
-                $this->translate(
-                    'Child component "{name}" not found.',
-                    ['name' => $routeMatches[IComponent::MATCH_COMPONENT]]
-                )
-            );
-        }
-
-        /**
-         * @var IComponent|IACLResource $childComponent
-         */
-        $childComponent = $component->getChildComponent($routeMatches[IComponent::MATCH_COMPONENT]);
-
-        if ($childComponent instanceof IACLResource && !$this->checkPermissions($component, $childComponent)) {
-
-            throw new HttpForbidden(
-                $this->translate(
-                    'Cannot execute component "{path}". Access denied.',
-                    ['path' => $childComponent->getPath()]
-                )
-            );
-        }
-
-        $matchedRoutePath .= $routeResult->getMatchedUrl();
-
-        return $this->processRequest($childComponent, $routeResult->getUnmatchedUrl(), $callStack, $matchedRoutePath);
-    }
-
-    /**
-     * Возвращает результат работы контроллера компонента.
-     * @param IComponent $component
-     * @param IDispatchContext $context
-     * @param SplStack $callStack
-     * @param array $routeMatches
-     * @throws HttpForbidden
-     * @throws HttpNotFound
-     * @return Response
-     */
-    private function processControllerRequest(IComponent $component, IDispatchContext $context, SplStack $callStack, array $routeMatches)
-    {
-        if (!$component->hasController($routeMatches[IComponent::MATCH_CONTROLLER])) {
-            throw new HttpNotFound(
-                $this->translate(
-                    'Controller "{name}" not found.',
-                    ['name' => $routeMatches[IComponent::MATCH_CONTROLLER]]
-                )
-            );
-        }
-
-        /**
-         * @var IController|IACLResource $controller
-         */
-        $controller = $component->getController($routeMatches[IComponent::MATCH_CONTROLLER])
-            ->setContext($context)
-            ->setRequest($this->getCurrentRequest());
-
-        if ($controller instanceof IACLResource && !$this->checkPermissions($component, $controller)) {
-            throw new HttpForbidden(
-                $this->translate(
-                    'Cannot execute controller "{name}" for component "{path}". Access denied.',
-                    [
-                        'name' => $controller->getName(),
-                        'path' => $component->getPath()
-                    ]
-                )
-            );
-        }
-
-        $componentResponse = $this->invokeController($controller);
-
-        return $this->processResponse($componentResponse, $callStack);
-    }
-
-    /**
      * Возвращает информацию о контексте вызова виджета.
      * @param string $widgetUri путь виджета
      * @throws RuntimeException если контекст не существует
      * @return array
      */
-    private function resolveWidgetContext(&$widgetUri)
+    protected function resolveWidgetContext(&$widgetUri)
     {
         if (strpos($widgetUri, self::WIDGET_URI_SEPARATOR) !== 0) {
             if (!$this->currentContext) {
@@ -611,6 +523,96 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
             $this->createCallStack(),
             ''
         ];
+    }
+
+    /**
+     * Возвращает результат работы дочернего компонента.
+     * @param IComponent $component
+     * @param IRouteResult $routeResult
+     * @param SplStack $callStack
+     * @param string $matchedRoutePath
+     * @throws HttpNotFound если дочерний компонент не существует
+     * @throws ResourceAccessForbiddenException если доступ к дочернему компоненту не разрешен
+     * @return Response
+     */
+    private function processChildComponentRequest(IComponent $component, IRouteResult $routeResult, SplStack $callStack, $matchedRoutePath)
+    {
+        $routeMatches = $routeResult->getMatches();
+        if (!$component->hasChildComponent($routeMatches[IComponent::MATCH_COMPONENT])) {
+
+            throw new HttpNotFound(
+                $this->translate(
+                    'Child component "{name}" not found.',
+                    ['name' => $routeMatches[IComponent::MATCH_COMPONENT]]
+                )
+            );
+        }
+
+        /**
+         * @var IComponent|IACLResource $childComponent
+         */
+        $childComponent = $component->getChildComponent($routeMatches[IComponent::MATCH_COMPONENT]);
+
+        if ($childComponent instanceof IACLResource && !$this->checkPermissions($component, $childComponent)) {
+
+            throw new ResourceAccessForbiddenException(
+                $childComponent,
+                $this->translate(
+                    'Cannot execute component "{path}". Access denied.',
+                    ['path' => $childComponent->getPath()]
+                )
+            );
+        }
+
+        $matchedRoutePath .= $routeResult->getMatchedUrl();
+
+        return $this->processRequest($childComponent, $routeResult->getUnmatchedUrl(), $callStack, $matchedRoutePath);
+    }
+
+    /**
+     * Возвращает результат работы контроллера компонента.
+     * @param IComponent $component
+     * @param IDispatchContext $context
+     * @param SplStack $callStack
+     * @param array $routeMatches
+     * @throws ResourceAccessForbiddenException
+     * @throws HttpNotFound
+     * @return Response
+     */
+    private function processControllerRequest(IComponent $component, IDispatchContext $context, SplStack $callStack, array $routeMatches)
+    {
+        if (!$component->hasController($routeMatches[IComponent::MATCH_CONTROLLER])) {
+            throw new HttpNotFound(
+                $this->translate(
+                    'Controller "{name}" not found.',
+                    ['name' => $routeMatches[IComponent::MATCH_CONTROLLER]]
+                )
+            );
+        }
+
+        /**
+         * @var IController|IACLResource $controller
+         */
+        $controller = $component->getController($routeMatches[IComponent::MATCH_CONTROLLER])
+            ->setContext($context)
+            ->setRequest($this->getCurrentRequest());
+
+        if ($controller instanceof IACLResource && !$this->checkPermissions($component, $controller)) {
+            throw new ResourceAccessForbiddenException(
+                $controller,
+                $this->translate(
+                    'Cannot execute controller "{name}" for component "{path}". Access denied.',
+                    [
+                        'name' => $controller->getName(),
+                        'path' => $component->getPath()
+                    ]
+                )
+            );
+        }
+
+        $componentResponse = $this->invokeController($controller);
+
+        return $this->processResponse($componentResponse, $callStack);
     }
 
     /**

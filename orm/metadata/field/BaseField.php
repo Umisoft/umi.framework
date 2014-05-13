@@ -14,6 +14,7 @@ use umi\dbal\builder\IQueryBuilder;
 use umi\dbal\builder\IUpdateBuilder;
 use umi\i18n\ILocalizable;
 use umi\i18n\TLocalizable;
+use umi\orm\exception\NonexistentEntityException;
 use umi\orm\exception\UnexpectedValueException;
 use umi\orm\object\IObject;
 use umi\orm\object\property\IProperty;
@@ -23,7 +24,6 @@ use umi\orm\object\property\IProperty;
  */
 abstract class BaseField implements IField, ILocalizable
 {
-
     use TLocalizable;
 
     /**
@@ -62,6 +62,11 @@ abstract class BaseField implements IField, ILocalizable
      * @var array $filtersConfig список фильтров в формате [$filterType => [$optionName => $value, ...], ...]
      */
     protected $filtersConfig = [];
+    /**
+     * @var array $localizations список локализаций в виде
+     * [$localeId => ['columnName' => $columnName, 'defaultValue' => $defaultValue], ...]
+     */
+    protected $localizations = [];
 
     /**
      * Конструктор.
@@ -105,9 +110,20 @@ abstract class BaseField implements IField, ILocalizable
     /**
      * {@inheritdoc}
      */
-    public function getColumnName()
+    public function getColumnName($localeId = null)
     {
-        return $this->columnName;
+        if (!$localeId) {
+            return $this->columnName;
+        }
+
+        if (!isset($this->localizations[$localeId]) || !isset($this->localizations[$localeId]['columnName'])) {
+            throw new NonexistentEntityException($this->translate(
+                'Information about column name for field "{field}" in locale "{locale}" does not exist.',
+                ['field' => $this->getName(), 'locale' => $localeId]
+            ));
+        }
+
+        return $this->localizations[$localeId]['columnName'];
     }
 
     /**
@@ -129,9 +145,26 @@ abstract class BaseField implements IField, ILocalizable
     /**
      * {@inheritdoc}
      */
-    public function getDefaultValue()
+    public function getDefaultValue($localeId = null)
     {
-        return $this->defaultValue;
+        if (!$localeId) {
+            return $this->defaultValue;
+        }
+
+        if (!isset($this->localizations[$localeId])) {
+            throw new NonexistentEntityException($this->translate(
+                'Cannot get default value for field "{field}" in locale "{locale}".',
+                ['field' => $this->getName(), 'locale' => $localeId]
+            ));
+        }
+
+        $defaultValue =
+            isset($this->localizations[$localeId]['defaultValue'])
+                ? $this->localizations[$localeId]['defaultValue']
+                : null;
+
+        return $defaultValue;
+
     }
 
     /**
@@ -153,14 +186,53 @@ abstract class BaseField implements IField, ILocalizable
     /**
      * {@inheritdoc}
      */
+    public function getIsLocalized()
+    {
+        return (bool) count($this->getLocalizations());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLocalizations()
+    {
+        return $this->localizations;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasLocale($localeId)
+    {
+        return isset($this->localizations[$localeId]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLocaleDefaultValue($localeId = null)
+    {
+
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function persistProperty(IObject $object, IProperty $property, IQueryBuilder $builder)
     {
         /**
          * @var IUpdateBuilder $builder
          */
         if ($builder instanceof IInsertBuilder || $builder instanceof IUpdateBuilder) {
-            $builder->set($this->getColumnName());
-            $builder->bindValue(':' . $this->getColumnName(), $property->getDbValue(), $this->getDataType());
+
+            $localeId = $property->getLocaleId();
+
+            if ($localeId && !$this->hasLocale($localeId)) {
+                return $this;
+            }
+
+            $builder->set($this->getColumnName($localeId));
+            $builder->bindValue(':' . $this->getColumnName($localeId), $property->getDbValue(), $this->getDataType());
         }
 
         return $this;
@@ -206,6 +278,16 @@ abstract class BaseField implements IField, ILocalizable
                 ));
             }
             $this->filtersConfig = $filters;
+        }
+
+        if (isset($config['localizations'])) {
+            $localizations = $config['localizations'];
+            if (!is_array($localizations)) {
+                throw new UnexpectedValueException($this->translate(
+                    'Localization configuration for localizable field should be an array.'
+                ));
+            }
+            $this->localizations = $localizations;
         }
     }
 
