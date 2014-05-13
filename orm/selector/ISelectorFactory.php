@@ -73,6 +73,6 @@ interface ISelectorFactory
         IField $field,
         $collectionAlias,
         $placeholder,
-        $localeId = null
+        $localeId
     );
 }

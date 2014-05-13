@@ -117,7 +117,7 @@ class SelectorFactory implements ISelectorFactory, IFactory
         IField $field,
         $collectionAlias,
         $placeholder,
-        $localeId = null
+        $localeId
     )
     {
         return $this->getPrototype(
