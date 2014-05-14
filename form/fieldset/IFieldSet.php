@@ -36,6 +36,13 @@ interface IFieldSet extends IFormEntity, Traversable
     public function get($name);
 
     /**
+     * Проверяет наличие сущности по имени.
+     * @param string $name
+     * @return bool
+     */
+    public function has($name);
+
+    /**
      * Устанавливает данные.
      * @param array $data данные
      * @return self
