@@ -286,7 +286,7 @@ interface IObject extends ArrayAccess, Serializable, Iterator
      * Производит валидацию модифицированного объекта
      * @return bool результат валидации
      */
-    public function validate();
+    public function isValid();
 
     /**
      * Производит валидацию модифицированного свойства объекта
@@ -294,16 +294,6 @@ interface IObject extends ArrayAccess, Serializable, Iterator
      * @return bool результат валидации
      */
     public function validateProperty(IProperty $property);
-
-    /**
-     * Догружает объект из базы полностью
-     * @internal
-     * @param string $localization указание на локаль, в которой загружается объект.
-     * По умолчанию объект загружается в текущей локали. Можно указать другую конкретную локаль
-     * или ILocalesService::LOCALE_ALL для загрузки объекта во всех локалях
-     * @throws LoadEntityException если у загружаемого объекта нет идентификатора
-     */
-    public function fullyLoad($localization = ILocalesService::LOCALE_CURRENT);
 
     /**
      * Возвращает список ошибок валидации объекта
@@ -318,13 +308,14 @@ interface IObject extends ArrayAccess, Serializable, Iterator
     public function clearValidationErrors();
 
     /**
-     * Добавляет ошибку валидации объекта
+     * Догружает объект из базы полностью
      * @internal
-     * @param string $propertyName имя не валидного свойства
-     * @param array $errors ошибки
-     * @return self
+     * @param string $localization указание на локаль, в которой загружается объект.
+     * По умолчанию объект загружается в текущей локали. Можно указать другую конкретную локаль
+     * или ILocalesService::LOCALE_ALL для загрузки объекта во всех локалях
+     * @throws LoadEntityException если у загружаемого объекта нет идентификатора
      */
-    public function addValidationError($propertyName, array $errors);
+    public function fullyLoad($localization = ILocalesService::LOCALE_CURRENT);
 
     /**
      * Выгружает объект из менеджера объектов.

@@ -634,7 +634,7 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
     /**
      * {@inheritdoc}
      */
-    public function validate()
+    public function isValid()
     {
         if (!$this->getIsModified() && !$this->getIsNew()) {
             return true;
@@ -657,10 +657,6 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
      */
     public function validateProperty(IProperty $property)
     {
-        if (!$property->getIsModified()) {
-            return true;
-        }
-
         $result = true;
 
         if (null != ($validators = $property->getField()->getValidatorsConfig())) {
@@ -688,13 +684,15 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
         $this->collection->fullyLoadObject($this, $localization);
     }
 
-
-
     /**
      * {@inheritdoc}
      */
     public function getValidationErrors()
     {
+        if (!$this->validationErrors) {
+            $this->isValid();
+        }
+
         return $this->validationErrors;
     }
 
@@ -704,19 +702,6 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
     public function clearValidationErrors()
     {
         $this->validationErrors = [];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addValidationError($propertyName, array $errors)
-    {
-        if (!isset($this->validationErrors[$propertyName])) {
-            $this->validationErrors[$propertyName] = [];
-        }
-        $this->validationErrors[$propertyName] = array_merge($this->validationErrors[$propertyName], $errors);
-
-        return $this;
     }
 
     /**
@@ -898,6 +883,22 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
     public function valid()
     {
         return !is_null(key($this->initialValues));
+    }
+
+    /**
+     * Добавляет ошибку валидации объекта
+     * @param string $propertyName имя не валидного свойства
+     * @param array $errors ошибки
+     * @return self
+     */
+    protected function addValidationError($propertyName, array $errors)
+    {
+        if (!isset($this->validationErrors[$propertyName])) {
+            $this->validationErrors[$propertyName] = [];
+        }
+        $this->validationErrors[$propertyName] = array_merge($this->validationErrors[$propertyName], $errors);
+
+        return $this;
     }
 
     /**
