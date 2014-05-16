@@ -289,6 +289,13 @@ interface IObject extends ArrayAccess, Serializable, Iterator
     public function validate();
 
     /**
+     * Производит валидацию модифицированного свойства объекта
+     * @param IProperty $property свойство
+     * @return bool результат валидации
+     */
+    public function validateProperty(IProperty $property);
+
+    /**
      * Догружает объект из базы полностью
      * @internal
      * @param string $localization указание на локаль, в которой загружается объект.

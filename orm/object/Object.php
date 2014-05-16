@@ -30,17 +30,20 @@ use umi\orm\object\property\IPropertyFactory;
 use umi\orm\persister\IObjectPersisterAware;
 use umi\orm\persister\TObjectPersisterAware;
 use umi\orm\selector\ISelector;
+use umi\validation\IValidationAware;
+use umi\validation\TValidationAware;
 
 /**
  * Базовый объект данных.
  */
-class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAware, IObjectPersisterAware
+class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAware, IObjectPersisterAware, IValidationAware
 {
 
     use TLocalizable;
     use TLocalesAware;
     use TObjectManagerAware;
     use TObjectPersisterAware;
+    use TValidationAware;
 
     /**
      * @var bool $isModified флаг "измененный"
@@ -637,8 +640,44 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
             return true;
         }
 
-        return $this->getObjectPersister()
-            ->validateObject($this);
+        $this->clearValidationErrors();
+        $result = true;
+
+        foreach ($this->getAllProperties() as $property) {
+            if (!$this->validateProperty($property)) {
+                $result = false;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function validateProperty(IProperty $property)
+    {
+        if (!$property->getIsModified()) {
+            return true;
+        }
+
+        $result = true;
+
+        if (null != ($validators = $property->getField()->getValidatorsConfig())) {
+            $validator = $this->createValidatorCollection($validators);
+            if (!$validator->isValid($property->getValue())) {
+                $this->addValidationError($property->getName(), $validator->getMessages());
+                $result = false;
+            }
+        }
+        $validatorMethod = IObject::VALIDATOR_METHOD_PREFIX . $property->getName();
+        if (method_exists($this, $validatorMethod)) {
+            if ($this->{$validatorMethod}() === false) {
+                $result = false;
+            }
+        }
+
+        return $result;
     }
 
     /**
