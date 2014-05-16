@@ -128,6 +128,25 @@ interface IProperty
     public function rollback();
 
     /**
+     * Производит валидацию
+     * @return bool результат валидации
+     */
+    public function validate();
+
+    /**
+     * Возвращает список ошибок валидации
+     * @return array
+     */
+    public function getValidationErrors();
+
+    /**
+     * Добавляет ошибки валидации
+     * @param array $errors ошибки
+     * @return self
+     */
+    public function addValidationErrors(array $errors);
+
+    /**
      * Проверяет, модифицировано ли значение свойства
      * @internal
      * @return bool
@@ -155,4 +174,6 @@ interface IProperty
      * @return self
      */
     public function update($value);
+
+
 }

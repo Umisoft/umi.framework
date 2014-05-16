@@ -30,20 +30,17 @@ use umi\orm\object\property\IPropertyFactory;
 use umi\orm\persister\IObjectPersisterAware;
 use umi\orm\persister\TObjectPersisterAware;
 use umi\orm\selector\ISelector;
-use umi\validation\IValidationAware;
-use umi\validation\TValidationAware;
 
 /**
  * Базовый объект данных.
  */
-class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAware, IObjectPersisterAware, IValidationAware
+class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAware, IObjectPersisterAware
 {
 
     use TLocalizable;
     use TLocalesAware;
     use TObjectManagerAware;
     use TObjectPersisterAware;
-    use TValidationAware;
 
     /**
      * @var bool $isModified флаг "измененный"
@@ -634,17 +631,19 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
     /**
      * {@inheritdoc}
      */
-    public function isValid()
+    public function validate()
     {
+        $this->validationErrors = [];
+
         if (!$this->getIsModified() && !$this->getIsNew()) {
             return true;
         }
 
-        $this->clearValidationErrors();
         $result = true;
 
         foreach ($this->getAllProperties() as $property) {
-            if (!$this->validateProperty($property)) {
+            if (!$property->validate()) {
+                $this->validationErrors[$property->getName()] = $property->getValidationErrors();
                 $result = false;
             }
         }
@@ -655,25 +654,9 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
     /**
      * {@inheritdoc}
      */
-    public function validateProperty(IProperty $property)
+    public function getValidationErrors()
     {
-        $result = true;
-
-        if (null != ($validators = $property->getField()->getValidatorsConfig())) {
-            $validator = $this->createValidatorCollection($validators);
-            if (!$validator->isValid($property->getValue())) {
-                $this->addValidationError($property->getName(), $validator->getMessages());
-                $result = false;
-            }
-        }
-        $validatorMethod = IObject::VALIDATOR_METHOD_PREFIX . $property->getName();
-        if (method_exists($this, $validatorMethod)) {
-            if ($this->{$validatorMethod}() === false) {
-                $result = false;
-            }
-        }
-
-        return $result;
+        return $this->validationErrors;
     }
 
     /**
@@ -682,26 +665,6 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
     public function fullyLoad($localization = ILocalesService::LOCALE_CURRENT)
     {
         $this->collection->fullyLoadObject($this, $localization);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getValidationErrors()
-    {
-        if (!$this->validationErrors) {
-            $this->isValid();
-        }
-
-        return $this->validationErrors;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function clearValidationErrors()
-    {
-        $this->validationErrors = [];
     }
 
     /**
@@ -883,22 +846,6 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
     public function valid()
     {
         return !is_null(key($this->initialValues));
-    }
-
-    /**
-     * Добавляет ошибку валидации объекта
-     * @param string $propertyName имя не валидного свойства
-     * @param array $errors ошибки
-     * @return self
-     */
-    protected function addValidationError($propertyName, array $errors)
-    {
-        if (!isset($this->validationErrors[$propertyName])) {
-            $this->validationErrors[$propertyName] = [];
-        }
-        $this->validationErrors[$propertyName] = array_merge($this->validationErrors[$propertyName], $errors);
-
-        return $this;
     }
 
     /**

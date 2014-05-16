@@ -33,6 +33,20 @@ interface IDataAdapter
     public function getData(IFormElement $element);
 
     /**
+     * Валидирует значение провайдера данных.
+     * @param IFormElement $element элемент формы, для которого формируется значение
+     * @return bool
+     */
+    public function isValid(IFormElement $element);
+
+    /**
+     * Возвращает ошибки валидации провайдера данных.
+     * @param IFormElement $element элемент формы, для которого формируется значение
+     * @return []
+     */
+    public function getValidationErrors(IFormElement $element);
+
+    /**
      * Возвращает список вариантов значений на выбор.
      * @param IChoiceFormElement $element элемент формы с выбором значений
      * @return array в формате [$value => $label, ...]

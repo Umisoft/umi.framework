@@ -286,26 +286,13 @@ interface IObject extends ArrayAccess, Serializable, Iterator
      * Производит валидацию модифицированного объекта
      * @return bool результат валидации
      */
-    public function isValid();
-
-    /**
-     * Производит валидацию модифицированного свойства объекта
-     * @param IProperty $property свойство
-     * @return bool результат валидации
-     */
-    public function validateProperty(IProperty $property);
+    public function validate();
 
     /**
      * Возвращает список ошибок валидации объекта
      * @return array массив ошибок в формате array('propertyName' => array('Error string', ...), ...))
      */
     public function getValidationErrors();
-
-    /**
-     * Очищает список ошибок, вызванных валидацией объекта
-     * @return array
-     */
-    public function clearValidationErrors();
 
     /**
      * Догружает объект из базы полностью

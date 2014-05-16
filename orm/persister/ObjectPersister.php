@@ -103,12 +103,12 @@ class ObjectPersister implements IObjectPersister, ILocalizable, ILocalesAware, 
     {
         $result = [];
         foreach ($this->modifiedObjects as $object) {
-            if (!$object->isValid()) {
+            if (!$object->validate()) {
                 $result[] = $object;
             }
         }
         foreach ($this->newObjects as $object) {
-            if (!$object->isValid()) {
+            if (!$object->validate()) {
                 $result[] = $object;
             }
         }
