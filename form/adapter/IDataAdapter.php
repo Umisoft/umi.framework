@@ -37,7 +37,7 @@ interface IDataAdapter
      * @param IFormElement $element элемент формы, для которого формируется значение
      * @return bool
      */
-    public function isValid(IFormElement $element);
+    public function validate(IFormElement $element);
 
     /**
      * Возвращает ошибки валидации провайдера данных.

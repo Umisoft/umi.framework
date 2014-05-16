@@ -105,10 +105,10 @@ class ObjectFormAdapter implements IDataAdapter
     /**
      * {@inheritdoc}
      */
-    public function isValid(IFormElement $element)
+    public function validate(IFormElement $element)
     {
         if ($dataSource = $element->getDataSource()) {
-            $property = $this->data->getPropertyByPath($dataSource);
+            return $this->data->getPropertyByPath($dataSource)->validate();
         }
 
         return true;
@@ -119,7 +119,11 @@ class ObjectFormAdapter implements IDataAdapter
      */
     public function getValidationErrors(IFormElement $element)
     {
+        if ($dataSource = $element->getDataSource()) {
+            return $this->data->getPropertyByPath($dataSource)->getValidationErrors();
+        }
 
+        return [];
     }
 
     /**

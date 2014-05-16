@@ -182,8 +182,13 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
     protected function validate()
     {
         $isValid =
-            $this->getValidators()->isValid($this->getValue());
-        $this->messages = $this->getValidators()->getMessages();
+            $this->getValidators()->isValid($this->getValue()) &&
+            $this->getDataAdapter()->validate($this);
+
+        $this->messages = array_merge(
+            $this->getValidators()->getMessages(),
+            $this->getDataAdapter()->getValidationErrors($this)
+        );
 
         return $isValid;
     }
