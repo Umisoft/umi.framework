@@ -19,7 +19,7 @@ interface IConfig extends IContainer, \ArrayAccess, \Countable, \Iterator
     /**
      * Разделитель ключей в пути.
      */
-    const PATH_SEPARATOR = '/';
+    const PATH_SEPARATOR = '.';
 
     /**
      * Получает значение по заданному пути.
