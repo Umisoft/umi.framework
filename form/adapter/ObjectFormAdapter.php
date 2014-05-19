@@ -179,9 +179,6 @@ class ObjectFormAdapter implements IDataAdapter
      */
     private function setScalarData($dataSource, $data)
     {
-        if (!is_scalar($data) && !is_null($data)) {
-            throw new UnexpectedValueException('Cannot set data. Data should be scalar or null.');
-        }
         $this->data->setValueByPath($dataSource, $data);
     }
 
