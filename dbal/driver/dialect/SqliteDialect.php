@@ -27,6 +27,16 @@ class SqliteDialect extends SqlitePlatform implements IDialect
     private $fkSupported = false;
 
     /**
+     * {@inheritdoc}
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->registerDoctrineTypeMapping('enum', 'string');
+        $this->registerDoctrineTypeMapping('set', 'string');
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function supportsForeignKeyConstraints()

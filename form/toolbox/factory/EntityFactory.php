@@ -39,6 +39,7 @@ use umi\form\element\Textarea;
 use umi\form\exception\InvalidArgumentException;
 use umi\form\exception\OutOfBoundsException;
 use umi\form\exception\RuntimeException;
+use umi\form\exception\UnexpectedValueException;
 use umi\form\fieldset\FieldSet;
 use umi\form\fieldset\IFieldSet;
 use umi\form\Form;
@@ -200,6 +201,7 @@ class EntityFactory implements IEntityFactory, IFactory
      * @param string $name имя
      * @param array $config конфигурация
      * @param array $contracts список контрактов
+     * @throws UnexpectedValueException
      * @return IFieldSet
      */
     protected function createFieldSet($name, array $config, array $contracts = ['umi\form\fieldset\IFieldSet'])
@@ -218,6 +220,12 @@ class EntityFactory implements IEntityFactory, IFactory
 
         if (isset($config['elements']) && is_array($config['elements'])) {
             foreach($config['elements'] as $name => $elementConfig) {
+                if (!is_array($elementConfig)) {
+                    throw new UnexpectedValueException($this->translate(
+                        'Cannot create form element "{name}". Element configuration should be array.',
+                        ['name' => $name]
+                    ));
+                }
                 $fieldSet->add($this->createFormEntity($name, $elementConfig));
             }
         }

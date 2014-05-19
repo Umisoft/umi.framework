@@ -27,6 +27,16 @@ class MySqlDialect extends MySqlPlatform implements IDialect
     /**
      * {@inheritdoc}
      */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->registerDoctrineTypeMapping('enum', 'string');
+        $this->registerDoctrineTypeMapping('set', 'string');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getDisableKeysSQL($tableName)
     {
         $tableName = $this->quoteIdentifier($tableName);
