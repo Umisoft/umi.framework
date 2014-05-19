@@ -45,7 +45,7 @@ class FieldSet extends BaseFormEntity implements Iterator, IFieldSet, ILocalizab
      */
     public function get($name)
     {
-        if (!isset($this->children[$name])) {
+        if (!$this->has($name)) {
             throw new OutOfBoundsException($this->translate(
                 'Entity "{name}" not found in "{entity}".',
                 ['name' => $name, 'entity' => $this->getName()]
@@ -53,6 +53,14 @@ class FieldSet extends BaseFormEntity implements Iterator, IFieldSet, ILocalizab
         }
 
         return $this->children[$name];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function has($name)
+    {
+        return isset($this->children[$name]);
     }
 
     /**

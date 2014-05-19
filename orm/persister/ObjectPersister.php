@@ -23,19 +23,16 @@ use umi\orm\manager\TObjectManagerAware;
 use umi\orm\metadata\field\relation\BelongsToRelationField;
 use umi\orm\object\IObject;
 use umi\orm\object\property\calculable\ICalculableProperty;
-use umi\validation\IValidationAware;
-use umi\validation\TValidationAware;
 
 /**
  * Синхронизатор объектов бизнес-транзакций с базой данных (Unit Of Work).
  */
-class ObjectPersister implements IObjectPersister, ILocalizable, IValidationAware, ILocalesAware, IObjectManagerAware
+class ObjectPersister implements IObjectPersister, ILocalizable, ILocalesAware, IObjectManagerAware
 {
 
     use TLocalizable;
     use TLocalesAware;
     use TObjectManagerAware;
-    use TValidationAware;
     use TEventObservant;
 
     /**
@@ -106,12 +103,12 @@ class ObjectPersister implements IObjectPersister, ILocalizable, IValidationAwar
     {
         $result = [];
         foreach ($this->modifiedObjects as $object) {
-            if (!$this->validateObject($object)) {
+            if (!$object->validate()) {
                 $result[] = $object;
             }
         }
         foreach ($this->newObjects as $object) {
-            if (!$this->validateObject($object)) {
+            if (!$object->validate()) {
                 $result[] = $object;
             }
         }
@@ -192,34 +189,6 @@ class ObjectPersister implements IObjectPersister, ILocalizable, IValidationAwar
         $this->modifiedObjects->detach($object);
         $this->deletedObjects->detach($object);
         $this->relatedObjects->detach($object);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function validateObject(IObject $object)
-    {
-
-        $object->clearValidationErrors();
-        $result = true;
-
-        foreach ($object->getAllProperties() as $property) {
-            if (null != ($validators = $property->getField()->getValidatorsConfig())) {
-                $validator = $this->createValidatorCollection($validators);
-                if (!$validator->isValid($property->getValue())) {
-                    $object->addValidationError($property->getName(), $validator->getMessages());
-                    $result = false;
-                }
-            }
-            $validatorMethod = IObject::VALIDATOR_METHOD_PREFIX . $property->getName();
-            if (method_exists($object, $validatorMethod)) {
-                if ($object->{$validatorMethod}() === false) {
-                    $result = false;
-                }
-            }
-        }
-
-        return $result;
     }
 
     /**

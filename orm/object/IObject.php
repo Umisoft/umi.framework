@@ -289,6 +289,12 @@ interface IObject extends ArrayAccess, Serializable, Iterator
     public function validate();
 
     /**
+     * Возвращает список ошибок валидации объекта
+     * @return array массив ошибок в формате array('propertyName' => array('Error string', ...), ...))
+     */
+    public function getValidationErrors();
+
+    /**
      * Догружает объект из базы полностью
      * @internal
      * @param string $localization указание на локаль, в которой загружается объект.
@@ -297,27 +303,6 @@ interface IObject extends ArrayAccess, Serializable, Iterator
      * @throws LoadEntityException если у загружаемого объекта нет идентификатора
      */
     public function fullyLoad($localization = ILocalesService::LOCALE_CURRENT);
-
-    /**
-     * Возвращает список ошибок валидации объекта
-     * @return array массив ошибок в формате array('propertyName' => array('Error string', ...), ...))
-     */
-    public function getValidationErrors();
-
-    /**
-     * Очищает список ошибок, вызванных валидацией объекта
-     * @return array
-     */
-    public function clearValidationErrors();
-
-    /**
-     * Добавляет ошибку валидации объекта
-     * @internal
-     * @param string $propertyName имя не валидного свойства
-     * @param array $errors ошибки
-     * @return self
-     */
-    public function addValidationError($propertyName, array $errors);
 
     /**
      * Выгружает объект из менеджера объектов.

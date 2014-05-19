@@ -30,6 +30,10 @@ class ObjectFormAdapter implements IDataAdapter
      * @var IObject $data провайдер данных для формы
      */
     protected $data;
+    /**
+     * @var array $validationErrors ошибки валидации провайдера данных
+     */
+    private $validationErrors = [];
 
     /**
      * Конструктор.
@@ -96,6 +100,30 @@ class ObjectFormAdapter implements IDataAdapter
         }
 
         return null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function validate(IFormElement $element)
+    {
+        if ($dataSource = $element->getDataSource()) {
+            return $this->data->getPropertyByPath($dataSource)->validate();
+        }
+
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getValidationErrors(IFormElement $element)
+    {
+        if ($dataSource = $element->getDataSource()) {
+            return $this->data->getPropertyByPath($dataSource)->getValidationErrors();
+        }
+
+        return [];
     }
 
     /**

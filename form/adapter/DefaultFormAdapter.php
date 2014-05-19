@@ -57,6 +57,22 @@ class DefaultFormAdapter implements IDataAdapter
     /**
      * {@inheritdoc}
      */
+    public function validate(IFormElement $element)
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getValidationErrors(IFormElement $element)
+    {
+        return [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getChoices(IChoiceFormElement $element)
     {
         return [];

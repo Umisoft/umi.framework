@@ -19,16 +19,19 @@ use umi\i18n\TLocalizable;
 use umi\orm\exception\InvalidArgumentException;
 use umi\orm\metadata\field\IField;
 use umi\orm\object\IObject;
+use umi\validation\IValidationAware;
+use umi\validation\TValidationAware;
 
 /**
  * Базовый класс свойства
  */
-class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware
+class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware, IValidationAware
 {
 
     use TLocalizable;
     use TFilterAware;
     use TLocalesAware;
+    use TValidationAware;
 
     /**
      * @var IObject $object владелец свойства
@@ -70,6 +73,10 @@ class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware
      * @var string $localeId идентификатор локали
      */
     protected $localeId;
+    /**
+     * @var array $validationErrors массив ошибок валидации
+     */
+    protected $validationErrors = [];
 
     /**
      * Конструктор
@@ -321,6 +328,50 @@ class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware
             $this->isModified = true;
             $this->object->setIsModified();
         }
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function validate()
+    {
+        $result = true;
+        $this->validationErrors = [];
+
+        if (null != ($validators = $this->getField()->getValidatorsConfig())) {
+            $validator = $this->createValidatorCollection($validators);
+            if (!$validator->isValid($this->getValue())) {
+                $this->addValidationErrors($validator->getMessages());
+                $result = false;
+            }
+        }
+        $validatorMethod = IObject::VALIDATOR_METHOD_PREFIX . $this->getName();
+        if (method_exists($this->object, $validatorMethod)) {
+            if ($this->object->{$validatorMethod}() === false) {
+                $result = false;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Возвращает список ошибок валидации
+     * @return array
+     */
+    public function getValidationErrors()
+    {
+        return $this->validationErrors;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addValidationErrors(array $errors)
+    {
+        $this->validationErrors = array_merge($this->validationErrors, $errors);
 
         return $this;
     }

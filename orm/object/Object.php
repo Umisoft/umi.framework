@@ -633,23 +633,23 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
      */
     public function validate()
     {
+        $this->validationErrors = [];
+
         if (!$this->getIsModified() && !$this->getIsNew()) {
             return true;
         }
 
-        return $this->getObjectPersister()
-            ->validateObject($this);
+        $result = true;
+
+        foreach ($this->getAllProperties() as $property) {
+            if (!$property->validate()) {
+                $this->validationErrors[$property->getName()] = $property->getValidationErrors();
+                $result = false;
+            }
+        }
+
+        return $result;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function fullyLoad($localization = ILocalesService::LOCALE_CURRENT)
-    {
-        $this->collection->fullyLoadObject($this, $localization);
-    }
-
-
 
     /**
      * {@inheritdoc}
@@ -662,22 +662,9 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
     /**
      * {@inheritdoc}
      */
-    public function clearValidationErrors()
+    public function fullyLoad($localization = ILocalesService::LOCALE_CURRENT)
     {
-        $this->validationErrors = [];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addValidationError($propertyName, array $errors)
-    {
-        if (!isset($this->validationErrors[$propertyName])) {
-            $this->validationErrors[$propertyName] = [];
-        }
-        $this->validationErrors[$propertyName] = array_merge($this->validationErrors[$propertyName], $errors);
-
-        return $this;
+        $this->collection->fullyLoadObject($this, $localization);
     }
 
     /**

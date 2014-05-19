@@ -53,11 +53,12 @@ class FieldCondition implements IFieldCondition
      * @param string $localeId идентификатор локали (для локализованных полей)
      * @return self
      */
-    public function __construct(ISelector $selector, IField $field, $collectionAlias, $placeholder, $localeId = null)
+    public function __construct(ISelector $selector, IField $field, $collectionAlias, $placeholder, $localeId)
     {
+        $columnName = $field->getIsLocalized() ? $field->getColumnName($localeId) : $field->getColumnName();
         $this->selector = $selector;
         $this->field = $field;
-        $this->fieldColumn = $collectionAlias . ISelector::FIELD_SEPARATOR . $field->getColumnName($localeId);
+        $this->fieldColumn = $collectionAlias . ISelector::FIELD_SEPARATOR . $columnName;
         $this->placeholder = $placeholder;
     }
 

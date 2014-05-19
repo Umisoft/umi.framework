@@ -71,13 +71,6 @@ interface IObjectPersister extends IEventObservant
     public function getInvalidObjects();
 
     /**
-     * Валидирует объект
-     * @param IObject $object
-     * @return bool результат валидации
-     */
-    public function validateObject(IObject $object);
-
-    /**
      * Помечает объект как новый
      * @param IObject $object
      * @return self
