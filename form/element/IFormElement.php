@@ -20,6 +20,12 @@ use umi\validation\IValidatorCollection;
 interface IFormElement extends IFormEntity
 {
     /**
+     * Возвращает тип элемента
+     * @return string
+     */
+    public function getType();
+
+    /**
      * Возвращает значение элемента.
      * @return string
      */

@@ -48,6 +48,14 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
     /**
      * {@inheritdoc}
      */
+    public function getType()
+    {
+        return self::TYPE_NAME;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getValue()
     {
         return $this->getDataAdapter()->getData($this);
