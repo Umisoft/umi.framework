@@ -17,14 +17,20 @@ use umi\i18n\TLocalizable;
  */
 abstract class BaseValidator implements ILocalizable, IValidator
 {
-    use TLocalizable;
+    use TLocalizable {
+        TLocalizable::getI18nDictionaryNames as getI18nDictionaryNamesInternal;
+    }
 
+    /**
+     * @var string $type тип валидатора
+     */
+    protected $type;
     /**
      * @var array $options опции валидатора
      */
     protected $options = [];
     /**
-     * @var array $messages сообщение об ошибке валидации
+     * @var string $message сообщение об ошибке валидации
      */
     protected $message;
     /**
@@ -34,11 +40,29 @@ abstract class BaseValidator implements ILocalizable, IValidator
 
     /**
      * Конструктор.
+     * @param string $type тип валидатора
      * @param array $options опции валидатора
      */
-    public function __construct(array $options = [])
+    public function __construct($type, array $options = [])
     {
+        $this->type = $type;
         $this->options = $options;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getOptions()
+    {
+        return $this->options;
     }
 
     /**
@@ -55,6 +79,19 @@ abstract class BaseValidator implements ILocalizable, IValidator
     public function getMessage()
     {
         return $this->message;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getI18nDictionaryNames()
+    {
+        $dictionaries = [];
+        if (isset($this->options['dictionaries'])) {
+            $dictionaries = $this->options['dictionaries'];
+        };
+
+        return array_merge($dictionaries, $this->getI18nDictionaryNamesInternal());
     }
 }
  

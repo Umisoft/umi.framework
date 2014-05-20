@@ -69,6 +69,6 @@ class ValidatorFactory implements IValidatorFactory, IFactory
                 $this->types[$type],
                 ['umi\validation\IValidator']
             )
-            ->createInstance([$options]);
+            ->createInstance([$type, $options]);
     }
 }

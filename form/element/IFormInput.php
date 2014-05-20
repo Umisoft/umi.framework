@@ -14,10 +14,6 @@ namespace umi\form\element;
  */
 interface IFormInput extends IFormElement
 {
-    /**
-     * Возвращает тип инпута.
-     * @return string
-     */
-    public function getInputType();
+
 }
  

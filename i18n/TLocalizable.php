@@ -57,6 +57,10 @@ trait TLocalizable
      */
     protected function translate($message, array $placeholders = [], $localeId = null)
     {
+        if (!$message) {
+           return $message;
+        }
+
         $dictionaries = $this->getI18nDictionaryNames();
         if ($this->traitTranslator) {
             return $this->traitTranslator->translate($dictionaries, $message, $placeholders, $localeId);

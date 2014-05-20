@@ -22,10 +22,24 @@ class Form extends FieldSet implements IForm
      * Тип элемента формы.
      */
     const TYPE_NAME = 'form';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $tagName = self::TYPE_NAME;
+
     /**
      * @var IDataAdapter $dataAdapter адаптер данных формы
      */
     protected $dataAdapter;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getType()
+    {
+        return self::TYPE_NAME;
+    }
 
     /**
      * {@inheritdoc}

@@ -9,11 +9,13 @@
 
 namespace umi\validation;
 
+use Traversable;
+
 /**
  * Класс коллекции валидаторов.
  * По очереди валидирует значение каждым валидатором.
  */
-class ValidatorCollection implements IValidatorCollection
+class ValidatorCollection implements \IteratorAggregate, IValidatorCollection
 {
     /**
      * @var IValidator[] $collection коллекция валидаторов в виде [[имя] => IValidator, ...]
@@ -77,5 +79,13 @@ class ValidatorCollection implements IValidatorCollection
         array_unshift($this->collection, $validator);
 
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->collection);
     }
 }

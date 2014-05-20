@@ -9,11 +9,13 @@
 
 namespace umi\form\element;
 
+use umi\form\FormEntityView;
+
 /**
  * Группа элементов формы - флаги(checkbox).
  * @example <input name="name[]" type="checkbox" />
  */
-class CheckboxGroup extends BaseChoiceElement implements IFormInput
+class CheckboxGroup extends BaseChoiceElement
 {
     /**
      * Тип элемента.
@@ -23,18 +25,41 @@ class CheckboxGroup extends BaseChoiceElement implements IFormInput
     /**
      * {@inheritdoc}
      */
-    public function getInputType()
-    {
-        return Checkbox::TYPE_NAME;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getElementName()
     {
         $name = parent::getElementName();
 
         return $name . '[]';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function extendView(FormEntityView $view)
+    {
+        parent::extendView($view);
+
+        $selected = (array) $this->getValue();
+        $view->choices = [];
+
+        foreach ($this->getChoices() as $value => $label) {
+            $attributes = [
+                'name' => $this->getElementName(),
+                'type' => 'checkbox',
+                'value' => $value
+            ];
+
+            if (in_array($value, $selected)) {
+                $attributes += [
+                    'checked' => 'checked'
+                ];
+            }
+
+            $view->choices[] = [
+                'label' => $this->translate($label),
+                'attributes' => $attributes,
+                'attributesString' => $this->buildAttributesString($attributes)
+            ];
+        }
     }
 }

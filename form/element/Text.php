@@ -23,8 +23,5 @@ class Text extends BaseFormElement implements IFormInput
     /**
      * {@inheritdoc}
      */
-    public function getInputType()
-    {
-        return self::TYPE_NAME;
-    }
+    protected $inputType = self::TYPE_NAME;
 }

@@ -15,8 +15,20 @@ namespace umi\validation;
 interface IValidator
 {
     /**
-     * Возвращает сообщения ошибки валидации
-     * @return array ошибки валидации
+     * Возвращает тип валидатора.
+     * @return string
+     */
+    public function getType();
+
+    /**
+     * Возвращает опции валидации.
+     * @return array
+     */
+    public function getOptions();
+
+    /**
+     * Возвращает сообщение ошибки валидации.
+     * @return string
      */
     public function getMessage();
 

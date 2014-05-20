@@ -9,14 +9,13 @@
 
 namespace umi\form\element\html5;
 
-use umi\form\element\BaseFormElement;
-use umi\form\element\IFormInput;
+use umi\form\element\BaseFormInput;
 
 /**
  * HTML5 элемент формы - выбор цвета (color).
  * @example <input type="color" />
  */
-class Color extends BaseFormElement implements IFormInput
+class Color extends BaseFormInput
 {
     /**
      * Тип элемента.
@@ -26,9 +25,5 @@ class Color extends BaseFormElement implements IFormInput
     /**
      * {@inheritdoc}
      */
-    public function getInputType()
-    {
-        return self::TYPE_NAME;
-    }
-
+    protected $inputType = self::TYPE_NAME;
 }

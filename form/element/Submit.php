@@ -20,4 +20,9 @@ class Submit extends Button
      */
     const TYPE_NAME = 'submit';
 
+    /**
+     * @var string $buttonType тип кнопки
+     */
+    protected $buttonType = self::TYPE_NAME;
+
 }

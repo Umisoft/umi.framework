@@ -9,22 +9,21 @@
 
 namespace umi\form\element\html5;
 
-use umi\form\element\BaseFormElement;
-use umi\form\element\IFormInput;
+use umi\form\element\BaseFormInput;
 
 /**
  * HTML5 элемент формы - Телефон (phone).
  * @example <input type="tel" />
  */
-class Phone extends BaseFormElement implements IFormInput
+class Phone extends BaseFormInput
 {
     /**
      * Тип элемента.
      */
     const TYPE_NAME = 'phone';
 
-    public function getInputType()
-    {
-        return 'tel';
-    }
+    /**
+     * {@inheritdoc}
+     */
+    protected $inputType = self::TYPE_NAME;
 }

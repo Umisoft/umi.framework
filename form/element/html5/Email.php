@@ -9,20 +9,24 @@
 
 namespace umi\form\element\html5;
 
-use umi\form\element\BaseFormElement;
-use umi\form\element\IFormInput;
+use umi\form\element\BaseFormInput;
 use umi\validation\IValidatorFactory;
 
 /**
  * HTML5 элемент формы - Email (email).
  * @example <input type="email" />
  */
-class Email extends BaseFormElement implements IFormInput
+class Email extends BaseFormInput
 {
     /**
      * Тип элемента.
      */
     const TYPE_NAME = 'email';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $inputType = self::TYPE_NAME;
 
     /**
      * {@inheritdoc}
@@ -33,13 +37,5 @@ class Email extends BaseFormElement implements IFormInput
         $config[IValidatorFactory::TYPE_EMAIL] = [];
 
         return $config;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getInputType()
-    {
-        return self::TYPE_NAME;
     }
 }

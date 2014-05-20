@@ -9,14 +9,13 @@
 
 namespace umi\form\element\html5;
 
-use umi\form\element\BaseFormElement;
-use umi\form\element\IFormInput;
+use umi\form\element\BaseFormInput;
 
 /**
  * HTML5 элемент формы - Неделя (week).
  * @example <input type="week" />
  */
-class Week extends BaseFormElement implements IFormInput
+class Week extends BaseFormInput
 {
     /**
      * Тип элемента.
@@ -26,8 +25,5 @@ class Week extends BaseFormElement implements IFormInput
     /**
      * {@inheritdoc}
      */
-    public function getInputType()
-    {
-        return self::TYPE_NAME;
-    }
+    protected $inputType = self::TYPE_NAME;
 }

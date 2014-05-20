@@ -9,16 +9,23 @@
 
 namespace umi\form\element;
 
+use umi\form\FormEntityView;
+
 /**
  * Элемент формы - флаг(checkbox).
  * @example <input type="checkbox" />
  */
-class Checkbox extends BaseFormElement implements IFormInput
+class Checkbox extends BaseFormInput
 {
     /**
      * Тип элемента.
      */
     const TYPE_NAME = 'checkbox';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $inputType = self::TYPE_NAME;
 
     /**
      * {@inheritdoc}
@@ -42,5 +49,18 @@ class Checkbox extends BaseFormElement implements IFormInput
     public function getInputType()
     {
         return self::TYPE_NAME;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function extendView(FormEntityView $view)
+    {
+        parent::extendView($view);
+
+        if ($this->getValue()) {
+            $view->attributes['checked'] = 'checked';
+        }
+        $view->attributes['value'] = 1;
     }
 }

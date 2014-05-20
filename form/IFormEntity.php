@@ -12,17 +12,24 @@ namespace umi\form;
 use umi\form\adapter\IDataAdapter;
 use umi\form\exception\RuntimeException;
 use umi\form\fieldset\IFieldSet;
+use umi\i18n\ILocalizable;
 
 /**
  * Интерфейс сущности формы.
  */
-interface IFormEntity
+interface IFormEntity extends ILocalizable
 {
     /**
      * Возвращает имя сущности.
      * @return string
      */
     public function getName();
+
+    /**
+     * Возвращает тип элемента.
+     * @return string
+     */
+    public function getType();
 
     /**
      * Возвращает label для сущности.
@@ -103,4 +110,10 @@ interface IFormEntity
      * @return bool
      */
     public function getIsSubmitted();
+
+    /**
+     * Возвращает модель для отображения.
+     * @return \ArrayObject
+     */
+    public function getView();
 }

@@ -9,14 +9,13 @@
 
 namespace umi\form\element\html5;
 
-use umi\form\element\BaseFormElement;
-use umi\form\element\IFormInput;
+use umi\form\element\BaseFormInput;
 
 /**
  * HTML5 элемент формы - Число (number).
  * @example <input type="number" />
  */
-class Number extends BaseFormElement implements IFormInput
+class Number extends BaseFormInput
 {
     /**
      * Тип элемента.
@@ -26,9 +25,6 @@ class Number extends BaseFormElement implements IFormInput
     /**
      * {@inheritdoc}
      */
-    public function getInputType()
-    {
-        return self::TYPE_NAME;
-    }
+    protected $inputType = self::TYPE_NAME;
 
 }

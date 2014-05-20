@@ -13,7 +13,7 @@ namespace umi\form\element;
  * Элемент формы - Пароль(password).
  * @example <input type="password" />
  */
-class Password extends BaseFormElement implements IFormInput
+class Password extends BaseFormInput
 {
     /**
      * Тип элемента.
@@ -23,8 +23,5 @@ class Password extends BaseFormElement implements IFormInput
     /**
      * {@inheritdoc}
      */
-    public function getInputType()
-    {
-        return self::TYPE_NAME;
-    }
+    protected $inputType = self::TYPE_NAME;
 }

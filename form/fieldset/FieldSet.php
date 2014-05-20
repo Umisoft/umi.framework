@@ -14,6 +14,7 @@ use umi\form\element\IFormElement;
 use umi\form\exception\OutOfBoundsException;
 use umi\form\exception\RuntimeException;
 use umi\form\BaseFormEntity;
+use umi\form\FormEntityView;
 use umi\form\IFormEntity;
 use umi\i18n\ILocalizable;
 use umi\i18n\TLocalizable;
@@ -32,6 +33,10 @@ class FieldSet extends BaseFormEntity implements Iterator, IFieldSet, ILocalizab
     const TYPE_NAME = 'fieldset';
 
     /**
+     * {@inheritdoc}
+     */
+    protected $tagName = self::TYPE_NAME;
+    /**
      * @var IFormEntity[] $children дочерние сущности
      */
     protected $children = [];
@@ -39,6 +44,16 @@ class FieldSet extends BaseFormEntity implements Iterator, IFieldSet, ILocalizab
      * @var bool $isSubmitted признак того, что данные группы были установлены
      */
     protected $isSubmitted = false;
+
+    /**
+     * {@inheritdoc}
+     */
+
+
+     function getType()
+    {
+        return self::TYPE_NAME;
+    }
 
     /**
      * {@inheritdoc}
@@ -244,5 +259,16 @@ class FieldSet extends BaseFormEntity implements Iterator, IFieldSet, ILocalizab
         }
 
         return $this->getParent()->getIsSubmitted();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function extendView(FormEntityView $view)
+    {
+        $view->elements = [];
+        foreach ($this->children as $child) {
+            $view->elements[] = $child->getView();
+        }
     }
 }

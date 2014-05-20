@@ -12,26 +12,14 @@ namespace umi\form\element;
 use umi\form\FormEntityView;
 
 /**
- * Элемент формы select с несколькими значениями.
- * @example <select name="name[]"></select>
+ * Базовый класс инпутов формы.
  */
-class MultiSelect extends Select
+abstract class BaseFormInput extends BaseFormElement
 {
-
     /**
-     * Тип элемента.
+     * @var string $inputType тип инпута
      */
-    const TYPE_NAME = 'multi-select';
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getElementName()
-    {
-        $name = parent::getElementName();
-
-        return $name . '[]';
-    }
+    protected $inputType = 'text';
 
     /**
      * {@inheritdoc}
@@ -40,7 +28,8 @@ class MultiSelect extends Select
     {
         parent::extendView($view);
 
-        $view->attributes['multiple'] = 'multiple';
+        $view->attributes['type'] = $this->inputType;
+        $view->attributes['value'] = $this->getValue();
     }
 }
  

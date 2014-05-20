@@ -12,7 +12,7 @@ namespace umi\validation;
 /**
  * Интерфейс коллекции валидаторов.
  */
-interface IValidatorCollection
+interface IValidatorCollection extends \Traversable
 {
     /**
      * Возвращает сообщения ошибок валидации

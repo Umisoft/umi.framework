@@ -13,6 +13,7 @@ use umi\filter\IFilterAware;
 use umi\filter\IFilterCollection;
 use umi\filter\TFilterAware;
 use umi\form\BaseFormEntity;
+use umi\form\FormEntityView;
 use umi\orm\exception\RuntimeException;
 use umi\validation\IValidationAware;
 use umi\validation\IValidatorCollection;
@@ -33,6 +34,10 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
     use TFilterAware;
 
     /**
+     * {@inheritdoc}
+     */
+    protected $tagName = 'input';
+    /**
      * @var array $messages сообщения валидации
      */
     protected $messages = [];
@@ -50,7 +55,11 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
      */
     public function getType()
     {
-        return self::TYPE_NAME;
+        $class =  get_called_class();
+
+        /** @noinspection PhpUndefinedFieldInspection */
+
+        return $class::TYPE_NAME;
     }
 
     /**
@@ -98,6 +107,15 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
     public function getValidators()
     {
         if (!$this->validators) {
+            $config = [];
+            foreach ($this->getValidatorsConfig() as $type => $options) {
+                if (isset($options['dictionaries'])) {
+                    $options['dictionaries'] = array_merge($options['dictionaries'], $this->getI18nDictionaryNames());
+                } else {
+                    $options['dictionaries'] = $this->getI18nDictionaryNames();
+                }
+                $config[$type] = $options;
+            }
             $this->validators = $this->createValidatorCollection($this->getValidatorsConfig());
         }
 
@@ -223,5 +241,32 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
         }
 
         return $this->getParent()->getIsSubmitted();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function extendView(FormEntityView $view)
+    {
+        $view->attributes['name'] = $this->getElementName();
+        $view->value = $this->getValue();
+
+        $view->validators = [];
+
+        foreach ($this->getValidators() as $validator) {
+            $view->validators[] = [
+                'type' => $validator->getType(),
+                'errorLabel' => $this->translate($validator->getErrorLabel()),
+                'options' => $validator->getOptions()
+            ];
+        }
+
+        $view->filters = [];
+        foreach ($this->getFiltersConfig() as $filterType => $filterOptions) {
+            $view->filters[] = [
+                'type' => $filterType,
+                'options' => $filterOptions
+            ];
+        }
     }
 }

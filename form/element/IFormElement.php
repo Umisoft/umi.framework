@@ -12,6 +12,7 @@ namespace umi\form\element;
 use umi\filter\IFilterCollection;
 use umi\form\exception\RuntimeException;
 use umi\form\IFormEntity;
+use umi\validation\IValidator;
 use umi\validation\IValidatorCollection;
 
 /**
@@ -19,12 +20,6 @@ use umi\validation\IValidatorCollection;
  */
 interface IFormElement extends IFormEntity
 {
-    /**
-     * Возвращает тип элемента
-     * @return string
-     */
-    public function getType();
-
     /**
      * Возвращает значение элемента.
      * @return string
@@ -46,7 +41,7 @@ interface IFormElement extends IFormEntity
 
     /**
      * Возвращает установленные валидаторы.
-     * @return IValidatorCollection
+     * @return IValidatorCollection|IValidator[]
      */
     public function getValidators();
 

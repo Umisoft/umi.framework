@@ -9,11 +9,13 @@
 
 namespace umi\form\element;
 
+use umi\form\FormEntityView;
+
 /**
  * Элемент формы - Переключатель(radio).
  * @example <input type="radio" />
  */
-class Radio extends BaseChoiceElement implements IFormInput
+class Radio extends BaseChoiceElement
 {
     /**
      * Тип элемента.
@@ -23,8 +25,32 @@ class Radio extends BaseChoiceElement implements IFormInput
     /**
      * {@inheritdoc}
      */
-    public function getInputType()
+    protected function extendView(FormEntityView $view)
     {
-        return self::TYPE_NAME;
+        parent::extendView($view);
+
+        $selected = (array) $this->getValue();
+        $view->choices = [];
+
+        foreach ($this->getChoices() as $value => $label) {
+            $attributes = [
+                'name' => $this->getElementName(),
+                'type' => 'radio',
+                'value' => $value
+            ];
+
+            if (in_array($value, $selected)) {
+                $attributes += [
+                    'checked' => 'checked'
+                ];
+            }
+
+            $view->choices[] = [
+                'label' => $this->translate($label),
+                'attributes' => $attributes,
+                'attributesString' => $this->buildAttributesString($attributes)
+            ];
+        }
     }
+
 }

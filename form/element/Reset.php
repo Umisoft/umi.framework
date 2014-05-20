@@ -20,4 +20,9 @@ class Reset extends Button
      */
     const TYPE_NAME = 'reset';
 
+    /**
+     * @var string $buttonType тип кнопки
+     */
+    protected $buttonType = self::TYPE_NAME;
+
 }

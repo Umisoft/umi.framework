@@ -8,7 +8,6 @@
 
 namespace umi\templating\engine\php;
 
-use umi\templating\helper\form\FormHelper;
 use umi\templating\helper\pagination\PaginationHelper;
 use umi\templating\helper\TranslationHelper;
 
@@ -21,10 +20,6 @@ class TemplatingPhpExtension implements IPhpExtension
      * @var string $paginationFunctionName имя функции для генерации постраничной навигации
      */
     public $paginationFunctionName = 'pagination';
-    /**
-     * @var string $formFunctionName имя функции для вывода форм
-     */
-    public $formFunctionName = 'form';
     /**
      * @var string $translateFunctionName имя функции для перевода
      */
@@ -45,7 +40,6 @@ class TemplatingPhpExtension implements IPhpExtension
     {
         return [
             $this->paginationFunctionName => $this->getPaginationHelper(),
-            $this->formFunctionName => $this->getFormHelper(),
             $this->translateFunctionName => [$this->getTranslationHelper(), 'translate']
         ];
     }
@@ -61,23 +55,6 @@ class TemplatingPhpExtension implements IPhpExtension
 
             if (!$helper) {
                 $helper = new PaginationHelper();
-            }
-
-            return $helper;
-        };
-    }
-
-    /**
-     * Возвращает помощник шаблонов для форм.
-     * @return callable
-     */
-    protected function getFormHelper()
-    {
-        return function () {
-            static $helper;
-
-            if (!$helper) {
-                $helper = new FormHelper();
             }
 
             return $helper;

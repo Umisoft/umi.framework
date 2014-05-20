@@ -7,17 +7,13 @@
  * @license   http://umi-framework.ru/license/bsd-3 BSD-3 License
  */
 
-namespace umi\form\element;
+namespace umi\form;
 
 /**
- * Интерфейс кнопочного элемента формы.
+ * Представление сущности формы
  */
-interface IFormButton extends IFormElement
+class FormEntityView extends \ArrayObject
 {
-    /**
-     * Возвращает тип кнопки.
-     * @return string
-     */
-    public function getButtonType();
 
 }
+ 

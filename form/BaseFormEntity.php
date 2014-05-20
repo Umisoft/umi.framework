@@ -10,16 +10,25 @@
 namespace umi\form;
 
 use umi\form\fieldset\IFieldSet;
+use umi\i18n\TLocalizable;
 
 /**
  * Базовый класс сущности формы.
  */
 abstract class BaseFormEntity implements IFormEntity
 {
+    use TLocalizable {
+        TLocalizable::getI18nDictionaryNames as getI18nDictionaryNamesInternal;
+    }
+
     /**
      * @var string $name имя сущности формы
      */
     protected $name;
+    /**
+     * @var string $tagName имя тега
+     */
+    protected $tagName;
     /**
      * @var string $label
      */
@@ -128,6 +137,75 @@ abstract class BaseFormEntity implements IFormEntity
     public function getParent()
     {
         return $this->parent;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getView()
+    {
+        $view = new FormEntityView(
+            [
+                'type' => $this->getType(),
+                'tag' => $this->tagName,
+                'label' => $this->translate($this->getLabel()),
+                'attributes' => $this->getAttributes(),
+                'valid' => $this->isValid(),
+                'errors' => $this->getMessages()
+            ],
+            FormEntityView::STD_PROP_LIST && FormEntityView::ARRAY_AS_PROPS
+        );
+
+        $this->extendView($view);
+
+        $view->attributesString = $this->buildAttributesString($view->attributes);
+
+        return $view;
+    }
+
+    /**
+     * Расширяет представление сущности.
+     * @param FormEntityView $view
+     */
+    protected function extendView(FormEntityView $view)
+    {
+
+    }
+
+    /**
+     * Генерирует строку аттрибутов для элемента.
+     * @param array $attributes массив аттрибутов элемента
+     * @return string
+     */
+    protected function buildAttributesString(array $attributes)
+    {
+        $strings = [];
+
+        foreach ($attributes as $key => $value) {
+            if (is_array($value)) {
+                continue;
+            }
+            $strings[] = $key . '="' . $value . '"';
+        }
+
+        return implode(' ', $strings);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getI18nDictionaryNames()
+    {
+        $parent = $this->getParent();
+        if ($parent instanceof self) {
+            return $parent->getI18nDictionaryNames();
+        }
+
+        if (isset($this->options['dictionaries'])) {
+            return $this->options['dictionaries'];
+        };
+
+        return $this->getI18nDictionaryNamesInternal();
     }
 
 }

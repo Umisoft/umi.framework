@@ -19,4 +19,9 @@ class Textarea extends BaseFormElement
      * Тип элемента.
      */
     const TYPE_NAME = 'textarea';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $tagName = self::TYPE_NAME;
 }
