@@ -93,7 +93,7 @@ class Form extends FieldSet implements IForm
         }
 
         if (!$this->dataAdapter) {
-            throw new RuntimeException('Form data adapter is not set');
+            throw new RuntimeException($this->translate('Form data adapter is not set'));
         }
 
         return $this->dataAdapter;

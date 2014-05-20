@@ -144,21 +144,16 @@ abstract class BaseFormEntity implements IFormEntity
      */
     public function getView()
     {
-        $view = new FormEntityView(
-            [
-                'type' => $this->getType(),
-                'tag' => $this->tagName,
-                'label' => $this->translate($this->getLabel()),
-                'attributes' => $this->getAttributes(),
-                'valid' => $this->isValid(),
-                'errors' => $this->getMessages()
-            ],
-            FormEntityView::STD_PROP_LIST && FormEntityView::ARRAY_AS_PROPS
-        );
+        $view = new FormEntityView([
+            'type' => $this->getType(),
+            'tag' => $this->tagName,
+            'label' => $this->translate($this->getLabel()),
+            'attributes' => new EntityAttributesView($this->getAttributes()),
+            'valid' => $this->isValid(),
+            'errors' => $this->getMessages()
+        ]);
 
         $this->extendView($view);
-
-        $view->attributesString = $this->buildAttributesString($view->attributes);
 
         return $view;
     }
@@ -170,25 +165,6 @@ abstract class BaseFormEntity implements IFormEntity
     protected function extendView(FormEntityView $view)
     {
 
-    }
-
-    /**
-     * Генерирует строку аттрибутов для элемента.
-     * @param array $attributes массив аттрибутов элемента
-     * @return string
-     */
-    protected function buildAttributesString(array $attributes)
-    {
-        $strings = [];
-
-        foreach ($attributes as $key => $value) {
-            if (is_array($value)) {
-                continue;
-            }
-            $strings[] = $key . '="' . $value . '"';
-        }
-
-        return implode(' ', $strings);
     }
 
     /**

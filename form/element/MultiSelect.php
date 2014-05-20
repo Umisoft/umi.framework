@@ -21,7 +21,7 @@ class MultiSelect extends Select
     /**
      * Тип элемента.
      */
-    const TYPE_NAME = 'multi-select';
+    const TYPE_NAME = 'multiSelect';
 
     /**
      * {@inheritdoc}

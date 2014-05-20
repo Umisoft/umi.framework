@@ -9,6 +9,7 @@
 
 namespace umi\form\element;
 
+use umi\form\EntityAttributesView;
 use umi\form\FormEntityView;
 
 /**
@@ -47,8 +48,7 @@ class Radio extends BaseChoiceElement
 
             $view->choices[] = [
                 'label' => $this->translate($label),
-                'attributes' => $attributes,
-                'attributesString' => $this->buildAttributesString($attributes)
+                'attributes' => new EntityAttributesView($attributes)
             ];
         }
     }

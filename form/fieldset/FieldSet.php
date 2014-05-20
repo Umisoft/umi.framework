@@ -16,17 +16,12 @@ use umi\form\exception\RuntimeException;
 use umi\form\BaseFormEntity;
 use umi\form\FormEntityView;
 use umi\form\IFormEntity;
-use umi\i18n\ILocalizable;
-use umi\i18n\TLocalizable;
 
 /**
  * Класс группы сущностей.
  */
-class FieldSet extends BaseFormEntity implements Iterator, IFieldSet, ILocalizable
+class FieldSet extends BaseFormEntity implements Iterator, IFieldSet
 {
-
-    use TLocalizable;
-
     /**
      * Тип элемента формы.
      */
@@ -48,8 +43,6 @@ class FieldSet extends BaseFormEntity implements Iterator, IFieldSet, ILocalizab
     /**
      * {@inheritdoc}
      */
-
-
      function getType()
     {
         return self::TYPE_NAME;
@@ -243,7 +236,9 @@ class FieldSet extends BaseFormEntity implements Iterator, IFieldSet, ILocalizab
     public function getDataAdapter()
     {
         if (!$this->getParent()) {
-            throw new RuntimeException('Cannot get form data adapter. Parent form is unknown');
+            throw new RuntimeException($this->translate(
+                'Cannot get form data adapter. Parent form is unknown'
+            ));
         }
 
         return $this->getParent()->getDataAdapter();
@@ -255,7 +250,9 @@ class FieldSet extends BaseFormEntity implements Iterator, IFieldSet, ILocalizab
     public function getIsSubmitted()
     {
         if (!$this->getParent()) {
-            throw new RuntimeException('Cannot detect whether the element was submitted. Parent form is unknown.');
+            throw new RuntimeException($this->translate(
+                'Cannot detect whether the element was submitted. Parent form is unknown.'
+            ));
         }
 
         return $this->getParent()->getIsSubmitted();

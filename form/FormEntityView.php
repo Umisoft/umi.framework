@@ -11,9 +11,22 @@ namespace umi\form;
 
 /**
  * Представление сущности формы
+ *
+ * @property string $type тип сущности
+ * @property string $tag имя тега
+ * @property string $label лейбл
+ * @property bool $valid признак валидности
+ * @property array $errors список ошибок валидации
+ * @property EntityAttributesView $attributes представление атрибутов сущности
  */
 class FormEntityView extends \ArrayObject
 {
-
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct(array $array)
+    {
+        parent::__construct($array, self::STD_PROP_LIST | self::ARRAY_AS_PROPS);
+    }
 }
  
