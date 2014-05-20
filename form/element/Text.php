@@ -13,7 +13,7 @@ namespace umi\form\element;
  * Элемент формы - Текстовое поле(text).
  * @example <input type="text" />
  */
-class Text extends BaseFormElement implements IFormInput
+class Text extends BaseFormInput
 {
     /**
      * Тип элемента.
