@@ -9,6 +9,8 @@
 
 namespace umi\form\element;
 
+use umi\form\FormEntityView;
+
 /**
  * Элемент формы - Пароль(password).
  * @example <input type="password" />
@@ -32,27 +34,10 @@ class Password extends BaseFormInput
     /**
      * {@inheritdoc}
      */
-    public function setValue($value)
+    protected function extendView(FormEntityView $view)
     {
-        $this->password = $this->filter($value);
-        $this->getDataAdapter()->setData($this, $this->password);
-
-        return $this;
+        parent::extendView($view);
+        unset($view->attributes['value']);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getValue()
-    {
-        return '';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function validate($value)
-    {
-        return parent::validate($this->password);
-    }
 }
