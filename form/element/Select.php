@@ -35,23 +35,26 @@ class Select extends BaseChoiceElement
     {
         parent::extendView($view);
 
-        $selected = (array) $this->getValue();
-        $view->choices = [];
+        if (!$this->isLazy()) {
 
-        foreach ($this->getChoices() as $value => $label) {
-            $attributes = ['value' => $value];
+            $selected = (array) $this->getValue();
+            $view->choices = [];
 
-            if (in_array($value, $selected)) {
-                $attributes += [
-                    'selected' => 'selected'
+            foreach ($this->getChoices() as $value => $label) {
+                $attributes = ['value' => $value];
+
+                if (in_array($value, $selected)) {
+                    $attributes += [
+                        'selected' => 'selected'
+                    ];
+                }
+
+                $view->choices[] = [
+                    'label' => $this->translate($label),
+                    'value' => $value,
+                    'attributes' => new EntityAttributesView($attributes)
                 ];
             }
-
-            $view->choices[] = [
-                'label' => $this->translate($label),
-                'value' => $value,
-                'attributes' => new EntityAttributesView($attributes)
-            ];
         }
     }
 }

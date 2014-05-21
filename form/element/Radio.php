@@ -30,27 +30,30 @@ class Radio extends BaseChoiceElement
     {
         parent::extendView($view);
 
-        $selected = (array) $this->getValue();
-        $view->choices = [];
+        if (!$this->isLazy()) {
 
-        foreach ($this->getChoices() as $value => $label) {
-            $attributes = [
-                'name' => $this->getElementName(),
-                'type' => 'radio',
-                'value' => $value
-            ];
+            $selected = (array) $this->getValue();
+            $view->choices = [];
 
-            if (in_array($value, $selected)) {
-                $attributes += [
-                    'checked' => 'checked'
+            foreach ($this->getChoices() as $value => $label) {
+                $attributes = [
+                    'name' => $this->getElementName(),
+                    'type' => 'radio',
+                    'value' => $value
+                ];
+
+                if (in_array($value, $selected)) {
+                    $attributes += [
+                        'checked' => 'checked'
+                    ];
+                }
+
+                $view->choices[] = [
+                    'label' => $this->translate($label),
+                    'value' => $value,
+                    'attributes' => new EntityAttributesView($attributes)
                 ];
             }
-
-            $view->choices[] = [
-                'label' => $this->translate($label),
-                'value' => $value,
-                'attributes' => new EntityAttributesView($attributes)
-            ];
         }
     }
 

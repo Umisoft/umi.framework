@@ -38,29 +38,32 @@ class CheckboxGroup extends BaseChoiceElement
      */
     protected function extendView(FormEntityView $view)
     {
+
         parent::extendView($view);
 
-        $selected = (array) $this->getValue();
-        $view->choices = [];
+        if (!$this->isLazy()) {
+            $selected = (array) $this->getValue();
+            $view->choices = [];
 
-        foreach ($this->getChoices() as $value => $label) {
-            $attributes = [
-                'name' => $this->getElementName(),
-                'type' => 'checkbox',
-                'value' => $value
-            ];
+            foreach ($this->getChoices() as $value => $label) {
+                $attributes = [
+                    'name' => $this->getElementName(),
+                    'type' => 'checkbox',
+                    'value' => $value
+                ];
 
-            if (in_array($value, $selected)) {
-                $attributes += [
-                    'checked' => 'checked'
+                if (in_array($value, $selected)) {
+                    $attributes += [
+                        'checked' => 'checked'
+                    ];
+                }
+
+                $view->choices[] = [
+                    'label' => $this->translate($label),
+                    'value' => $value,
+                    'attributes' => new EntityAttributesView($attributes)
                 ];
             }
-
-            $view->choices[] = [
-                'label' => $this->translate($label),
-                'value' => $value,
-                'attributes' => new EntityAttributesView($attributes)
-            ];
         }
     }
 }

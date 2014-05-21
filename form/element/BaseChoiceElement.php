@@ -10,6 +10,7 @@
 namespace umi\form\element;
 
 use umi\form\exception\InvalidArgumentException;
+use umi\form\FormEntityView;
 
 /**
  * Базовый класс элемента, предаставляющего значения на выбор.
@@ -83,5 +84,26 @@ abstract class BaseChoiceElement extends BaseFormElement implements IChoiceFormE
         }
 
         return parent::setValue($value);
+    }
+
+    /**
+     * Проверяет, должны ли сразу загружаться значения для выбора.
+     * @return bool
+     */
+    protected function isLazy()
+    {
+        return (isset($this->options['lazy']) && $this->options['lazy'] === true);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function extendView(FormEntityView $view)
+    {
+        parent::extendView($view);
+
+        $view->lazy = $this->isLazy();
+        $view->choicesLabelSource = $this->getChoiceLabelSource();
+        $view->choicesValueSource = $this->getChoiceValueSource();
     }
 }
