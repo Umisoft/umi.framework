@@ -70,7 +70,7 @@ class CSRF extends Hidden implements ILocalizable, ISessionAware
     /**
      * {@inheritdoc}
      */
-    protected function validate()
+    protected function validate($value)
     {
         return $this->token == $this->value;
     }

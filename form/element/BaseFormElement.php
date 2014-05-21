@@ -173,7 +173,7 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
             return true;
         }
 
-        return $this->validate();
+        return $this->validate($this->getValue());
     }
 
     /**
@@ -203,12 +203,13 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
 
     /**
      * Проверяет значение на сооветсвие валидаторам.
+     * @param mixed $value
      * @return bool
      */
-    protected function validate()
+    protected function validate($value)
     {
         $isValid =
-            $this->getValidators()->isValid($this->getValue()) &&
+            $this->getValidators()->isValid($value) &&
             $this->getDataAdapter()->validate($this);
 
         $this->messages = array_merge(

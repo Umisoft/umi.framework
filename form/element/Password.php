@@ -24,4 +24,35 @@ class Password extends BaseFormInput
      * {@inheritdoc}
      */
     protected $inputType = self::TYPE_NAME;
+    /**
+     * @var string $password пароль
+     */
+    protected $password;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setValue($value)
+    {
+        $this->password = $this->filter($value);
+        $this->getDataAdapter()->setData($this, $this->password);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getValue()
+    {
+        return '';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function validate($value)
+    {
+        return parent::validate($this->password);
+    }
 }
