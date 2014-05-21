@@ -256,7 +256,7 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
         foreach ($this->getValidators() as $validator) {
             $view->validators[] = [
                 'type' => $validator->getType(),
-                'errorLabel' => $this->translate($validator->getErrorLabel()),
+                'message' => $this->translate($validator->getErrorLabel()),
                 'options' => $validator->getOptions()
             ];
         }

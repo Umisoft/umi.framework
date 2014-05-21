@@ -48,6 +48,7 @@ class Radio extends BaseChoiceElement
 
             $view->choices[] = [
                 'label' => $this->translate($label),
+                'value' => $value,
                 'attributes' => new EntityAttributesView($attributes)
             ];
         }
