@@ -9,6 +9,9 @@
 
 namespace umi\form;
 
+use umi\form\exception\OutOfBoundsException;
+use umi\form\exception\RuntimeException;
+
 /**
  * Интерфейс фабрики элементов формы.
  */
@@ -22,4 +25,15 @@ interface IEntityFactory
      * @return IForm
      */
     public function createForm(array $config, $object = null);
+
+    /**
+     * Создает элемент формы. Это может быть как просто элемент,
+     * так и набор элементов.
+     * @param string $name имя элемента
+     * @param array $config конфигурация элемента, включая аттрибуты и опции
+     * @throws RuntimeException если тип элемента не определен
+     * @throws OutOfBoundsException если тип элемента не поддерживается
+     * @return IFormEntity
+     */
+    public function createFormEntity($name, array $config);
 }

@@ -129,15 +129,9 @@ class EntityFactory implements IEntityFactory, IFactory
     }
 
     /**
-     * Создает элемент формы. Это может быть как просто элемент,
-     * так и коллекция элементов.
-     * @param string $name имя элемента
-     * @param array $config конфигурация элемента, включая аттрибуты и опции
-     * @throws RuntimeException если тип элемента не определен
-     * @throws OutOfBoundsException если тип элемента не поддерживается
-     * @return IFormEntity
+     * {@inheritdoc}
      */
-    protected function createFormEntity($name, array $config)
+    public function createFormEntity($name, array $config)
     {
         if (!isset($config['type'])) {
             throw new RuntimeException(
