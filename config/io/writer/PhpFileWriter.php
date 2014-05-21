@@ -64,6 +64,11 @@ class PhpFileWriter extends BaseWriter
 	return $source;
 FILE;
 
+        $directory = dirname($filename);
+        if (!is_dir($filename) && !@mkdir($directory, 0777, true)) {
+            return false;
+        }
+
         return @file_put_contents($filename, $source) != 0;
     }
 }
