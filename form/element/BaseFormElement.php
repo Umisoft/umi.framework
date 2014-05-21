@@ -251,7 +251,7 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
         $name = $this->getElementName();
         $view->attributes['name'] = $name;
         $view->name = $name;
-        $view->datasource = $this->getDataSource();
+        $view->dataSource = $this->getDataSource();
         $view->value = $this->getValue();
 
         $view->validators = [];
