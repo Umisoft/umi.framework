@@ -45,7 +45,6 @@ use umi\form\fieldset\IFieldSet;
 use umi\form\Form;
 use umi\form\IEntityFactory;
 use umi\form\IForm;
-use umi\form\IFormEntity;
 use umi\i18n\TLocalizable;
 use umi\toolkit\factory\IFactory;
 use umi\toolkit\factory\TFactory;
@@ -100,6 +99,11 @@ class EntityFactory implements IEntityFactory, IFactory
         Form::TYPE_NAME       => 'umi\form\Form',
         FieldSet::TYPE_NAME   => 'umi\form\fieldset\FieldSet'
     ];
+
+    /**
+     * @var array $elementOptions опции для элементов по умолчанию
+     */
+    public $elementDefaultOptions = [];
 
     /**
      * @var array $dataAdapters список адаптеров данных формы
@@ -166,7 +170,6 @@ class EntityFactory implements IEntityFactory, IFactory
      */
     protected function createElement($name, array $config)
     {
-
         $type = $config['type'];
         $className = isset($config['className']) ? $config['className'] : $this->elementTypes[$type];
 
@@ -180,7 +183,7 @@ class EntityFactory implements IEntityFactory, IFactory
             $className,
             ['umi\form\element\IFormElement']
         )
-        ->createInstance([$name, $attributes, $options]);
+        ->createInstance([$name, $attributes, $this->getEntityOptions($type, $options)]);
 
         if (isset($config['label'])) {
             $element->setLabel($config['label']);
@@ -210,7 +213,7 @@ class EntityFactory implements IEntityFactory, IFactory
          * @var IFieldSet $fieldSet
          */
         $fieldSet = $this->getPrototype($className, $contracts)
-            ->createInstance([$name, $attributes, $options]);
+            ->createInstance([$name, $attributes, $this->getEntityOptions($type, $options)]);
 
         if (isset($config['elements']) && is_array($config['elements'])) {
             foreach($config['elements'] as $name => $elementConfig) {
@@ -270,6 +273,25 @@ class EntityFactory implements IEntityFactory, IFactory
             'Form data adapter not found for objects({type}).',
             ['type' => is_object($object) ? get_class($object) : gettype($object)]
         ));
+    }
+
+    /**
+     * Возвращает вычисленные опции для сущности.
+     * @param string $type тип сущности
+     * @param array $options опции, заданные в конфигурации
+     * @return array
+     */
+    private function getEntityOptions($type, $options)
+    {
+        $options = $this->configToArray($options, true);
+
+        if (isset($this->elementDefaultOptions[$type])) {
+            $defaultOptions = $this->configToArray($this->elementDefaultOptions[$type], true);
+            $options = $this->mergeConfigOptions($options, $defaultOptions);
+        }
+
+        return $options;
+
     }
 
 }
