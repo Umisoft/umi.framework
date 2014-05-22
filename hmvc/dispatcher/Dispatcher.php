@@ -148,6 +148,30 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
     /**
      * {@inheritdoc}
      */
+    public function getComponentByPath($componentPath)
+    {
+        $componentPathParts = explode(IComponent::PATH_SEPARATOR, $componentPath);
+        $component = $this->getInitialComponent();
+
+        if ($component->getName() != array_shift($componentPathParts)) {
+            throw new RuntimeException(
+                $this->translate(
+                    'Cannot resolve component path "{path}".',
+                    ['path' => $componentPath]
+                )
+            );
+        }
+
+        while ($componentName = array_shift($componentPathParts)) {
+            $component = $component->getChildComponent($componentName);
+        }
+
+        return $component;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function reportViewRenderError(Exception $e, IDispatchContext $failureContext, $viewOwner)
     {
         if ($viewOwner instanceof IWidget) {

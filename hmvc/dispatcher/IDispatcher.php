@@ -66,6 +66,14 @@ interface IDispatcher
     public function dispatch($routePath = null, $baseUrl = '');
 
     /**
+     * Возвращает компонент по полному пути.
+     * @param string $componentPath путь до компонента
+     * @throws RuntimeException если не удалось определить компонент
+     * @return IComponent
+     */
+    public function getComponentByPath($componentPath);
+
+    /**
      * Обрабатывает ошибку рендеринга.
      * @param Exception $e
      * @param IDispatchContext $failureContext контекст, в котором произошла ошибка
