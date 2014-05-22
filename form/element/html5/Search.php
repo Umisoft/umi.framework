@@ -25,5 +25,9 @@ class Search extends BaseFormInput
     /**
      * {@inheritdoc}
      */
-    protected $inputType = self::TYPE_NAME;
+    protected $type = 'search';
+    /**
+     * {@inheritdoc}
+     */
+    protected $inputType = 'search';
 }

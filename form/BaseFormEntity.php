@@ -30,6 +30,10 @@ abstract class BaseFormEntity implements IFormEntity
      */
     protected $tagName;
     /**
+     * @var string $type тип сущности
+     */
+    protected $type;
+    /**
      * @var string $label
      */
     protected $label;
@@ -145,7 +149,7 @@ abstract class BaseFormEntity implements IFormEntity
     public function getView()
     {
         $view = new FormEntityView([
-            'type' => $this->getType(),
+            'type' => $this->type,
             'tag' => $this->tagName,
             'label' => $this->translate($this->getLabel()),
             'attributes' => new EntityAttributesView($this->getAttributes()),

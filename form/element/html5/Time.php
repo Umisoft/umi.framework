@@ -25,5 +25,9 @@ class Time extends BaseFormInput
     /**
      * {@inheritdoc}
      */
-    protected $inputType = self::TYPE_NAME;
+    protected $type = 'time';
+    /**
+     * {@inheritdoc}
+     */
+    protected $inputType = 'time';
 }

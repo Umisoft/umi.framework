@@ -23,5 +23,5 @@ class Text extends BaseFormInput
     /**
      * {@inheritdoc}
      */
-    protected $inputType = self::TYPE_NAME;
+    protected $inputType = 'text';
 }

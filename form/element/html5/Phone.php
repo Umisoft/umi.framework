@@ -25,5 +25,9 @@ class Phone extends BaseFormInput
     /**
      * {@inheritdoc}
      */
-    protected $inputType = self::TYPE_NAME;
+    protected $type = 'phone';
+    /**
+     * {@inheritdoc}
+     */
+    protected $inputType = 'phone';
 }

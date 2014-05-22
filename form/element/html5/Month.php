@@ -25,5 +25,9 @@ class Month extends BaseFormInput
     /**
      * {@inheritdoc}
      */
-    protected $inputType = self::TYPE_NAME;
+    protected $type = 'month';
+    /**
+     * {@inheritdoc}
+     */
+    protected $inputType = 'month';
 }

@@ -26,7 +26,12 @@ class Select extends BaseChoiceElement
     /**
      * {@inheritdoc}
      */
-    protected $tagName = self::TYPE_NAME;
+    protected $type = 'select';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $tagName = 'select';
 
     /**
      * {@inheritdoc}

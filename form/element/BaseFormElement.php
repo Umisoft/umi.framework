@@ -25,18 +25,9 @@ use umi\validation\TValidationAware;
 abstract class BaseFormElement extends BaseFormEntity implements IFormElement, IValidationAware, IFilterAware
 {
 
-    /**
-     * Тип элемента.
-     */
-    const TYPE_NAME = 'text';
-
     use TValidationAware;
     use TFilterAware;
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $tagName = 'input';
     /**
      * @var array $messages сообщения валидации
      */
@@ -49,18 +40,6 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
      * @var IValidatorCollection $validators валидаторы элемента
      */
     private $validators;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getType()
-    {
-        $class =  get_called_class();
-
-        /** @noinspection PhpUndefinedFieldInspection */
-
-        return $class::TYPE_NAME;
-    }
 
     /**
      * {@inheritdoc}

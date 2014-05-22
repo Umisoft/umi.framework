@@ -21,11 +21,14 @@ class Checkbox extends BaseFormInput
      * Тип элемента.
      */
     const TYPE_NAME = 'checkbox';
-
     /**
      * {@inheritdoc}
      */
-    protected $inputType = self::TYPE_NAME;
+    protected $type = 'checkbox';
+    /**
+     * {@inheritdoc}
+     */
+    protected $inputType = 'checkbox';
 
     /**
      * {@inheritdoc}

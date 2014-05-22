@@ -25,5 +25,9 @@ class Range extends BaseFormInput
     /**
      * {@inheritdoc}
      */
-    protected $inputType = self::TYPE_NAME;
+    protected $type = 'range';
+    /**
+     * {@inheritdoc}
+     */
+    protected $inputType = 'range';
 }

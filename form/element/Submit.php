@@ -21,8 +21,13 @@ class Submit extends Button
     const TYPE_NAME = 'submit';
 
     /**
+     * {@inheritdoc}
+     */
+    protected $type = 'submit';
+
+    /**
      * @var string $buttonType тип кнопки
      */
-    protected $buttonType = self::TYPE_NAME;
+    protected $buttonType = 'submit';
 
 }

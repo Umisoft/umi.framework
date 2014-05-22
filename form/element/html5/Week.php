@@ -25,5 +25,9 @@ class Week extends BaseFormInput
     /**
      * {@inheritdoc}
      */
-    protected $inputType = self::TYPE_NAME;
+    protected $type = 'week';
+    /**
+     * {@inheritdoc}
+     */
+    protected $inputType = 'week';
 }

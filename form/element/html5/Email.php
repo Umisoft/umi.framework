@@ -26,7 +26,11 @@ class Email extends BaseFormInput
     /**
      * {@inheritdoc}
      */
-    protected $inputType = self::TYPE_NAME;
+    protected $type = 'email';
+    /**
+     * {@inheritdoc}
+     */
+    protected $inputType = 'email';
 
     /**
      * {@inheritdoc}

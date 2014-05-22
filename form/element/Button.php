@@ -25,12 +25,16 @@ class Button extends BaseFormElement
     /**
      * {@inheritdoc}
      */
-    protected $tagName = self::TYPE_NAME;
+    protected $tagName = 'button';
+    /**
+     * {@inheritdoc}
+     */
+    protected $type = 'button';
 
     /**
      * @var string $buttonType тип кнопки
      */
-    protected $buttonType = self::TYPE_NAME;
+    protected $buttonType = 'button';
 
     /**
      * {@inheritdoc}

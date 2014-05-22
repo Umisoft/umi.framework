@@ -25,6 +25,10 @@ class DateTime extends BaseFormInput
     /**
      * {@inheritdoc}
      */
-    protected $inputType = self::TYPE_NAME;
+    protected $type = 'datetime';
+    /**
+     * {@inheritdoc}
+     */
+    protected $inputType = 'datetime';
 
 }

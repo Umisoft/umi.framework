@@ -25,6 +25,10 @@ class Number extends BaseFormInput
     /**
      * {@inheritdoc}
      */
-    protected $inputType = self::TYPE_NAME;
+    protected $type = 'number';
+    /**
+     * {@inheritdoc}
+     */
+    protected $inputType = 'number';
 
 }

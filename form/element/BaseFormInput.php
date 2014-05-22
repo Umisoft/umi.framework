@@ -17,9 +17,13 @@ use umi\form\FormEntityView;
 abstract class BaseFormInput extends BaseFormElement
 {
     /**
+     * {@inheritdoc}
+     */
+    protected $tagName = 'input';
+    /**
      * @var string $inputType тип инпута
      */
-    protected $inputType = 'text';
+    protected $inputType;
 
     /**
      * {@inheritdoc}

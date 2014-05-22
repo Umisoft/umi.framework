@@ -22,6 +22,10 @@ class CheckboxGroup extends BaseChoiceElement
      * Тип элемента.
      */
     const TYPE_NAME = 'checkboxGroup';
+    /**
+     * {@inheritdoc}
+     */
+    protected $type = 'checkboxGroup';
 
     /**
      * {@inheritdoc}

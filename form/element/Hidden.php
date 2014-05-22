@@ -23,5 +23,10 @@ class Hidden extends BaseFormInput
     /**
      * {@inheritdoc}
      */
-    protected $inputType = self::TYPE_NAME;
+    protected $type = 'hidden';
+    /**
+     * {@inheritdoc}
+     */
+    protected $inputType = 'hidden';
+
 }

@@ -25,7 +25,11 @@ class Password extends BaseFormInput
     /**
      * {@inheritdoc}
      */
-    protected $inputType = self::TYPE_NAME;
+    protected $type = 'password';
+    /**
+     * {@inheritdoc}
+     */
+    protected $inputType = 'password';
 
     /**
      * {@inheritdoc}

@@ -26,6 +26,11 @@ class MultiSelect extends Select
     /**
      * {@inheritdoc}
      */
+    protected $type = 'multiSelect';
+
+    /**
+     * {@inheritdoc}
+     */
     public function getElementName()
     {
         $name = parent::getElementName();

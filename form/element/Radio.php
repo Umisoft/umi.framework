@@ -26,6 +26,11 @@ class Radio extends BaseChoiceElement
     /**
      * {@inheritdoc}
      */
+    protected $type = 'radio';
+
+    /**
+     * {@inheritdoc}
+     */
     protected function extendView(FormEntityView $view)
     {
         parent::extendView($view);

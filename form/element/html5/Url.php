@@ -25,5 +25,9 @@ class Url extends BaseFormInput
     /**
      * {@inheritdoc}
      */
-    protected $inputType = self::TYPE_NAME;
+    protected $type = 'url';
+    /**
+     * {@inheritdoc}
+     */
+    protected $inputType = 'url';
 }

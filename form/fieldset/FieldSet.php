@@ -30,7 +30,11 @@ class FieldSet extends BaseFormEntity implements Iterator, IFieldSet
     /**
      * {@inheritdoc}
      */
-    protected $tagName = self::TYPE_NAME;
+    protected $tagName = 'fieldset';
+    /**
+     * {@inheritdoc}
+     */
+    protected $type = 'fieldset';
     /**
      * @var IFormEntity[] $children дочерние сущности
      */
@@ -39,14 +43,6 @@ class FieldSet extends BaseFormEntity implements Iterator, IFieldSet
      * @var bool $isSubmitted признак того, что данные группы были установлены
      */
     protected $isSubmitted = false;
-
-    /**
-     * {@inheritdoc}
-     */
-     function getType()
-    {
-        return self::TYPE_NAME;
-    }
 
     /**
      * {@inheritdoc}

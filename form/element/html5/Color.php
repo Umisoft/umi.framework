@@ -25,5 +25,9 @@ class Color extends BaseFormInput
     /**
      * {@inheritdoc}
      */
-    protected $inputType = self::TYPE_NAME;
+    protected $type = 'color';
+    /**
+     * {@inheritdoc}
+     */
+    protected $inputType = 'color';
 }

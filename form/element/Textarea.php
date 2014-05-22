@@ -23,5 +23,9 @@ class Textarea extends BaseFormElement
     /**
      * {@inheritdoc}
      */
-    protected $tagName = self::TYPE_NAME;
+    protected $type = 'textarea';
+    /**
+     * {@inheritdoc}
+     */
+    protected $tagName = 'textarea';
 }

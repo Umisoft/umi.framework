@@ -32,6 +32,10 @@ class CSRF extends Hidden implements ILocalizable, ISessionAware
     const SESSION_NAMESPACE = 'csrf_protection';
 
     /**
+     * {@inheritdoc}
+     */
+    protected $type = 'csrf';
+    /**
      * @var string $token CSRF токен
      */
     protected $token;

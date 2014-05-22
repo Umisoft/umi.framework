@@ -26,12 +26,6 @@ interface IFormEntity extends ILocalizable
     public function getName();
 
     /**
-     * Возвращает тип элемента.
-     * @return string
-     */
-    public function getType();
-
-    /**
      * Возвращает label для сущности.
      * @return string
      */

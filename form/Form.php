@@ -26,20 +26,15 @@ class Form extends FieldSet implements IForm
     /**
      * {@inheritdoc}
      */
-    protected $tagName = self::TYPE_NAME;
-
+    protected $tagName = 'form';
+    /**
+     * {@inheritdoc}
+     */
+    protected $type = 'form';
     /**
      * @var IDataAdapter $dataAdapter адаптер данных формы
      */
     protected $dataAdapter;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getType()
-    {
-        return self::TYPE_NAME;
-    }
 
     /**
      * {@inheritdoc}
