@@ -40,13 +40,21 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
      * @var IValidatorCollection $validators валидаторы элемента
      */
     private $validators;
+    /**
+     * @var string $value значение элемента формы
+     */
+    private $value;
 
     /**
      * {@inheritdoc}
      */
     public function getValue()
     {
-        return $this->getDataAdapter()->getData($this);
+        if ($this->getDataSource()) {
+            return $this->getDataAdapter()->getData($this);
+        } else {
+            return $this->value;
+        }
     }
 
     /**
@@ -55,7 +63,12 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
     public function setValue($value)
     {
         $value = $this->filter($value);
-        $this->getDataAdapter()->setData($this, $value);
+
+        if ($this->getDataSource()) {
+            $this->getDataAdapter()->setData($this, $value);
+        } else {
+            $this->value = $value;
+        }
 
         return $this;
     }

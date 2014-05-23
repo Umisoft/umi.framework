@@ -29,10 +29,6 @@ class CSRF extends Hidden implements ISessionAware
      * {@inheritdoc}
      */
     protected $type = 'csrf';
-    /**
-     * @var string $value значение токена из формы
-     */
-    protected $value;
 
     /**
      * {@inheritdoc}
