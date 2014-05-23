@@ -9,8 +9,6 @@
 namespace umi\form\element;
 
 use umi\form\FormEntityView;
-use umi\i18n\ILocalizable;
-use umi\i18n\TLocalizable;
 use umi\session\ISessionAware;
 use umi\session\TSessionAware;
 
@@ -18,9 +16,8 @@ use umi\session\TSessionAware;
  * Элемент формы - Cross-site request forgery токен.
  * @example <input type="hidden" value="ca969a1bc97732d97b1e88ce8396c216" />
  */
-class CSRF extends Hidden implements ILocalizable, ISessionAware
+class CSRF extends Hidden implements ISessionAware
 {
-    use TLocalizable;
     use TSessionAware;
 
     /**
@@ -36,10 +33,6 @@ class CSRF extends Hidden implements ILocalizable, ISessionAware
      * @var string $value значение токена из формы
      */
     protected $value;
-    /**
-     * @var string $validToken валидный токен
-     */
-    protected $validToken;
 
     /**
      * {@inheritdoc}
@@ -48,13 +41,7 @@ class CSRF extends Hidden implements ILocalizable, ISessionAware
     {
         parent::extendView($view);
 
-        $sessionKey = $this->getSessionKey();
-        if (!$this->validToken = $this->getSessionVar($sessionKey)) {
-            $this->validToken = sha1('csrf:' . time() . rand());
-            $this->setSessionVar('token', $this->validToken);
-        }
-
-        $view->attributes['value'] = $this->validToken;
+        $view->attributes['value'] = $this->getValidToken();
     }
 
     /**
@@ -62,7 +49,7 @@ class CSRF extends Hidden implements ILocalizable, ISessionAware
      */
     protected function validate($value)
     {
-        $isValid = $value && ($value === $this->validToken);
+        $isValid = $value && ($value === $this->getValidToken());
 
         if (!$isValid) {
             $this->messages = ['Invalid csrf token.'];
@@ -72,10 +59,26 @@ class CSRF extends Hidden implements ILocalizable, ISessionAware
     }
 
     /**
+     * Возвращает валидный токен.
+     * @return string
+     */
+    protected function getValidToken()
+    {
+        $key = $this->getSessionKey();
+
+        if (!$token = $this->getSessionVar($key)) {
+            $token = sha1('csrf:' . time() . rand());
+            $this->setSessionVar($key, $token);
+        }
+
+        return $token;
+    }
+
+    /**
      * Генерирует и возвращает уникальный ключ для хранения токена в сессии.
      * @return string
      */
-    protected function getSessionKey()
+    private function getSessionKey()
     {
         $names = $this->getName();
 
