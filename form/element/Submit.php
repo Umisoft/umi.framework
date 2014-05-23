@@ -11,7 +11,7 @@ namespace umi\form\element;
 
 /**
  * Элемент формы - Кнопка отправки(submit).
- * @example <input type="submit" />
+ * @example <button type="submit" />
  */
 class Submit extends Button
 {
