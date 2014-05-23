@@ -8,6 +8,7 @@
 
 namespace umi\form\element;
 
+use umi\form\FormEntityView;
 use umi\i18n\ILocalizable;
 use umi\i18n\TLocalizable;
 use umi\session\ISessionAware;
@@ -26,49 +27,34 @@ class CSRF extends Hidden implements ILocalizable, ISessionAware
      * Тип элемента.
      */
     const TYPE_NAME = 'csrf';
-    /**
-     * Пространство имен сессии для хранения данных о CSRF.
-     */
-    const SESSION_NAMESPACE = 'csrf_protection';
 
     /**
      * {@inheritdoc}
      */
     protected $type = 'csrf';
     /**
-     * @var string $token CSRF токен
-     */
-    protected $token;
-    /**
      * @var string $value значение токена из формы
      */
     protected $value;
+    /**
+     * @var string $validToken валидный токен
+     */
+    protected $validToken;
 
     /**
      * {@inheritdoc}
      */
-    public function setValue($value)
+    protected function extendView(FormEntityView $view)
     {
-        if (!$this->token) {
-            $this->initToken();
+        parent::extendView($view);
+
+        $sessionKey = $this->getSessionKey();
+        if (!$this->validToken = $this->getSessionVar($sessionKey)) {
+            $this->validToken = sha1('csrf:' . time() . rand());
+            $this->setSessionVar('token', $this->validToken);
         }
 
-        $value = $this->filter($value);
-        $this->value = $value;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getValue()
-    {
-        if (!$this->token) {
-            $this->initToken();
-        }
-
-        return $this->token;
+        $view->attributes['value'] = $this->validToken;
     }
 
     /**
@@ -76,28 +62,29 @@ class CSRF extends Hidden implements ILocalizable, ISessionAware
      */
     protected function validate($value)
     {
-        return $this->token == $this->value;
-    }
+        $isValid = $value && ($value === $this->validToken);
 
-    /**
-     * Восстанавливает значение токена из сессии,
-     * либо генерирует новый токен.
-     */
-    protected function initToken()
-    {
-        $this->token = $this->getSessionVar('token');
-
-        if (!$this->token) {
-            $this->token = sha1('token:' . time() . rand());
-            $this->setSessionVar('token', $this->token);
+        if (!$isValid) {
+            $this->messages = ['Invalid csrf token.'];
         }
+
+        return $isValid;
     }
 
     /**
-     * {@inheritdoc}
+     * Генерирует и возвращает уникальный ключ для хранения токена в сессии.
+     * @return string
      */
-    protected function getSessionNamespacePath()
+    protected function getSessionKey()
     {
-        return self::SESSION_NAMESPACE;
+        $names = $this->getName();
+
+        $element = $this->getParent();
+        while ($parent = $element->getParent()) {
+            $names .= $parent->getName();
+            $element = $parent;
+        }
+
+        return 't_' . md5($names);
     }
 }
