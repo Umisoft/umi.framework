@@ -151,6 +151,7 @@ abstract class BaseFormEntity implements IFormEntity
         $view = new FormEntityView([
             'type' => $this->type,
             'tag' => $this->tagName,
+            'name' => $this->getName(),
             'label' => $this->translate($this->getLabel()),
             'attributes' => new EntityAttributesView($this->getAttributes()),
             'valid' => $this->isValid(),
