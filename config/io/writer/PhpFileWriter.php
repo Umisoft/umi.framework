@@ -36,15 +36,17 @@ class PhpFileWriter extends BaseWriter
                 ));
             }
 
-            if (!$this->writeSource($filename, $source)) {
+            try {
+                $this->writeSource($filename, $source);
+            } catch (RuntimeException $e) {
                 throw new RuntimeException($this->translate(
                     'Cannot write configuration file "{alias}"("{file}").',
                     [
                         'alias' => $alias,
                         'file'  => $filename
                     ]
-                ));
-            };
+                ), 0, $e);
+            }
         }
 
         $this->saveConfig($config);
@@ -53,8 +55,8 @@ class PhpFileWriter extends BaseWriter
     /**
      * Записывает конфигурационный файл.
      * @param string $filename имя файла
+     * @throws RuntimeException если файл записать не удалось
      * @param array $source содержимое, в виде массива скалярных значений
-     * @return bool true, если файл успешно записан
      */
     protected function writeSource($filename, array $source)
     {
@@ -65,10 +67,12 @@ class PhpFileWriter extends BaseWriter
 FILE;
 
         $directory = dirname($filename);
-        if (!is_dir($filename) && !@mkdir($directory, 0777, true)) {
-            return false;
+        if (!is_dir($directory) && !@mkdir($directory, 0777, true)) {
+            throw new RuntimeException(error_get_last()['message']);
         }
 
-        return @file_put_contents($filename, $source) != 0;
+        if (@file_put_contents($filename, $source) === false) {
+            throw new RuntimeException(error_get_last()['message']);
+        }
     }
 }
