@@ -40,6 +40,22 @@ class AclManager implements IAclManager, ILocalizable
     /**
      * {@inheritdoc}
      */
+    public function getRoleList()
+    {
+        return $this->roles;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getResourceList()
+    {
+        return array_keys($this->resources);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function addRole($roleName, array $parentRoleNames = [])
     {
         if ($this->hasRole($roleName)) {

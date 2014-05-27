@@ -28,6 +28,18 @@ interface IAclManager
     const OPERATION_ALL = '*';
 
     /**
+     * Возвращает список ролей в формате [$roleName => [$parentRoleName, ...]...]
+     * @return array
+     */
+    public function getRoleList();
+
+    /**
+     * Возвращает список ресурсов
+     * @return array
+     */
+    public function getResourceList();
+
+    /**
      * Добавляет роль.
      * @param string $roleName имя роли
      * @param array $parentRoleNames список имен родительских ролей
