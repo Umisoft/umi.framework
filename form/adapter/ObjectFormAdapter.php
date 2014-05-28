@@ -12,11 +12,14 @@ namespace umi\form\adapter;
 use umi\form\element\IFormElement;
 use umi\form\element\IChoiceFormElement;
 use umi\form\exception\UnexpectedValueException;
+use umi\orm\collection\ICollectionManagerAware;
+use umi\orm\collection\TCollectionManagerAware;
 use umi\orm\metadata\field\IRelationField;
 use umi\orm\metadata\field\relation\BelongsToRelationField;
 use umi\orm\metadata\field\relation\HasManyRelationField;
 use umi\orm\metadata\field\relation\HasOneRelationField;
 use umi\orm\metadata\field\relation\ManyToManyRelationField;
+use umi\orm\metadata\field\relation\ObjectRelationField;
 use umi\orm\object\IObject;
 use umi\orm\objectset\IManyToManyObjectSet;
 use umi\orm\objectset\IObjectSet;
@@ -24,16 +27,14 @@ use umi\orm\objectset\IObjectSet;
 /**
  * Адаптер формы для данных в виде ORM-объекта
  */
-class ObjectFormAdapter implements IDataAdapter
+class ObjectFormAdapter implements IDataAdapter, ICollectionManagerAware
 {
+    use TCollectionManagerAware;
+
     /**
      * @var IObject $data провайдер данных для формы
      */
     protected $data;
-    /**
-     * @var array $validationErrors ошибки валидации провайдера данных
-     */
-    private $validationErrors = [];
 
     /**
      * Конструктор.
@@ -65,6 +66,10 @@ class ObjectFormAdapter implements IDataAdapter
                     $this->setManyToManyObjectSetData($dataSource, $data);
                     break;
                 }
+                case $field instanceof ObjectRelationField: {
+                    $this->setObjectRelationData($dataSource, $data);
+                    break;
+                }
                 default: {
                     $this->setScalarData($dataSource, $data);
                 }
@@ -91,6 +96,9 @@ class ObjectFormAdapter implements IDataAdapter
                 case $field instanceof HasManyRelationField:
                 case $field instanceof ManyToManyRelationField: {
                     return $this->getObjectSetData($dataSource);
+                }
+                case $field instanceof ObjectRelationField: {
+                    return $this->getObjectRelationData($dataSource);
                 }
                 default: {
                     return $this->getScalarData($dataSource);
@@ -215,6 +223,44 @@ class ObjectFormAdapter implements IDataAdapter
          */
         $field = $property->getField();
         $value = $data ? $field->getTargetCollection()->getById($data) : null;
+
+        $this->data->setValueByPath($dataSource, $value);
+    }
+
+    /**
+     * Возвращает данные формы для источников со значением в виде IObject.
+     * @param string $dataSource идентификатор источника данных для элемента
+     * @return string|null
+     */
+    private function getObjectRelationData($dataSource)
+    {
+        $value = $this->data->getValueByPath($dataSource);
+        if ($value instanceof IObject) {
+            $value = $value->getCollectionName() . ObjectRelationField::SEPARATOR . $value->getId();
+        }
+
+        return $value;
+    }
+
+    /**
+     * Устанавливает в провайдер данных данные в поле типа ObjectRelationField.
+     * @param string $dataSource идентификатор источника данных для элемента
+     * @param string $data данные
+     * @throws UnexpectedValueException если данные в неверном формате
+     */
+    private function setObjectRelationData($dataSource, $data)
+    {
+        if (!is_string($data) && !is_null($data)) {
+            throw new UnexpectedValueException('Cannot set data. Data should be string or null.');
+        }
+
+        $info = explode(ObjectRelationField::SEPARATOR, $data);
+        if (count($info) != 2) {
+            throw new UnexpectedValueException('Cannot set data. Invalid data format.');
+        }
+        list ($collectionName, $id) = $info;
+
+        $value = $this->getCollectionManager()->getCollection($collectionName)->getById($id);
 
         $this->data->setValueByPath($dataSource, $value);
     }

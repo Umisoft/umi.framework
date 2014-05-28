@@ -58,7 +58,6 @@ interface IField
 
     const TYPE_COUNTER = 'counter';
 
-    //TODO сделать реализацию полей данного типа
     const TYPE_PASSWORD = 'password';
     const TYPE_MONEY = 'money';
     const TYPE_FILE = 'file';
