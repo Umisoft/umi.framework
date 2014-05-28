@@ -25,6 +25,7 @@ interface IField
     const TYPE_MANY_TO_MANY = 'manyToManyRelation';
     const TYPE_HAS_MANY = 'hasManyRelation';
     const TYPE_HAS_ONE = 'hasOneRelation';
+    const TYPE_OBJECT_RELATION = 'objectRelation';
 
     // integer's
     const TYPE_INTEGER = 'integer';

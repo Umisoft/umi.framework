@@ -47,6 +47,7 @@ class MetadataFactory implements IMetadataFactory, IFactory
         IField::TYPE_MANY_TO_MANY => 'umi\orm\metadata\field\relation\ManyToManyRelationField',
         IField::TYPE_HAS_MANY     => 'umi\orm\metadata\field\relation\HasManyRelationField',
         IField::TYPE_HAS_ONE      => 'umi\orm\metadata\field\relation\HasOneRelationField',
+        IField::TYPE_OBJECT_RELATION  => 'umi\orm\metadata\field\relation\ObjectRelationField',
         // numeric
         IField::TYPE_INTEGER      => 'umi\orm\metadata\field\numeric\IntegerField',
         IField::TYPE_DECIMAL      => 'umi\orm\metadata\field\numeric\DecimalField',
