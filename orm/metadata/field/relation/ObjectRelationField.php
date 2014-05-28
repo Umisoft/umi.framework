@@ -23,6 +23,11 @@ class ObjectRelationField extends BaseField implements ICollectionManagerAware
     use TCollectionManagerAware;
 
     /**
+     * Разделитель для хранения поля в БД
+     */
+    const SEPARATOR = '#';
+
+    /**
      * {@inheritdoc}
      */
     public function getDataType()
@@ -50,7 +55,7 @@ class ObjectRelationField extends BaseField implements ICollectionManagerAware
     public function preparePropertyValue(IObject $object, $internalDbValue)
     {
         if ($internalDbValue) {
-            list($collectionName, $id) = unserialize($internalDbValue);
+            list($collectionName, $id) = explode(self::SEPARATOR, $internalDbValue);
             if ($this->getCollectionManager()->hasCollection($collectionName)) {
                 try {
                     return $this->getCollectionManager()
@@ -71,10 +76,7 @@ class ObjectRelationField extends BaseField implements ICollectionManagerAware
     public function prepareDbValue(IObject $object, $propertyValue)
     {
         if ($propertyValue instanceof IObject) {
-            return serialize([
-                $propertyValue->getCollectionName(),
-                $propertyValue->getId()
-            ]);
+            return $propertyValue->getCollectionName() . self::SEPARATOR . $propertyValue->getId();
         }
 
         return null;
