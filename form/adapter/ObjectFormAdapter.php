@@ -236,7 +236,7 @@ class ObjectFormAdapter implements IDataAdapter, ICollectionManagerAware
     {
         $value = $this->data->getValueByPath($dataSource);
         if ($value instanceof IObject) {
-            $value = $value->getCollectionName() . ObjectRelationField::SEPARATOR . $value->getId();
+            $value = $value->getCollectionName() . ObjectRelationField::SEPARATOR . $value->getGUID();
         }
 
         return $value;
@@ -258,9 +258,9 @@ class ObjectFormAdapter implements IDataAdapter, ICollectionManagerAware
         if (count($info) != 2) {
             throw new UnexpectedValueException('Cannot set data. Invalid data format.');
         }
-        list ($collectionName, $id) = $info;
+        list ($collectionName, $guid) = $info;
 
-        $value = $this->getCollectionManager()->getCollection($collectionName)->getById($id);
+        $value = $this->getCollectionManager()->getCollection($collectionName)->get($guid);
 
         $this->data->setValueByPath($dataSource, $value);
     }

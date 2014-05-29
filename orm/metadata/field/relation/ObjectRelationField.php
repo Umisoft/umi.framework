@@ -55,12 +55,12 @@ class ObjectRelationField extends BaseField implements ICollectionManagerAware
     public function preparePropertyValue(IObject $object, $internalDbValue)
     {
         if ($internalDbValue) {
-            list($collectionName, $id) = explode(self::SEPARATOR, $internalDbValue);
+            list($collectionName, $guid) = explode(self::SEPARATOR, $internalDbValue);
             if ($this->getCollectionManager()->hasCollection($collectionName)) {
                 try {
                     return $this->getCollectionManager()
                         ->getCollection($collectionName)
-                        ->getById($id);
+                        ->get($guid);
                 } catch (\Exception $e) {
                     return null;
                 }
@@ -76,7 +76,7 @@ class ObjectRelationField extends BaseField implements ICollectionManagerAware
     public function prepareDbValue(IObject $object, $propertyValue)
     {
         if ($propertyValue instanceof IObject) {
-            return $propertyValue->getCollectionName() . self::SEPARATOR . $propertyValue->getId();
+            return $propertyValue->getCollectionName() . self::SEPARATOR . $propertyValue->getGUID();
         }
 
         return null;
