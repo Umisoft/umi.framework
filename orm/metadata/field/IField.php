@@ -25,6 +25,7 @@ interface IField
     const TYPE_MANY_TO_MANY = 'manyToManyRelation';
     const TYPE_HAS_MANY = 'hasManyRelation';
     const TYPE_HAS_ONE = 'hasOneRelation';
+    const TYPE_OBJECT_RELATION = 'objectRelation';
 
     // integer's
     const TYPE_INTEGER = 'integer';
@@ -57,7 +58,6 @@ interface IField
 
     const TYPE_COUNTER = 'counter';
 
-    //TODO сделать реализацию полей данного типа
     const TYPE_PASSWORD = 'password';
     const TYPE_MONEY = 'money';
     const TYPE_FILE = 'file';
