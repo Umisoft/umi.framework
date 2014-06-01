@@ -7,17 +7,16 @@
  * @license   http://umi-framework.ru/license/bsd-3 BSD-3 License
  */
 
-namespace umi\hmvc\controller;
+namespace umi\hmvc\widget;
 
 use umi\acl\IAclResource;
-use umi\authentication\TAuthenticationAware;
 
 /**
- * Базовый класс контроллера, доступ к которому может контролироваться через ACL.
+ * Базовый класс виджета, доступ к которому контролируется через ACL.
  */
-abstract class BaseSecureController extends BaseController implements IAclResource
+abstract class BaseAccessRestrictedWidget extends BaseWidget implements IAclResource
 {
-    const ACL_RESOURCE_PREFIX = 'controller:';
+    const ACL_RESOURCE_PREFIX = 'widget:';
 
     /**
      * {@inheritdoc}

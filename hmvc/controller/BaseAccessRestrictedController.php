@@ -7,19 +7,17 @@
  * @license   http://umi-framework.ru/license/bsd-3 BSD-3 License
  */
 
-namespace umi\hmvc\component;
+namespace umi\hmvc\controller;
 
 use umi\acl\IAclResource;
+use umi\authentication\TAuthenticationAware;
 
 /**
- * Класс компонента, доступ к которому может контролироваться через ACL.
+ * Базовый класс контроллера, доступ к которому контролируется через ACL.
  */
-class SecureComponent extends Component implements IAclResource
+abstract class BaseAccessRestrictedController extends BaseController implements IAclResource
 {
-    /**
-     * Префикс имени ACL-ресурса
-     */
-    const ACL_RESOURCE_PREFIX = 'component:';
+    const ACL_RESOURCE_PREFIX = 'controller:';
 
     /**
      * {@inheritdoc}
@@ -28,6 +26,5 @@ class SecureComponent extends Component implements IAclResource
     {
         return self::ACL_RESOURCE_PREFIX . $this->name;
     }
-
 }
  

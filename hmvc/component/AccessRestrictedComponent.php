@@ -7,16 +7,19 @@
  * @license   http://umi-framework.ru/license/bsd-3 BSD-3 License
  */
 
-namespace umi\hmvc\widget;
+namespace umi\hmvc\component;
 
 use umi\acl\IAclResource;
 
 /**
- * Базовый класс виджета, доступ к которому может контролироваться через ACL.
+ * Класс компонента, доступ к которому контролируется через ACL.
  */
-abstract class BaseSecureWidget extends BaseWidget implements IAclResource
+class AccessRestrictedComponent extends Component implements IAclResource
 {
-    const ACL_RESOURCE_PREFIX = 'widget:';
+    /**
+     * Префикс имени ACL-ресурса
+     */
+    const ACL_RESOURCE_PREFIX = 'component:';
 
     /**
      * {@inheritdoc}
@@ -25,5 +28,6 @@ abstract class BaseSecureWidget extends BaseWidget implements IAclResource
     {
         return self::ACL_RESOURCE_PREFIX . $this->name;
     }
+
 }
  
