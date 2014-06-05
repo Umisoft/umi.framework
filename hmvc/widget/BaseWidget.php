@@ -14,16 +14,12 @@ use umi\hmvc\dispatcher\IDispatchContext;
 use umi\hmvc\exception\RequiredDependencyException;
 use umi\hmvc\view\IView;
 use umi\hmvc\view\View;
-use umi\i18n\ILocalizable;
-use umi\i18n\TLocalizable;
 
 /**
  * Базовая реализация виджета компонента.
  */
-abstract class BaseWidget implements IWidget, ILocalizable
+abstract class BaseWidget implements IWidget
 {
-    use TLocalizable;
-
     /**
      * @var string $name имя виджета
      */
@@ -62,18 +58,11 @@ abstract class BaseWidget implements IWidget, ILocalizable
     }
 
     /**
-     * {@inheritdoc}
+     * @see IComponent::translate()
      */
-    protected function getI18nDictionaryNames()
+    protected function translate($message, array $placeholders = [], $localeId = null)
     {
-        $pathParts = explode(IComponent::PATH_SEPARATOR, $this->getComponent()->getPath());
-
-        $dictionaries = [];
-        for ($i = count($pathParts); $i > 0; $i--) {
-            $dictionaries[] = implode('.', array_slice($pathParts, 0, $i));
-        }
-
-        return $dictionaries;
+        return $this->getContext()->getComponent()->translate($message, $placeholders, $localeId);
     }
 
     /**
@@ -112,7 +101,6 @@ abstract class BaseWidget implements IWidget, ILocalizable
     {
         return new View($this, $this->getContext(), $templateName, $variables);
     }
-
 
 }
 

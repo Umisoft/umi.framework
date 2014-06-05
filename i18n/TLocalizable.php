@@ -30,6 +30,34 @@ trait TLocalizable
     }
 
     /**
+     * Возвращает сообщение, переведенное для текущей или указанной локали.
+     * Текст сообщения может содержать плейсхолдеры. Ex: File "{path}" not found
+     * Если идентификатор локали не указан, будет использована текущая локаль.
+     * @param string $message текст сообщения на языке разработки
+     * @param array $placeholders значения плейсхолдеров для сообщения. Ex: array('{path}' => '/path/to/file')
+     * @param string $localeId идентификатор локали в которую осуществляется перевод (ru, en_us)
+     * @return string
+     */
+    public function translate($message, array $placeholders = [], $localeId = null)
+    {
+        if (!$message) {
+            return $message;
+        }
+
+        $dictionaries = $this->getI18nDictionaryNames();
+        if ($this->traitTranslator) {
+            return $this->traitTranslator->translate($dictionaries, $message, $placeholders, $localeId);
+        }
+
+        $replace = [];
+        foreach ($placeholders as $key => $val) {
+            $replace['{' . $key . '}'] = $val;
+        }
+
+        return strtr($message, $replace);
+    }
+
+    /**
      * Возвращает список имен словарей в которых будет производиться поиск перевода сообщений и лейблов
      * данного компонента. Приоритет поиска соответсвует последовательности словарей в списке.
      * @return array
@@ -46,31 +74,4 @@ trait TLocalizable
         return $dictionaries;
     }
 
-    /**
-     * Возвращает сообщение из указанного словаря, переведенное для текущей или указанной локали.
-     * Текст сообщения может содержать плейсхолдеры. Ex: File "{path}" not found
-     * Если идентификатор локали не указан, будет использована текущая локаль.
-     * @param string $message текст сообщения на языке разработки
-     * @param array $placeholders значения плейсхолдеров для сообщения. Ex: array('{path}' => '/path/to/file')
-     * @param string $localeId идентификатор локали в которую осуществляется перевод (ru, en_us)
-     * @return string
-     */
-    protected function translate($message, array $placeholders = [], $localeId = null)
-    {
-        if (!$message) {
-           return $message;
-        }
-
-        $dictionaries = $this->getI18nDictionaryNames();
-        if ($this->traitTranslator) {
-            return $this->traitTranslator->translate($dictionaries, $message, $placeholders, $localeId);
-        }
-
-        $replace = [];
-        foreach ($placeholders as $key => $val) {
-            $replace['{' . $key . '}'] = $val;
-        }
-
-        return strtr($message, $replace);
-    }
 }
