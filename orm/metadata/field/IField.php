@@ -57,6 +57,7 @@ interface IField
     const TYPE_ORDER = 'order';
 
     const TYPE_COUNTER = 'counter';
+    const TYPE_FORMULA = 'formula';
 
     const TYPE_PASSWORD = 'password';
     const TYPE_MONEY = 'money';

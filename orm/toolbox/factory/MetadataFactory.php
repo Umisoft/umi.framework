@@ -73,6 +73,7 @@ class MetadataFactory implements IMetadataFactory, IFactory
         IField::TYPE_LEVEL        => 'umi\orm\metadata\field\special\LevelField',
         IField::TYPE_ORDER        => 'umi\orm\metadata\field\special\OrderField',
         IField::TYPE_COUNTER      => 'umi\orm\metadata\field\special\CounterField',
+        IField::TYPE_FORMULA      => 'umi\orm\metadata\field\special\FormulaField',
         IField::TYPE_MONEY        => 'umi\orm\metadata\field\special\MoneyField',
         IField::TYPE_PASSWORD     => 'umi\orm\metadata\field\special\PasswordField',
         IField::TYPE_FILE         => 'umi\orm\metadata\field\special\FileField',
