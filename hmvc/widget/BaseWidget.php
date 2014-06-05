@@ -62,7 +62,7 @@ abstract class BaseWidget implements IWidget
      */
     protected function translate($message, array $placeholders = [], $localeId = null)
     {
-        return $this->getComponent()->translate($message, $placeholders, $localeId);
+        return $this->getContext()->getComponent()->translate($message, $placeholders, $localeId);;
     }
 
     /**
