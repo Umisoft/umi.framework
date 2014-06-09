@@ -9,6 +9,8 @@
 
 namespace umi\hmvc\widget;
 
+use umi\acl\IAclManager;
+use umi\acl\IAclResource;
 use umi\hmvc\component\IComponent;
 use umi\hmvc\dispatcher\IDispatchContext;
 use umi\hmvc\exception\RequiredDependencyException;
@@ -89,6 +91,17 @@ abstract class BaseWidget implements IWidget
     protected function getComponent()
     {
         return $this->getContext()->getComponent();
+    }
+
+    /**
+     * Проверяет права текущего пользователя на выполнение операции над ресурсом
+     * @param IAclResource|string $resource имя ресурса или ресурс
+     * @param string $operationName имя операции
+     * @return bool
+     */
+    protected function isAllowed($resource, $operationName = IAclManager::OPERATION_ALL)
+    {
+        return $this->getContext()->getDispatcher()->checkPermissions($this->getComponent(), $resource, $operationName);
     }
 
     /**
