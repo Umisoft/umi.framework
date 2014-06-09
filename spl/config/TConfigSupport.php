@@ -79,8 +79,7 @@ trait TConfigSupport
 
                 if (is_array($defaultValue)) {
                     $value = $this->configToArray($value);
-                    $value = $this->mergeConfigOptions($value, $defaultValue);
-                    $result[$name] = array_merge($defaultValue, $value);
+                    $result[$name] = $this->mergeConfigOptions($value, $defaultValue);
                 } else {
                     $result[$name] = $value;
                 }
