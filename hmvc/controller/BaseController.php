@@ -128,7 +128,7 @@ abstract class BaseController implements IController, IHttpAware
      * Возвращает переменную из параметров маршрутизации.
      * @param string $name имя параметра
      * @param mixed $default значение по умолчанию
-     * @return mixed значение из GET
+     * @return mixed
      */
     protected function getRouteVar($name, $default = null)
     {
