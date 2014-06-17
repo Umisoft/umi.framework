@@ -433,7 +433,7 @@ class ObjectPersister implements IObjectPersister, ILocalizable, ILocalesAware, 
         }
 
         if ($eventRaised) {
-            $this->processBeforePersistingEvents($processedNewObjects);
+            $this->processBeforePersistingEvents($processedNewObjects, $processedModifiedObjects, $processedDeletedObjects);
         }
     }
 }
