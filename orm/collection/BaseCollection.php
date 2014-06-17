@@ -46,6 +46,10 @@ abstract class BaseCollection
     use TLocalesAware;
 
     /**
+     * @var callable $selectorInitializer инициализатор для селектора
+     */
+    protected static $selectorInitializer;
+    /**
      * @var string $name имя коллекции
      */
     protected $name;
@@ -61,6 +65,15 @@ abstract class BaseCollection
      * @var array $config конфигурация
      */
     protected $config;
+
+    /**
+     * Устанавливает инициализатор для селектора
+     * @param callable $initializer
+     */
+    public static function setSelectorInitializer(callable $initializer = null)
+    {
+        self::$selectorInitializer = $initializer;
+    }
 
     /**
      * Конструктор
@@ -384,7 +397,7 @@ abstract class BaseCollection
         }
 
         $insertBuilder->execute();
-        
+
         if (!$object->getId()) {
             $objectId = $insertBuilder->getConnection()->lastInsertId();
             if (!$objectId) {
@@ -507,7 +520,7 @@ abstract class BaseCollection
 
         $deleteBuilder
             ->where()
-                ->expr($this->getIdentifyField()->getColumnName(), '=', ':objectId');
+            ->expr($this->getIdentifyField()->getColumnName(), '=', ':objectId');
 
         $deleteBuilder->bindValue(
             ':objectId',
