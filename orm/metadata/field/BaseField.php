@@ -170,9 +170,32 @@ abstract class BaseField implements IField, ILocalizable
     /**
      * {@inheritdoc}
      */
-    public function getValidatorsConfig()
+    public function getValidatorsConfig($localeId = null)
     {
-        return $this->validatorsConfig;
+        if (!$localeId) {
+            return $this->validatorsConfig;
+        }
+
+        if (!isset($this->localizations[$localeId])) {
+            throw new NonexistentEntityException($this->translate(
+                'Cannot get validators for field "{field}" in locale "{locale}".',
+                ['field' => $this->getName(), 'locale' => $localeId]
+            ));
+        }
+
+        $validatorsConfig =
+            isset($this->localizations[$localeId]['validators'])
+                ? $this->localizations[$localeId]['validators']
+                : [];
+
+        if (!is_array($validatorsConfig)) {
+            throw new UnexpectedValueException($this->translate(
+                'Validators configuration for field "{field}" in locale "{locale}" should be an array.',
+                ['field' => $this->getName(), 'locale' => $localeId]
+            ));
+        }
+
+        return $validatorsConfig;
     }
 
     /**
@@ -264,7 +287,8 @@ abstract class BaseField implements IField, ILocalizable
             $validators = $config['validators'];
             if (!is_array($validators)) {
                 throw new UnexpectedValueException($this->translate(
-                    'Field validators configuration should be an array.'
+                    'Validators configuration for field "{field}" should be an array.',
+                    ['field' => $this->getName()]
                 ));
             }
             $this->validatorsConfig = $validators;
@@ -274,7 +298,8 @@ abstract class BaseField implements IField, ILocalizable
             $filters = $config['filters'];
             if (!is_array($filters)) {
                 throw new UnexpectedValueException($this->translate(
-                    'Field filters configuration should be an array.'
+                    'Filters configuration for field "{field}" should be an array.',
+                    ['field' => $this->getName()]
                 ));
             }
             $this->filtersConfig = $filters;
@@ -284,7 +309,8 @@ abstract class BaseField implements IField, ILocalizable
             $localizations = $config['localizations'];
             if (!is_array($localizations)) {
                 throw new UnexpectedValueException($this->translate(
-                    'Localization configuration for localizable field should be an array.'
+                    'Localization configuration for localizable field "{field}" should be an array.',
+                    ['field' => $this->getName()]
                 ));
             }
             $this->localizations = $localizations;

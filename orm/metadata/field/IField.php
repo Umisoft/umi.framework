@@ -119,9 +119,11 @@ interface IField
 
     /**
      * Возвращает конфигурацию валидаторов.
+     * @param string|null $localeId идентификатор локали
+     * @throws NonexistentEntityException если не найдено значения для указанной локали
      * @return array в формате [$validatorType => [$optionName => $value, ...], ...]
      */
-    public function getValidatorsConfig();
+    public function getValidatorsConfig($localeId = null);
 
     /**
      * Возвращает конфигурацию фильтров.

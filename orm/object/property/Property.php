@@ -340,10 +340,11 @@ class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware, 
         $result = true;
         $this->validationErrors = [];
 
-        if (null != ($validators = $this->getField()->getValidatorsConfig())) {
-            $validator = $this->createValidatorCollection($validators);
-            if (!$validator->isValid($this->getValue())) {
-                $this->addValidationErrors($validator->getMessages());
+        if ($validators = $this->getField()->getValidatorsConfig($this->getLocaleId())) {
+
+            $validatorCollection = $this->createValidatorCollection($validators);
+            if (!$validatorCollection->isValid($this->getValue())) {
+                $this->addValidationErrors($validatorCollection->getMessages());
                 $result = false;
             }
         }
