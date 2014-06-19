@@ -111,12 +111,9 @@ class Translator implements ITranslator, ILocalesAware, ILoggerAware
     }
 
     /**
-     * Возвращает список лейблов локали в словаре
-     * @param string $dictionaryName
-     * @param string $localeId
-     * @return array
+     * {@inheritdoc}
      */
-    protected function getLabels($dictionaryName, $localeId)
+    public function getLabels($dictionaryName, $localeId)
     {
         if (!isset($this->dictionaries[$dictionaryName])) {
             return [];

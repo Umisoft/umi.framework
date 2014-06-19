@@ -25,4 +25,12 @@ interface ITranslator
      * @return string
      */
     public function translate(array $dictionaries, $message, array $placeholders = [], $localeId = null);
+
+    /**
+     * Возвращает список лейблов локали в словаре
+     * @param string $dictionaryName
+     * @param string $localeId
+     * @return array
+     */
+    public function getLabels($dictionaryName, $localeId);
 }
