@@ -114,17 +114,25 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
      */
     public function serialize()
     {
-        if ($this->getIsModified() || $this->getIsNew()) {
+        if ($this->getIsNew()) {
             throw new RuntimeException($this->translate(
-                'Cannot serialize modified or new object.'
+                'Cannot serialize new object.'
             ));
         }
 
         if ($this->collection && $this->type) {
             $this->fullyLoad(ILocalesService::LOCALE_ALL);
+
+            $values = [];
+            foreach ($this->getLoadedProperties() as $property) {
+                $values[$property->getFullName()] = $property->getPersistedDbValue();
+            }
+        } else {
+            $values = $this->initialValues;
         }
+
         $data = [
-            $this->initialValues,
+            $values,
             $this->getCollectionName(),
             $this->getTypeName()
         ];
