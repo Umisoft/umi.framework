@@ -119,6 +119,30 @@ class ObjectPersister implements IObjectPersister, ILocalizable, ILocalesAware, 
     /**
      * {@inheritdoc}
      */
+    public function getNewObjects()
+    {
+        return $this->newObjects;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getModifiedObjects()
+    {
+        return $this->modifiedObjects;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDeletedObjects()
+    {
+        return $this->deletedObjects;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function markAsNew(IObject $object)
     {
         $this->newObjects->attach($object);

@@ -9,6 +9,7 @@
 
 namespace umi\orm\persister;
 
+use SplObjectStorage;
 use umi\event\IEventObservant;
 use umi\orm\exception\NotAllowedOperationException;
 use umi\orm\exception\RuntimeException;
@@ -69,6 +70,24 @@ interface IObjectPersister extends IEventObservant
      * @return IObject[] массив невалидных объектов, либо пустой массив, если все измененные объекты валидны
      */
     public function getInvalidObjects();
+
+    /**
+     * Возвращает список новых объектов.
+     * @return SplObjectStorage|IObject[]
+     */
+    public function getNewObjects();
+
+    /**
+     * Возвращает список неновых модифицированных объектов.
+     * @return SplObjectStorage|IObject[]
+     */
+    public function getModifiedObjects();
+
+    /**
+     * Возвращает список удаленных объектов.
+     * @return SplObjectStorage|IObject[]
+     */
+    public function getDeletedObjects();
 
     /**
      * Помечает объект как новый
