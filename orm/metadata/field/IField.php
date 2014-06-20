@@ -127,9 +127,11 @@ interface IField
 
     /**
      * Возвращает конфигурацию фильтров.
+     * @param string|null $localeId идентификатор локали
+     * @throws NonexistentEntityException если не найдено значения для указанной локали
      * @return array в формате [$filterType => [$optionName => $value, ...], ...]
      */
-    public function getFiltersConfig();
+    public function getFiltersConfig($localeId = null);
 
     /**
      * Проверяет, локазизовано ли поле

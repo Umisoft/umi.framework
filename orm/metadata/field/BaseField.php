@@ -201,9 +201,32 @@ abstract class BaseField implements IField, ILocalizable
     /**
      * {@inheritdoc}
      */
-    public function getFiltersConfig()
+    public function getFiltersConfig($localeId = null)
     {
-        return $this->filtersConfig;
+        if (!$localeId) {
+            return $this->filtersConfig;
+        }
+
+        if (!isset($this->localizations[$localeId])) {
+            throw new NonexistentEntityException($this->translate(
+                'Cannot get filters for field "{field}" in locale "{locale}".',
+                ['field' => $this->getName(), 'locale' => $localeId]
+            ));
+        }
+
+        $filtersConfig =
+            isset($this->localizations[$localeId]['filters'])
+                ? $this->localizations[$localeId]['filters']
+                : [];
+
+        if (!is_array($filtersConfig)) {
+            throw new UnexpectedValueException($this->translate(
+                'Filters configuration for field "{field}" in locale "{locale}" should be an array.',
+                ['field' => $this->getName(), 'locale' => $localeId]
+            ));
+        }
+
+        return $filtersConfig;
     }
 
     /**

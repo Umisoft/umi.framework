@@ -199,7 +199,7 @@ class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware, 
      */
     public function setValue($value)
     {
-        $value = $this->applyFieldFilters($value);
+        $value = $this->applyFilters($value);
 
         if (!is_null($value)) {
             $isValid = false;
@@ -382,9 +382,9 @@ class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware, 
      * @param mixed $propertyValue
      * @return mixed
      */
-    protected function applyFieldFilters($propertyValue)
+    protected function applyFilters($propertyValue)
     {
-        $filterConfig = $this->field->getFiltersConfig();
+        $filterConfig = $this->field->getFiltersConfig($this->getLocaleId());
         if (count($filterConfig)) {
             $filterCollection = $this->createFilterCollection($filterConfig);
             $propertyValue = $filterCollection->filter($propertyValue);
@@ -392,6 +392,5 @@ class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware, 
 
         return $propertyValue;
     }
-
 
 }
