@@ -49,7 +49,7 @@ class VersionField extends BaseField implements IScalarField
 
         if ($builder instanceof IUpdateBuilder) {
 
-            $increment = $property->getDbValue() - $property->getPreviousDbValue();
+            $increment = $property->getDbValue() - $property->getPersistedDbValue();
             if ($increment !== 0) {
 
                 $incrementExpression = $builder->getConnection()

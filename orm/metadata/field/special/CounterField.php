@@ -67,7 +67,7 @@ class CounterField extends BaseField implements IScalarField, ICalculableField
          * @var IUpdateBuilder $builder
          */
         if ($builder instanceof IUpdateBuilder) {
-            $increment = $property->getDbValue() - $property->getPreviousDbValue();
+            $increment = $property->getDbValue() - $property->getPersistedDbValue();
             if ($increment !== 0) {
 
                 $incrementExpression = $builder->getConnection()

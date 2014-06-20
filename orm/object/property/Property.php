@@ -54,17 +54,17 @@ class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware, 
      */
     protected $dbValue;
     /**
-     * @var mixed $previousDbValue прежнее значение свойства в БД
+     * @var mixed $persistedDbValue текущее сохраненное значение свойства в БД
      */
-    protected $previousDbValue;
+    protected $persistedDbValue;
     /**
      * @var mixed $value значение свойства
      */
     protected $value;
     /**
-     * @var mixed $oldValue прежнее значение свойства
+     * @var mixed $persistedValue текущее сохраненное значение свойства
      */
-    protected $previousValue;
+    protected $persistedValue;
     /**
      * @var bool $isValuePrepared флаг, указывающий на то что значение свойство было подготовлено
      */
@@ -140,8 +140,8 @@ class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware, 
      */
     public function setInitialValue($dbValue)
     {
-        $this->dbValue = $this->previousDbValue = $dbValue;
-        $this->value = $this->previousValue = null;
+        $this->dbValue = $this->persistedDbValue = $dbValue;
+        $this->value = $this->persistedValue = null;
         $this->isLoaded = true;
         $this->isModified = false;
         $this->isValuePrepared = false;
@@ -176,9 +176,9 @@ class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware, 
     /**
      * {@inheritdoc}
      */
-    public function getPreviousDbValue()
+    public function getPersistedDbValue()
     {
-        return $this->previousDbValue;
+        return $this->persistedDbValue;
     }
 
     /**
@@ -229,7 +229,7 @@ class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware, 
     public function getValue()
     {
         if (!$this->isValuePrepared) {
-            $this->value = $this->previousValue = $this->field->preparePropertyValue(
+            $this->value = $this->persistedValue = $this->field->preparePropertyValue(
                 $this->object,
                 $this->getDbValue()
             );
@@ -242,13 +242,13 @@ class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware, 
     /**
      * {@inheritdoc}
      */
-    public function getPreviousValue()
+    public function getPersistedValue()
     {
         if (!$this->isValuePrepared) {
             $this->getValue();
         }
 
-        return $this->previousValue;
+        return $this->persistedValue;
     }
 
     /**
@@ -289,8 +289,8 @@ class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware, 
     public function setIsConsistent()
     {
         $this->isModified = false;
-        $this->previousDbValue = $this->dbValue;
-        $this->previousValue = $this->value;
+        $this->persistedDbValue = $this->dbValue;
+        $this->persistedValue = $this->value;
 
         return $this;
     }
@@ -301,8 +301,8 @@ class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware, 
     public function rollback()
     {
         if ($this->getIsModified()) {
-            $this->dbValue = $this->previousDbValue;
-            $this->value = $this->previousValue;
+            $this->dbValue = $this->persistedDbValue;
+            $this->value = $this->persistedValue;
             $this->isModified = false;
         }
 

@@ -64,11 +64,11 @@ interface IProperty
     public function getDbValue();
 
     /**
-     * Возвращает прежнее внутреннее значение свойства из БД. Для rollback().
+     * Возвращает текущее сохраненное внутреннее значение свойства из БД.
      * @internal
      * @return string
      */
-    public function getPreviousDbValue();
+    public function getPersistedDbValue();
 
     /**
      * Устанавливает значение свойства "по умолчанию"
@@ -91,10 +91,10 @@ interface IProperty
     public function getValue();
 
     /**
-     * Возвращает прежнее значение свойства
+     * Возвращает текущее сохраненное значение свойства
      * @return mixed
      */
-    public function getPreviousValue();
+    public function getPersistedValue();
 
     /**
      * Возвращает имя getter'а для доступа к значению поля

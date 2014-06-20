@@ -447,7 +447,7 @@ abstract class BaseCollection
         if ($updateBuilder->getUpdatePossible()) {
 
             $versionProperty = $object->getProperty(IObject::FIELD_VERSION);
-            $version = (int) ($versionProperty->getPreviousDbValue() ? : $versionProperty->getDbValue());
+            $version = (int) ($versionProperty->getPersistedDbValue() ? : $versionProperty->getDbValue());
             $newVersion = $version + 1;
             $versionProperty->setValue($newVersion);
 
