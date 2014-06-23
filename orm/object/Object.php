@@ -154,6 +154,16 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
      */
     public function setInitialValues(array $initialValues)
     {
+        foreach ($initialValues as $propertyFullName => $value) {
+            list ($propertyName, $localeId) = $this->splitFullPropName($propertyFullName);
+            if (
+                !$this->getType()->getFieldExists($propertyName) ||
+                ($localeId && !$this->getType()->getField($propertyName)->hasLocale($localeId))
+            ) {
+                unset($initialValues[$propertyFullName]);
+            }
+        }
+
         $this->initialValues = array_merge($this->initialValues, $initialValues);
         foreach ($initialValues as $fullPropName => $internalValue) {
             if (isset($this->properties[$fullPropName])) {
