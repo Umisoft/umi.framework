@@ -17,6 +17,7 @@ use umi\orm\metadata\field\BaseField;
 use umi\orm\metadata\field\IRelationField;
 use umi\orm\metadata\field\TRelationField;
 use umi\orm\object\IObject;
+use umi\orm\selector\ISelector;
 
 /**
  * Класс поля связи "многие-ко-многим".
@@ -115,13 +116,47 @@ class ManyToManyRelationField extends BaseField implements IRelationField, IColl
      */
     public function preparePropertyValue(IObject $object, $internalDbValue)
     {
-        $targetCollection = $this->getCollectionManager()
-            ->getCollection($this->targetCollectionName);
-        $mirrorField = $targetCollection->getMetadata()
-            ->getFieldByRelation($this->getTargetFieldName(), $this->getBridgeCollectionName());
+        $targetCollection = $this->getTargetCollection();
+
         $selector = $targetCollection->getManyToManySelector($object, $this);
-        $selector->where($mirrorField->getName())
-            ->equals($object);
+        $selectBuilder = $selector->getSelectBuilder();
+
+        $targetPkAlias = $targetCollection->getSourceAlias() . ISelector::FIELD_SEPARATOR;
+        $targetPkAlias .= $targetCollection->getIdentifyField()->getColumnName();
+
+        $relationCollection = $object->getCollection();
+        $relationTableName = $relationCollection->getMetadata()->getCollectionDataSource()->getSourceName();
+        $relationTableAlias = $relationCollection->getSourceAlias();
+        $relationPk = $relationCollection->getIdentifyField();
+        $relationPkAlias = $relationTableAlias . ISelector::FIELD_SEPARATOR;
+        $relationPkAlias .= $relationPk->getColumnName();
+
+        $bridgeCollection = $this->getBridgeCollection();
+        $bridgeCollectionAlias = $bridgeCollection->getSourceAlias();
+        $bridgeMetadata = $bridgeCollection->getMetadata();
+        $bridgeTableName = $bridgeMetadata->getCollectionDataSource()->getSourceName();
+        $targetFieldAlias = $bridgeCollectionAlias . ISelector::FIELD_SEPARATOR;
+        $targetFieldAlias .= $bridgeMetadata->getField($this->getTargetFieldName())->getColumnName();
+        $relatedFieldAlias = $bridgeCollectionAlias . ISelector::FIELD_SEPARATOR;
+        $relatedFieldAlias .= $bridgeMetadata->getField($this->getRelatedFieldName())->getColumnName();
+
+        $selectBuilder
+            ->leftJoin(array($bridgeTableName, $bridgeCollectionAlias))
+            ->on($targetFieldAlias, '=', $targetPkAlias);
+
+        $selectBuilder
+            ->leftJoin(array($relationTableName, $relationTableAlias))
+            ->on($relationPkAlias, '=', $relatedFieldAlias);
+
+        $selectBuilder->where()
+            ->expr($relationPkAlias, '=', ':objectId');
+        $selectBuilder->bindValue(
+            ':objectId',
+            $object->getId(),
+            $relationPk->getDataType()
+        );
+
+        $selectBuilder->groupBy($targetPkAlias);
 
         return $selector->result();
     }
