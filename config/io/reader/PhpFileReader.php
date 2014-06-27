@@ -101,6 +101,12 @@ class PhpFileReader implements IReader, ILocalizable, IConfigAliasResolverAware,
         foreach ($local as $key => &$localValue) {
             if (isset($master[$key])) {
                 $masterValue = & $master[$key];
+
+                //TODO: refactoring
+                if ($masterValue instanceof IConfigSource) {
+                    $masterValue = $masterValue->getSource();
+                }
+
                 if (is_array($masterValue)) {
                     if (!is_array($localValue)) {
                         throw new UnexpectedValueException($this->translate(
@@ -127,9 +133,10 @@ class PhpFileReader implements IReader, ILocalizable, IConfigAliasResolverAware,
                     }
                 } else {
                     throw new UnexpectedValueException($this->translate(
-                        'Unexpected "{key}" property type.',
+                        'Unexpected property type "{type}" with key "{key}".',
                         [
-                            'key' => $key
+                            'key' => $key,
+                            'type' => gettype($masterValue) . (is_object($masterValue) ? ':' . get_class($masterValue) : '')
                         ]
                     ));
                 }
