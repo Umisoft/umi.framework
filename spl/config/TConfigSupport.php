@@ -69,15 +69,20 @@ trait TConfigSupport
                     $value = $this->configToArray($value);
                 }
 
-                if (!is_null($defaultValue) && (gettype($defaultValue) !== gettype($value))) {
+                if (!is_null($defaultValue) && is_scalar($defaultValue) && !is_scalar($value)) {
                     throw new UnexpectedValueException(sprintf(
-                        'Cannot resolve option "%s". Option value should be of type %s.',
-                        $name,
-                        gettype($defaultValue)
+                        'Cannot resolve option "%s". Option value should scalar.',
+                        $name
                     ));
                 }
 
                 if (is_array($defaultValue)) {
+                    if (!is_array($value)) {
+                        throw new UnexpectedValueException(sprintf(
+                            'Cannot resolve option "%s". Option value should an array.',
+                            $name
+                        ));
+                    }
                     $value = $this->configToArray($value);
                     $result[$name] = $this->mergeConfigOptions($value, $defaultValue);
                 } else {
