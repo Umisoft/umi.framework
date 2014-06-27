@@ -50,6 +50,8 @@ class StreamService implements IStreamService
             throw new RuntimeException(sprintf('Cannot register stream wrapper for protocol "%s".', $protocol));
         }
 
+        $this->streams[$protocol] = $handler;
+
         return $this;
     }
 
@@ -58,7 +60,7 @@ class StreamService implements IStreamService
      */
     public function unregisterStream($protocol)
     {
-        if ($this->hasStream($protocol)) {
+        if (!$this->hasStream($protocol)) {
             throw new NotRegisteredException(sprintf('Protocol "%s" is not registered.', $protocol));
         }
         unset($this->streams[$protocol]);
@@ -73,7 +75,7 @@ class StreamService implements IStreamService
     {
         $protocol = parse_url($uri, PHP_URL_SCHEME);
 
-        if ($this->hasStream($protocol)) {
+        if (!$this->hasStream($protocol)) {
             throw new NotRegisteredException(sprintf('Cannot execute stream. Protocol "%s" is not registered.', $protocol));
         }
 
