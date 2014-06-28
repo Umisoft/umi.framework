@@ -187,6 +187,22 @@ class PhpFileReader implements IReader, ILocalizable, IConfigAliasResolverAware,
                     return $this->read($value);
                 case self::COMMAND_LAZY:
                     return $this->createSeparateConfigSource('lazy', $value);
+                case self::LOCAL_DIR: {
+                    $files = $this->getFilesByAlias($value);
+                    return $this->createConfigValue(
+                        [
+                            IConfigValue::KEY_LOCAL => $files[IConfigValue::KEY_LOCAL]
+                        ]
+                    );
+                }
+                case self::MASTER_DIR: {
+                    $files = $this->getFilesByAlias($value);
+                    return $this->createConfigValue(
+                        [
+                            IConfigValue::KEY_MASTER => $files[IConfigValue::KEY_MASTER]
+                        ]
+                    );
+                }
             }
         }
 
