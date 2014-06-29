@@ -60,16 +60,18 @@ class ObjectType implements IObjectType, ILocalizable
             }
         }
 
+        if ($parentType = $metadata->getParentType($this->name)) {
+            $this->fields = $parentType->getFields();
+        }
+
         if (isset($config['fields'])) {
-            $fieldsInfo = $config['fields'];
-            if (!is_array($fieldsInfo)) {
+            if (!is_array($config['fields'])) {
                 throw new UnexpectedValueException($this->translate(
                     'Type fields configuration should be an array.'
                 ));
             }
-            foreach ($fieldsInfo as $fieldName) {
-                $field = $metadata->getField($fieldName);
-                $this->fields[$fieldName] = $field;
+            foreach ($config['fields'] as $fieldName) {
+                $this->fields[$fieldName] = $metadata->getField($fieldName);
             }
         }
     }
