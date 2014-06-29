@@ -54,7 +54,12 @@ class CollectionDataSource implements ICollectionDataSource, ILocalizable
                 'Collection data source configuration should contain source name and name should be a string.'
             ));
         }
-        $this->sourceName = $config['sourceName'];
+        $sourceNamePrefix = '';
+        if (isset($config['sourceNamePrefix'])) {
+            $sourceNamePrefix = (string) $config['sourceNamePrefix'];
+        }
+
+        $this->sourceName = $sourceNamePrefix . $config['sourceName'];
         if (isset($config['masterServerId'])) {
             $this->masterServerId = $config['masterServerId'];
         }

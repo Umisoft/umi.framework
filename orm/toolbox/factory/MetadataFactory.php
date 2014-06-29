@@ -37,6 +37,10 @@ class MetadataFactory implements IMetadataFactory, IFactory
      * @var string $dataSourceClass имя класса для источника данных коллекции
      */
     public $dataSourceClass = 'umi\orm\metadata\CollectionDataSource';
+    /**
+     * @var string $dataSourceNamePrefix префикс для имен источника данных коллекций
+     */
+    public $dataSourceNamePrefix = '';
 
     /**
      * @var array $fieldTypes поддерживаемые типы полей
@@ -120,6 +124,10 @@ class MetadataFactory implements IMetadataFactory, IFactory
      */
     public function createDataSource(array $config)
     {
+        if ($this->dataSourceNamePrefix && !isset($config['sourceNamePrefix'])) {
+            $config['sourceNamePrefix'] = $this->dataSourceNamePrefix;
+        }
+
         return $this->getPrototype(
             $this->dataSourceClass,
             ['umi\orm\metadata\ICollectionDataSource']
