@@ -94,7 +94,7 @@ interface IMetadata
 
     /**
      * Возвращает список полей коллекции
-     * @return array в формате [fieldName => IField, ...]
+     * @return IField[] в формате [fieldName => IField, ...]
      */
     public function getFields();
 
