@@ -22,6 +22,7 @@ interface IField
 {
     // relation
     const TYPE_BELONGS_TO = 'belongsToRelation';
+    const TYPE_BELONGS_TO_SELF = 'belongsToSelfRelation';
     const TYPE_MANY_TO_MANY = 'manyToManyRelation';
     const TYPE_HAS_MANY = 'hasManyRelation';
     const TYPE_HAS_ONE = 'hasOneRelation';

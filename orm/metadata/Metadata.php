@@ -228,7 +228,9 @@ class Metadata implements IMetadata, ILocalizable
                 ['name' => $fieldName, 'collection' => $this->getCollectionName()]
             ));
         }
-        $field = $this->metadataFactory->createField($fieldName, $this->config['fields'][$fieldName]);
+        $config = $this->config['fields'][$fieldName];
+        $config['collectionName'] = $this->collectionName;
+        $field = $this->metadataFactory->createField($fieldName, $config);
 
         return $this->fields[$fieldName] = $field;
     }
