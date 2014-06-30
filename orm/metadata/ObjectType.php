@@ -70,7 +70,7 @@ class ObjectType implements IObjectType, ILocalizable
                     'Type fields configuration should be an array.'
                 ));
             }
-            foreach ($config['fields'] as $fieldName) {
+            foreach ($config['fields'] as $fieldName => $options) {
                 $this->fields[$fieldName] = $metadata->getField($fieldName);
             }
         }
