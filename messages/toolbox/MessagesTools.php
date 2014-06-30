@@ -42,6 +42,9 @@ class MessagesTools implements IToolbox
         'delivery_address' => [],
     ];
 
+    /**
+     * @var array $transportOptions настройки транспортов для почтовой службы
+     */
     public $transportOptions = [
         'smtp' => [
             'encryption' => null,
@@ -116,9 +119,34 @@ class MessagesTools implements IToolbox
         if (!isset($this->mailerOptions['delivery_address'])) {
             throw new InvalidArgumentException("No default delivery address");
         }
+
         $swiftMailer = new SwiftMailer($this->getTransport());
-        $swiftMailer->setDefaultFrom($this->mailerOptions['sender_address']);
-        $swiftMailer->setDefaultTo($this->mailerOptions['delivery_address']);
+
+        $from = [];
+        foreach ($this->mailerOptions['sender_address'] as $senderInfo) {
+            if (isset($senderInfo['email'])) {
+                if (isset($senderInfo['name'])) {
+                    $from[$senderInfo['email']] = $senderInfo['name'];
+                } else {
+                    $from[] = $senderInfo['email'];
+                }
+            }
+        }
+
+        $to = [];
+        foreach ($this->mailerOptions['delivery_address'] as $recipientInfo) {
+            if (isset($recipientInfo['email'])) {
+                if (isset($recipientInfo['name'])) {
+                    $to[$recipientInfo['email']] = $recipientInfo['name'];
+                } else {
+                    $to[] = $recipientInfo['email'];
+                }
+            }
+        }
+
+        $swiftMailer->setDefaultFrom($from);
+        $swiftMailer->setDefaultTo($to);
+
         return $swiftMailer;
     }
 
