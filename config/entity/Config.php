@@ -417,10 +417,14 @@ class Config implements IConfig, ILocalizable
         $value = & $source[$key];
 
         if (!$keys) {
-            if (($value instanceof IConfig) || is_array($value)) {
-                throw new UnexpectedValueException($this->translate(
-                    'Cannot delete array of values.'
-                ));
+            if ($value instanceof IConfig) {
+                foreach ($value as $partKey => $partValue) {
+                    $value->del($partKey);
+                }
+            } elseif (is_array($value)) {
+                foreach ($value as $partKey => $partValue) {
+                    $this->deleteByPath([$partKey], $value);
+                }
             } elseif ($value instanceof IConfigValue) {
                 $value->del();
             } else {
