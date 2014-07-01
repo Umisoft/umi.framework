@@ -48,7 +48,6 @@ class MetadataFactory implements IMetadataFactory, IFactory
     public $fieldTypes = [
         // relation
         IField::TYPE_BELONGS_TO   => 'umi\orm\metadata\field\relation\BelongsToRelationField',
-        IField::TYPE_BELONGS_TO_SELF => 'umi\orm\metadata\field\relation\BelongsToSelfRelationField',
         IField::TYPE_MANY_TO_MANY => 'umi\orm\metadata\field\relation\ManyToManyRelationField',
         IField::TYPE_HAS_MANY     => 'umi\orm\metadata\field\relation\HasManyRelationField',
         IField::TYPE_HAS_ONE      => 'umi\orm\metadata\field\relation\HasOneRelationField',
