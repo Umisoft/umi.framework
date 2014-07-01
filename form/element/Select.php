@@ -40,7 +40,7 @@ class Select extends BaseChoiceElement
     {
         parent::extendView($view);
 
-        if (!$this->isLazy()) {
+        if (!$this->isLazy() || $this->getStaticChoices()) {
 
             $selected = (array) $this->getValue();
             $view->choices = [];
