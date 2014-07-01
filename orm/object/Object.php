@@ -55,10 +55,6 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
      */
     protected $isUnloaded = false;
     /**
-     * @var string $collectionName имя коллекции, к которой принадлежит объект
-     */
-    protected $collectionName;
-    /**
      * @var string $typeName имя типа объекта
      */
     protected $typeName;
@@ -105,6 +101,14 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
         $this->collection = $collection;
         $this->propertyFactory = $propertyFactory;
         $this->isUnloaded = false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __toString()
+    {
+        return $this->getTypePath() . '#' . $this->getGUID();
     }
 
     /**
@@ -193,11 +197,7 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
      */
     public function getCollectionName()
     {
-        if ($this->collectionName) {
-            return $this->collectionName;
-        }
-
-        return $this->collectionName = $this->collection->getName();
+        return $this->collection->getName();
     }
 
     /**

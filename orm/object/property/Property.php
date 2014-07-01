@@ -340,17 +340,18 @@ class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware, 
         $result = true;
         $this->validationErrors = [];
 
+        $validatorMethod = IObject::VALIDATOR_METHOD_PREFIX . $this->getName();
+        if (method_exists($this->object, $validatorMethod)) {
+            if ($this->object->{$validatorMethod}() === false) {
+                $result = false;
+            }
+        }
+        
         if ($validators = $this->getField()->getValidatorsConfig($this->getLocaleId())) {
 
             $validatorCollection = $this->createValidatorCollection($validators);
             if (!$validatorCollection->isValid($this->getValue())) {
                 $this->addValidationErrors($validatorCollection->getMessages());
-                $result = false;
-            }
-        }
-        $validatorMethod = IObject::VALIDATOR_METHOD_PREFIX . $this->getName();
-        if (method_exists($this->object, $validatorMethod)) {
-            if ($this->object->{$validatorMethod}() === false) {
                 $result = false;
             }
         }
