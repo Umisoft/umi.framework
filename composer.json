@@ -20,8 +20,8 @@
     },
 
     "suggest": {
-        "umi/extension-twig": "templating with Twig extension.",
-        "umi/extension-monolog": "logging with Monolog extension."
+        "umisoft/extension-twig": "templating with Twig extension.",
+        "umisoft/extension-monolog": "logging with Monolog extension."
     },
 
     "autoload": {
