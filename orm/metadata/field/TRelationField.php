@@ -35,9 +35,14 @@ trait TRelationField
     protected $relatedFieldName;
 
     /**
+     * @see IField::getName()
+     */
+    abstract public function getName();
+    /**
      * @see TLocalizable::translate()
      */
     abstract protected function translate($message, array $placeholders = [], $localeId = null);
+
 
     /**
      * Разбирает и применяет конфигурацию для target-коллекции
@@ -46,12 +51,16 @@ trait TRelationField
      */
     protected function applyTargetCollectionConfig(array $config)
     {
-        if (!isset($config['target']) || !is_string($config['target'])) {
+        if (isset($config['target']) && is_string($config['target'])) {
+            $this->targetCollectionName = $config['target'];
+        } elseif (isset($config['collectionName']) && is_string($config['collectionName'])) {
+            $this->targetCollectionName = $config['collectionName'];
+        } else {
             throw new UnexpectedValueException($this->translate(
-                'Relation field configuration should contain target collection name and name should be a string.'
+                'Relation field "{field}" configuration should contain either "target" or "collectionName" option.',
+                ['field' => $this->getName()]
             ));
         }
-        $this->targetCollectionName = $config['target'];
     }
 
     /**
