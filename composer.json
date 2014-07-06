@@ -1,43 +1,28 @@
 {
-    "name": "umi/framework",
-    "description": "UMI.Framework",
+    "name": "umisoft/umi.framework",
+    "description": "UMI.Framework Version 1",
     "keywords": ["umi", "framework"],
     "type": "library",
     "license": "BSD-3-Clause",
     "homepage": "http://umi-framework.ru/",
-    "replace": {
-        "umi/acl" : "self.version",
-        "umi/authentication" : "self.version",
-        "umi/cache" : "self.version",
-        "umi/config" : "self.version",
-        "umi/dbal" : "self.version",
-        "umi/event" : "self.version",
-        "umi/filter" : "self.version",
-        "umi/form" : "self.version",
-        "umi/hmvc" : "self.version",
-        "umi/http" : "self.version",
-        "umi/i18n" : "self.version",
-        "umi/log" : "self.version",
-        "umi/orm" : "self.version",
-        "umi/pagination" : "self.version",
-        "umi/rbac" : "self.version",
-        "umi/route" : "self.version",
-        "umi/rss" : "self.version",
-        "umi/session" : "self.version",
-        "umi/spl" : "self.version",
-        "umi/stream" : "self.version",
-        "umi/syntax" : "self.version",
-        "umi/templating" : "self.version",
-        "umi/toolkit" : "self.version",
-        "umi/validation" : "self.version"
-    },
+
     "require": {
         "php": ">=5.4.0",
+        "lib-pcre": "*",
+        "ext-mbstring": "*",
+
+        "makhov/phpmorphy": "dev-master",
         "symfony/http-foundation": "2.4.*",
         "psr/log": "1.*",
         "doctrine/dbal": "2.4.*",
         "twig/twig": "1.*"
     },
+
+    "suggest": {
+        "umi/extension-twig": "templating with Twig extension.",
+        "umi/extension-monolog": "logging with Monolog extension."
+    },
+
     "autoload": {
         "psr-4": {
             "umi\\": ""
