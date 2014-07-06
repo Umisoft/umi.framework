@@ -1,7 +1,5 @@
-UMI.Framework
+UMI.Framework Version 1
 ======
-
-Master branch [![Build Status](https://travis-ci.org/Umisoft/umi.framework.png?branch=master)](https://travis-ci.org/Umisoft/umi.framework)
 
 ### УСТАНОВКА
 
