@@ -10,6 +10,7 @@
         "php": ">=5.4.0",
         "lib-pcre": "*",
         "ext-mbstring": "*",
+        "ext-pdo": "*",
 
         "umisoft/phpmorphy": "1.*",
         "symfony/http-foundation": "2.4.*",
