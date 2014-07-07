@@ -342,7 +342,7 @@ class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware, 
 
         $validatorMethod = IObject::VALIDATOR_METHOD_PREFIX . $this->getName();
         if (method_exists($this->object, $validatorMethod)) {
-            if ($this->object->{$validatorMethod}() === false) {
+            if ($this->object->{$validatorMethod}($this->getLocaleId()) === false) {
                 $result = false;
             }
         }
