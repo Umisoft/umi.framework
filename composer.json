@@ -11,7 +11,7 @@
         "lib-pcre": "*",
         "ext-mbstring": "*",
 
-        "makhov/phpmorphy": "dev-master",
+        "umisoft/phpmorphy": "1.*",
         "symfony/http-foundation": "2.4.*",
         "psr/log": "1.*",
         "doctrine/dbal": "2.4.*",
