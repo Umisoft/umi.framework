@@ -209,4 +209,11 @@ interface ISelector extends \IteratorAggregate
      * @return ICollection
      */
     public function getCollection();
+
+    /**
+     * Выставляет инициализатор билдера запроса
+     * @param callable $builderInitializer
+     * @return self
+     */
+    public function setSelectBuilderInitializer(callable $builderInitializer);
 }

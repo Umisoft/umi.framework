@@ -100,6 +100,10 @@ class Selector implements ISelector, ILocalizable, ILocalesAware, IMetadataManag
      */
     protected $selectorFactory;
     /**
+     * @var callable $builderInitializer инициализатор билдера запроса
+     */
+    protected $builderInitializer;
+    /**
      * @var IMetadata $metadata метаданные коллекции объектов
      */
     private $metadata;
@@ -434,6 +438,11 @@ class Selector implements ISelector, ILocalizable, ILocalesAware, IMetadataManag
             $this->applyOrderConditions($this->selectBuilder);
             $this->applyLimitConditions($this->selectBuilder);
 
+            if (is_callable($this->builderInitializer)) {
+                $initializer = $this->builderInitializer;
+                $initializer($this->selectBuilder);
+            }
+
         }
 
         return $this->selectBuilder;
@@ -470,6 +479,16 @@ class Selector implements ISelector, ILocalizable, ILocalesAware, IMetadataManag
     public function getCollection()
     {
         return $this->collection;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setSelectBuilderInitializer(callable $builderInitializer)
+    {
+        $this->builderInitializer = $builderInitializer;
+
+        return $this;
     }
 
     /**
