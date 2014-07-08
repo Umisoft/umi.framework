@@ -55,6 +55,10 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
      */
     protected $isUnloaded = false;
     /**
+     * @var string $collectionName имя коллекции, к которой принадлежит объект
+     */
+    protected $collectionName;
+    /**
      * @var string $typeName имя типа объекта
      */
     protected $typeName;
@@ -197,7 +201,11 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
      */
     public function getCollectionName()
     {
-        return $this->collection->getName();
+        if ($this->collectionName) {
+            return $this->collectionName;
+        }
+
+        return $this->collectionName = $this->collection->getName();
     }
 
     /**
