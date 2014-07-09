@@ -34,6 +34,10 @@ class SelectorFactory implements ISelectorFactory, IFactory
      */
     public $selectorClass = 'umi\orm\selector\Selector';
     /**
+     * @var string $emptySelectorClass имя класса селектора с пустым результатом
+     */
+    public $emptySelectorClass = 'umi\orm\selector\EmptySelector';
+    /**
      * @var string $fieldConditionClass класс выражения селектора
      */
     public $fieldConditionClass = 'umi\orm\selector\condition\FieldCondition';
@@ -73,7 +77,17 @@ class SelectorFactory implements ISelectorFactory, IFactory
     {
         $emptyObjectSet = $this->objectSetFactory->createEmptyObjectSet();
 
-        return $this->getSelectorInstance($objectsCollection, $emptyObjectSet);
+        /**
+         * @var ISelector $selector
+         */
+        $selector = $this->getPrototype(
+            $this->emptySelectorClass,
+            ['umi\orm\selector\ISelector']
+        )
+            ->createInstance([$objectsCollection, $emptyObjectSet, $this]);
+        $emptyObjectSet->setSelector($selector);
+
+        return $selector;
     }
 
     /**
