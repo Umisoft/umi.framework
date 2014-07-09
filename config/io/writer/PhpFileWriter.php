@@ -60,10 +60,10 @@ class PhpFileWriter extends BaseWriter
      */
     protected function writeSource($filename, array $source)
     {
-        $source = str_replace(['  ', "\n"], ["\t", "\n\t"], var_export($source, true));
+        $source = var_export($source, true);
         $source = <<<FILE
 <?php
-	return $source;
+return $source;
 FILE;
 
         $directory = dirname($filename);
