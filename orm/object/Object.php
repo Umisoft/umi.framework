@@ -767,6 +767,18 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
     /**
      * {@inheritdoc}
      */
+    public function splitFullPropName($fullPropName)
+    {
+        $propInfo = explode(IProperty::LOCALE_SEPARATOR, $fullPropName);
+        $propName = $propInfo[0];
+        $localeId = isset($propInfo[1]) ? $propInfo[1] : null;
+
+        return [$propName, $localeId];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function __set($propName, $value)
     {
         $this->setValue($propName, $value);
@@ -872,20 +884,6 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
     public function valid()
     {
         return !is_null(key($this->initialValues));
-    }
-
-    /**
-     * Возвращает имя свойства и его локаль по полному имени свойства
-     * @param string $fullPropName полное имя свойства
-     * @return array
-     */
-    protected function splitFullPropName($fullPropName)
-    {
-        $propInfo = explode(IProperty::LOCALE_SEPARATOR, $fullPropName);
-        $propName = $propInfo[0];
-        $localeId = isset($propInfo[1]) ? $propInfo[1] : null;
-
-        return [$propName, $localeId];
     }
 
     /**

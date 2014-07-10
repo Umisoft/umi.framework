@@ -336,6 +336,13 @@ interface IObject extends ArrayAccess, Serializable, Iterator
     public function getLoadLocalization();
 
     /**
+     * Возвращает имя свойства и его локаль по полному имени свойства
+     * @param string $fullPropName полное имя свойства
+     * @return array
+     */
+    public function splitFullPropName($fullPropName);
+
+    /**
      * Магический setter ($object->propName = $someValue)
      * @internal
      * @param string $propName имя свойства
