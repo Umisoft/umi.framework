@@ -265,6 +265,16 @@ class Toolkit implements IToolkit, ILoggerAware, ILocalizable
                 ['service' => $serviceInterfaceName]
             ));
         }
+        $this->overrideService($serviceInterfaceName, $builder);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function overrideService($serviceInterfaceName, callable $builder)
+    {
         $this->trace(
             'Registering builder for service "{service}".',
             ['service' => $serviceInterfaceName]
@@ -273,6 +283,8 @@ class Toolkit implements IToolkit, ILoggerAware, ILocalizable
 
         return $this;
     }
+
+
 
     /**
      * {@inheritdoc}
