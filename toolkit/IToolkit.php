@@ -86,6 +86,26 @@ interface IToolkit extends IEventObservant
     public function registerService($serviceInterfaceName, callable $builder);
 
     /**
+     * Перегружает зарегистрированный ранее сервис.
+     * Каждый раз при обращении к сервису через IToolkit::getService(), будет
+     * вызван билдер для получения экземпляра сервиса.
+     * Пример:
+     * <code>
+     *  $toolkit->registerService('umi\mail\IMail', function($concreteClassName, IToolkit $toolkit) {
+     *      if ($concreteClassName) {
+     *          return new $concreteClassName();
+     *      } else {
+     *          return new MyDefaultMail();
+     *      }
+     *  }
+     * </code>
+     * @param string $serviceInterfaceName интерфейс сервиса
+     * @param callable $builder билдер сервиса, создающий его экземпляр.
+     * @return self
+     */
+    public function overrideService($serviceInterfaceName, callable $builder);
+
+    /**
      * Проверяет, зарегистрирован ли сервис
      * @param string $serviceInterfaceName имя интерфейса сервиса
      * @return bool
