@@ -272,28 +272,6 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
     /**
      * {@inheritdoc}
      */
-    public function setGUID($guid)
-    {
-        if (!$this->getIsNew()) {
-            throw new NotAllowedOperationException(
-                $this->translate(
-                    'Cannot set GUID. GUID can be set only for new objects.'
-                )
-            );
-        }
-
-        $guidProperty = $this->getProperty(self::FIELD_GUID);
-        $oldGuid = $guidProperty->getValue();
-        $guidProperty->setValue($guid);
-
-        $this->getObjectManager()->changeObjectGuid($this, $oldGuid);
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getVersion()
     {
         $versionFieldProperty = $this->getProperty(self::FIELD_VERSION);

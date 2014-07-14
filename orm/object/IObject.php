@@ -113,13 +113,6 @@ interface IObject extends ArrayAccess, Serializable, Iterator
     public function getGUID();
 
     /**
-     * Устанавливает глобальный уникальный идентификатор объекта.
-     * @param string $guid
-     * @return self
-     */
-    public function setGUID($guid);
-
-    /**
      * Возвращает версию объекта
      * @return int
      */

@@ -21,7 +21,7 @@ class SimpleCollection extends BaseCollection implements ISimpleCollection
     /**
      * {@inheritdoc}
      */
-    public function add($typeName = IObjectType::BASE)
+    public function add($typeName = IObjectType::BASE, $guid = null)
     {
         if (!$this->metadata->getTypeExists($typeName)) {
             throw new NonexistentEntityException($this->translate(
@@ -31,6 +31,6 @@ class SimpleCollection extends BaseCollection implements ISimpleCollection
         }
 
         return $this->getObjectManager()
-            ->registerNewObject($this, $this->metadata->getType($typeName));
+            ->registerNewObject($this, $this->metadata->getType($typeName), $guid);
     }
 }

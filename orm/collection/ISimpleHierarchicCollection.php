@@ -23,8 +23,9 @@ interface ISimpleHierarchicCollection extends IHierarchicCollection
      * @param string $slug последняя часть ЧПУ
      * @param string $typeName имя типа
      * @param IHierarchicObject|null $branch ветка, в которую добавляется объект
+     * @param string|null $guid глобальный уникальный идентификатор объекта
      * @throws NonexistentEntityException если тип не существует
      * @return IHierarchicObject
      */
-    public function add($slug, $typeName = IObjectType::BASE, IHierarchicObject $branch = null);
+    public function add($slug, $typeName = IObjectType::BASE, IHierarchicObject $branch = null, $guid = null);
 }

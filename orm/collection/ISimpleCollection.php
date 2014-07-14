@@ -21,10 +21,10 @@ interface ISimpleCollection extends ICollection
 
     /**
      * Добавляет объект в коллекцию и возвращает его экземпляр.
-     * @param string $typeName имя дочернего типа.
-     * Если тип не указан, будет создан объект базового типа
+     * @param string $typeName имя дочернего типа. Если тип не указан, будет создан объект базового типа
+     * @param string|null $guid глобальный уникальный идентификатор объекта
      * @throws IException если не удалось добавить объект
      * @return IObject
      */
-    public function add($typeName = IObjectType::BASE);
+    public function add($typeName = IObjectType::BASE, $guid = null);
 }

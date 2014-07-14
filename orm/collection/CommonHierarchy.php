@@ -51,10 +51,11 @@ class CommonHierarchy extends BaseHierarchicCollection implements ICommonHierarc
         ILinkedHierarchicCollection $linkedCollection,
         $slug,
         $typeName = IObjectType::BASE,
-        IHierarchicObject $branch = null
+        IHierarchicObject $branch = null,
+        $guid = null
     )
     {
-        return $linkedCollection->add($slug, $typeName, $branch);
+        return $linkedCollection->add($slug, $typeName, $branch, $guid);
     }
 
     /**
