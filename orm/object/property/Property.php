@@ -322,7 +322,7 @@ class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware, 
      */
     public function update($value)
     {
-        if ($this->getValue() !== $value) {
+        if (!$this->field->compareValue($this->getValue(), $value)) {
             $this->dbValue = $this->field->prepareDbValue($this->object, $value);
             $this->value = $value;
             $this->isModified = true;

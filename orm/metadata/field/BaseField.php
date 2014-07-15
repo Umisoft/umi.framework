@@ -264,6 +264,14 @@ abstract class BaseField implements IField, ILocalizable
     /**
      * {@inheritdoc}
      */
+    public function compareValue($currentValue, $newValue)
+    {
+        return ($currentValue === $newValue);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function persistProperty(IObject $object, IProperty $property, IQueryBuilder $builder)
     {
         /**

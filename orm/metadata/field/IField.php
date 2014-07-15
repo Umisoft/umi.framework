@@ -182,6 +182,15 @@ interface IField
     public function prepareDbValue(IObject $object, $propertyValue);
 
     /**
+     * Сравнивает и определяет равны ли текущее и устанавливаемые значения.
+     * @internal
+     * @param mixed $currentValue
+     * @param mixed $newValue
+     * @return bool
+     */
+    public function compareValue($currentValue, $newValue);
+
+    /**
      * Дополняет запрос условием на изменение значения свойства в БД.
      * @internal
      * @param IObject $object объект, для которого выставляется значение

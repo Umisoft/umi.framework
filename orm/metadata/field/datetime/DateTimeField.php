@@ -49,6 +49,18 @@ class DateTimeField extends BaseField
     /**
      * {@inheritdoc}
      */
+    public function compareValue($currentValue, $newValue)
+    {
+        if ($currentValue instanceof DateTime && $newValue instanceof DateTime) {
+            return ($currentValue->getTimestamp() === $newValue->getTimestamp());
+        }
+
+        return parent::compareValue($currentValue, $newValue);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function prepareDbValue(IObject $object, $propertyValue)
     {
         $dbValue = null;
