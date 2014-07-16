@@ -351,8 +351,9 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
             return is_null($localeId);
         } else {
             if (is_null($localeId)) {
-                $localeId = ($this->getLoadLocalization() === ILocalesService::LOCALE_CURRENT) ?
-                    $this->getCurrentDataLocale() : $this->getLoadLocalization();
+                $loadLocalization = $this->getLoadLocalization();
+                $localeId = ($loadLocalization === ILocalesService::LOCALE_CURRENT || $loadLocalization === ILocalesService::LOCALE_ALL) ?
+                    $this->getCurrentDataLocale() : $loadLocalization;
             }
 
             return $field->hasLocale($localeId);
@@ -375,8 +376,9 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
         $field = $this->type->getField($propName);
 
         if (!$localeId && $field->getIsLocalized()) {
-            $localeId = ($this->getLoadLocalization() === ILocalesService::LOCALE_CURRENT) ?
-                $this->getCurrentDataLocale() : $this->getLoadLocalization();
+            $loadLocalization = $this->getLoadLocalization();
+            $localeId = ($loadLocalization === ILocalesService::LOCALE_CURRENT || $loadLocalization === ILocalesService::LOCALE_ALL) ?
+                $this->getCurrentDataLocale() : $loadLocalization;
         }
         if ($localeId) {
             $fullPropName .= IProperty::LOCALE_SEPARATOR . $localeId;
