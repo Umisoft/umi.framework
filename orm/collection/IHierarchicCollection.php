@@ -90,13 +90,6 @@ interface IHierarchicCollection extends ICollection
     public function getHierarchyLevelField();
 
     /**
-     * Возвращает поле, которое используется у базового типа коллекции для хранения информации о количестве детей
-     * @throws NonexistentEntityException если такого поля не существует
-     * @return IField
-     */
-    public function getHierarchyChildCountField();
-
-    /**
      * Возвращает поле, которое используется у базового типа коллекции для хранения последней части ЧПУ
      * @throws NonexistentEntityException если такого поля не существует
      * @return IField

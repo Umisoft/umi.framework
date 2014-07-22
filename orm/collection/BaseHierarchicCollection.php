@@ -18,34 +18,12 @@ use umi\orm\exception\RuntimeException;
 use umi\orm\metadata\field\relation\BelongsToRelationField;
 use umi\orm\metadata\field\special\MaterializedPathField;
 use umi\orm\object\IHierarchicObject;
-use umi\orm\object\IObject;
-use umi\orm\object\property\calculable\ICounterProperty;
 
 /**
  * Базовый класс иерархической коллекции
  */
 abstract class BaseHierarchicCollection extends BaseCollection implements IHierarchicCollection
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function delete(IObject $object)
-    {
-        parent::delete($object);
-        /**
-         * @var IHierarchicObject $object
-         */
-        if (null != ($parent = $object->getParent())) {
-            /**
-             * @var ICounterProperty $childCount
-             */
-            $childCount = $parent->getProperty(IHierarchicObject::FIELD_CHILD_COUNT);
-            $childCount->decrement();
-        }
-
-        return $this;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -90,14 +68,6 @@ abstract class BaseHierarchicCollection extends BaseCollection implements IHiera
     public function getHierarchyLevelField()
     {
         return $this->getRequiredField(IHierarchicObject::FIELD_HIERARCHY_LEVEL);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getHierarchyChildCountField()
-    {
-        return $this->getRequiredField(IHierarchicObject::FIELD_CHILD_COUNT);
     }
 
     /**
@@ -336,12 +306,6 @@ abstract class BaseHierarchicCollection extends BaseCollection implements IHiera
                     ];
 
                     if ($object->getParent() !== $branch) {
-                        if (null != ($parent = $object->getParent())) {
-                            $builders[] = $this->buildUpdateChildCountQuery($parent, $this, -1);
-                        }
-                        if ($branch) {
-                            $builders[] = $this->buildUpdateChildCountQuery($branch, $this, 1);
-                        }
                         $builders[] = $this->buildUpdateHierarchicPropertiesQueryForMovedObject(
                             $object,
                             $this,
@@ -546,47 +510,6 @@ abstract class BaseHierarchicCollection extends BaseCollection implements IHiera
                 $object->getMaterializedPath() . MaterializedPathField::MPATH_SEPARATOR . '%',
                 $mpathField->getDataType()
             );
-
-        return $update;
-
-    }
-
-    /**
-     * Возвращает запрос на изменения количества детей.
-     * @param IHierarchicObject $object объект, у которого меняется количество детей
-     * @param IHierarchicCollection $collection коллекция, для которой формируется запрос
-     * @param int $childCountModifier число, на которое увеличивается или уменьшается количество детей
-     * @return IUpdateBuilder
-     */
-    protected function buildUpdateChildCountQuery(
-        IHierarchicObject $object,
-        IHierarchicCollection $collection,
-        $childCountModifier
-    )
-    {
-
-        $dataSource = $collection
-            ->getMetadata()
-            ->getCollectionDataSource();
-        $childCountField = $collection->getHierarchyChildCountField();
-        $idField = $collection->getIdentifyField();
-
-        /**
-         * @var $update IUpdateBuilder
-         */
-        $update = $dataSource->update();
-
-        $modifierExpression = $update
-                ->getConnection()
-                ->quoteIdentifier($childCountField->getColumnName()) . ' + (' . $childCountModifier . ')';
-        $update
-            ->set($childCountField->getColumnName())
-            ->bindExpression(':' . $childCountField->getColumnName(), $modifierExpression);
-
-        $update
-            ->where()
-            ->expr($idField->getColumnName(), '=', ':' . $idField->getName())
-            ->bindValue(':' . $idField->getName(), $object->getId(), $idField->getDataType());
 
         return $update;
 

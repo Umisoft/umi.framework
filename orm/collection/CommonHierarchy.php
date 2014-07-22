@@ -87,15 +87,6 @@ class CommonHierarchy extends BaseHierarchicCollection implements ICommonHierarc
         }
 
         if ($object->getParent() !== $branch) {
-
-            if (null != ($parent = $object->getParent())) {
-                $builders[] = $this->buildUpdateChildCountQuery($parent, $this, -1);
-                $builders[] = $this->buildUpdateChildCountQuery($parent, $parent->getCollection(), -1);
-            }
-            if ($branch) {
-                $builders[] = $this->buildUpdateChildCountQuery($branch, $this, 1);
-                $builders[] = $this->buildUpdateChildCountQuery($branch, $branch->getCollection(), 1);
-            }
             $builders[] = $this->buildUpdateHierarchicPropertiesQueryForMovedObject($object, $this, $branch);
             $builders[] = $this->buildUpdateHierarchicPropertiesQueryForMovedObject(
                 $object,

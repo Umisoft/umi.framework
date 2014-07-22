@@ -17,7 +17,6 @@ use umi\i18n\TLocalizable;
 use umi\orm\collection\ICollection;
 use umi\orm\exception\InvalidArgumentException;
 use umi\orm\exception\NonexistentEntityException;
-use umi\orm\exception\NotAllowedOperationException;
 use umi\orm\exception\ReadOnlyEntityException;
 use umi\orm\exception\RuntimeException;
 use umi\orm\manager\IObjectManagerAware;
