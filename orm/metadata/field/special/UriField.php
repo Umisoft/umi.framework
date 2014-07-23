@@ -53,17 +53,13 @@ class UriField extends BaseField implements IScalarField, ICalculableField
      */
     public function calculateDBValue(IObject $object, $localeId = null)
     {
-
         if (!$object instanceof IHierarchicObject) {
             throw new RuntimeException($this->translate(
                 'Cannot calculate URI value for nonhierarchical object.'
             ));
         }
-        if ($uri = $object->getProperty($this->getName())->getDbValue()) {
-            return $uri;
-        }
 
-        if (($parent = $object->getParent()) && $parent->getURI()) {
+        if ($parent = $object->getParent()) {
             return $parent->getURI() . '/' . $object->getSlug();
         } else {
             return  self::URI_START_SYMBOL . '/' . $object->getSlug();

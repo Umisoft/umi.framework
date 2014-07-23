@@ -432,15 +432,10 @@ abstract class BaseCollection
 
         $updateBuilder = $dataSource->update();
 
-        $calculableProperties = [];
-        foreach ($object->getModifiedProperties() as $property) {
+        foreach ($modifiedProperties as $property) {
             if ($this->getMetadata()->getFieldExists($property->getName())) {
-                if ($property instanceof ICalculableProperty) {
-                    $calculableProperties[] = $property;
-                } else {
-                    $field = $this->getMetadata()->getField($property->getName());
-                    $field->persistProperty($object, $property, $updateBuilder);
-                }
+                $field = $this->getMetadata()->getField($property->getName());
+                $field->persistProperty($object, $property, $updateBuilder);
             }
         }
 
@@ -463,13 +458,8 @@ abstract class BaseCollection
                 $this->getIdentifyField()->getDataType()
             );
 
-            $updateBuilder->where()
-                ->expr($versionColumnName, '=', ':' . $versionColumnName);
-            $updateBuilder->bindValue(
-                ':' . $versionColumnName,
-                $version,
-                $this->getVersionField()->getDataType()
-            );
+            $updateBuilder->where()->expr($versionColumnName, '=', ':' . $versionColumnName);
+            $updateBuilder->bindValue(':' . $versionColumnName, $version, $this->getVersionField()->getDataType());
 
             $result = $updateBuilder->execute();
 
@@ -500,8 +490,6 @@ abstract class BaseCollection
                 ));
             }
         }
-
-        $this->persistCalculableProperties($object, $calculableProperties);
     }
 
     /**
@@ -532,54 +520,6 @@ abstract class BaseCollection
         if ($result->rowCount() != 1) {
             throw new RuntimeException($this->translate(
                 'Cannot delete object with id "{id}" and type "{type}". Database row is not modified.',
-                ['id' => $object->getId(), 'type' => $object->getTypePath()]
-            ));
-        }
-    }
-
-    /**
-     * Запускает запросы на сохранение вычисляемых свойств объекта.
-     * @param IObject $object объект, для которого сохраняются значения
-     * @param IProperty[] $calculableProperties список свойств, которые должны быть вычислены
-     * @throws RuntimeException если не удалось сохранить свойства
-     */
-    protected function persistCalculableProperties(IObject $object, array $calculableProperties)
-    {
-
-        $updateBuilder = $this->getMetadata()->getCollectionDataSource()->update();
-
-        $updateBuilder
-            ->where()
-            ->expr(
-                $this
-                    ->getIdentifyField()
-                    ->getColumnName(),
-                '=',
-                ':objectId'
-            );
-        $updateBuilder->bindValue(
-            ':objectId',
-            $object->getId(),
-            $this->getIdentifyField()
-                ->getDataType()
-        );
-
-        foreach ($calculableProperties as $property) {
-            if ($this->getMetadata()->getFieldExists($property->getName())) {
-                $field = $this->getMetadata()->getField($property->getName());
-                $field->persistProperty($object, $property, $updateBuilder);
-            }
-        }
-
-        if (!$updateBuilder->getUpdatePossible()) {
-            return;
-        }
-        $result = $updateBuilder->execute();
-
-        if ($result->rowCount() != 1) {
-            throw new RuntimeException($this->translate(
-                'Cannot set calculable properties for object with id "{id}" and type "{type}".'
-                . ' Database row is not modified.',
                 ['id' => $object->getId(), 'type' => $object->getTypePath()]
             ));
         }

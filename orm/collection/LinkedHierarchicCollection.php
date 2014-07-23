@@ -123,6 +123,24 @@ class LinkedHierarchicCollection extends SimpleHierarchicCollection implements I
     /**
      * {@inheritdoc}
      */
+    public function selectChildren(IHierarchicObject $object = null)
+    {
+        return $this->getCommonHierarchy()
+            ->selectChildren($object);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function selectDescendants(IHierarchicObject $object = null, $depth = null)
+    {
+        return $this->getCommonHierarchy()
+            ->selectChildren($object, $depth);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function changeSlug(IHierarchicObject $object, $slug)
     {
         $this->getCommonHierarchy()

@@ -9,6 +9,7 @@
 
 namespace umi\orm\collection;
 
+use umi\orm\exception\InvalidArgumentException;
 use umi\orm\exception\NonexistentEntityException;
 use umi\orm\metadata\field\IField;
 use umi\orm\object\IHierarchicObject;
@@ -29,6 +30,29 @@ interface IHierarchicCollection extends ICollection
      * @return int
      */
     public function getMaxOrder(IHierarchicObject $branch = null);
+
+    /**
+     * Возвращает селектор для выбора дочерних объектов для указанного.
+     * @param IHierarchicObject|null $object объект, либо null, если нужна выборка от корня
+     * @return ISelector|IHierarchicObject[]
+     */
+    public function selectChildren(IHierarchicObject $object = null);
+
+    /**
+     * Возвращает селектор для выбора потомков указанного объекта, либо от корня.
+     * @param IHierarchicObject|null $object объект, либо null, если нужна выборка от корня
+     * @param int|null $depth глубина выбора потомков, по умолчанию выбираются на всю глубину
+     * @throws InvalidArgumentException если глубина указана не верно
+     * @return ISelector|IHierarchicObject[]
+     */
+    public function selectDescendants(IHierarchicObject $object = null, $depth = null);
+
+    /**
+     * Возвращает селектор для выбора родителей страницы
+     * @param IHierarchicObject $object
+     * @return ISelector
+     */
+    public function selectAncestry(IHierarchicObject $object);
 
     /**
      * Перемещает объект по иерархии после указанного объекта.
@@ -52,13 +76,6 @@ interface IHierarchicCollection extends ICollection
      * @return self
      */
     public function changeSlug(IHierarchicObject $object, $slug);
-
-    /**
-     * Возвращает селектор для выбора родителей страницы
-     * @param IHierarchicObject $object
-     * @return ISelector
-     */
-    public function selectAncestry(IHierarchicObject $object);
 
     /**
      * Возвращает поле, которое используется у базового типа коллекции для хранения информации о родителе объекта

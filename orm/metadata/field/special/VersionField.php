@@ -46,12 +46,9 @@ class VersionField extends BaseField implements IScalarField
      */
     public function persistProperty(IObject $object, IProperty $property, IQueryBuilder $builder)
     {
-
         if ($builder instanceof IUpdateBuilder) {
-
             $increment = $property->getDbValue() - $property->getPersistedDbValue();
             if ($increment !== 0) {
-
                 $incrementExpression = $builder->getConnection()
                         ->quoteIdentifier($this->getColumnName()) . ' + (' . $increment . ')';
                 $builder

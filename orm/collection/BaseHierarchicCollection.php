@@ -9,15 +9,15 @@
 
 namespace umi\orm\collection;
 
-use umi\dbal\builder\IExpressionGroup;
 use umi\dbal\builder\ISelectBuilder;
-use umi\dbal\builder\IUpdateBuilder;
-use umi\dbal\builder\SelectBuilder;
+use umi\orm\exception\InvalidArgumentException;
 use umi\orm\exception\NotAllowedOperationException;
 use umi\orm\exception\RuntimeException;
 use umi\orm\metadata\field\relation\BelongsToRelationField;
 use umi\orm\metadata\field\special\MaterializedPathField;
 use umi\orm\object\IHierarchicObject;
+use umi\orm\object\property\calculable\ICalculableProperty;
+use umi\orm\selector\ISelector;
 
 /**
  * Базовый класс иерархической коллекции
@@ -136,21 +136,85 @@ abstract class BaseHierarchicCollection extends BaseCollection implements IHiera
     /**
      * {@inheritdoc}
      */
+    public function selectChildren(IHierarchicObject $object = null)
+    {
+        return $this->select()
+            ->where(IHierarchicObject::FIELD_PARENT)->equals($object)
+            ->orderBy(IHierarchicObject::FIELD_HIERARCHY_LEVEL, ISelector::ORDER_ASC)
+            ->orderBy(IHierarchicObject::FIELD_ORDER);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function selectDescendants(IHierarchicObject $object = null, $depth = null)
+    {
+        if (!is_null($depth) && !is_int($depth) && $depth < 0) {
+            throw new InvalidArgumentException($this->translate(
+                'Cannot select descendants. Invalid argument "depth" value.'
+            ));
+        }
+
+        if (!is_null($object) && $depth === 1) {
+            return $this->selectChildren($object);
+        }
+
+        $selector = $this->select();
+
+        if ($object) {
+            $selector
+                ->where(IHierarchicObject::FIELD_MPATH)
+                ->like($object->getMaterializedPath() . MaterializedPathField::MPATH_SEPARATOR . '%');
+        }
+
+        if ($depth) {
+            if ($object) {
+                $selector
+                    ->where(IHierarchicObject::FIELD_HIERARCHY_LEVEL)
+                    ->equalsOrLess($object->getLevel() + $depth);
+            } else {
+                $selector
+                    ->where(IHierarchicObject::FIELD_HIERARCHY_LEVEL)
+                    ->equalsOrLess($depth);
+            }
+        }
+
+        $selector->orderBy(IHierarchicObject::FIELD_HIERARCHY_LEVEL);
+        $selector->orderBy(IHierarchicObject::FIELD_ORDER);
+
+        return $selector;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function selectAncestry(IHierarchicObject $object)
+    {
+        $mpath = substr($object->getMaterializedPath(), strlen(MaterializedPathField::MPATH_START_SYMBOL));
+
+        $ids = explode(MaterializedPathField::MPATH_SEPARATOR, $mpath);
+        if (count($ids) < 2) {
+            return $this->emptySelect();
+        }
+        array_pop($ids);
+
+        $selector = $this->select();
+        $selector
+            ->where(IHierarchicObject::FIELD_IDENTIFY)
+            ->in($ids);
+
+        return $selector;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function move(
         IHierarchicObject $object,
         IHierarchicObject $branch = null,
         IHierarchicObject $previousSibling = null
     )
     {
-
-        if (!$this
-            ->getObjectPersister()
-            ->getIsPersisted()
-        ) {
-            throw new RuntimeException($this->translate(
-                'Cannot move object. Not all objects are persisted. Commit transaction first.'
-            ));
-        }
 
         if (!$this->contains($object)) {
             throw new RuntimeException($this->translate(
@@ -204,8 +268,23 @@ abstract class BaseHierarchicCollection extends BaseCollection implements IHiera
             }
         }
 
-        $this->persistMovedObjects($object, $branch, $previousSibling);
-        $this->resetObjects();
+        if ($object->getParent() !== $branch) {
+
+            $baseUri = $branch ? $branch->getURI() . '/' : '//';
+            $newUri = $baseUri . $object->getSlug();
+
+            $slugConflict = $this->select()
+                ->where(IHierarchicObject::FIELD_URI)->equals($newUri);
+
+            if ($slugConflict->getTotal()) {
+                throw new RuntimeException($this->translate(
+                    'Cannot move object with id "{id}". Slug {slug} is not unique.',
+                    ['id' => $object->getId(), 'slug' => $object->getSlug()]
+                ));
+            }
+        }
+
+        $this->modifyMovedObjects($object, $branch, $previousSibling);
 
         return $this;
     }
@@ -215,58 +294,36 @@ abstract class BaseHierarchicCollection extends BaseCollection implements IHiera
      */
     public function changeSlug(IHierarchicObject $object, $slug)
     {
+        $branch = $object->getParent();
 
-        if (!$this
-            ->getObjectPersister()
-            ->getIsPersisted()
-        ) {
+        $baseUri = $branch ? $branch->getURI() . '/' : '//';
+        $newUri = $baseUri . $slug;
+
+        $slugConflict = $this->select()
+            ->where(IHierarchicObject::FIELD_URI)->equals($newUri)
+            ->where(IHierarchicObject::FIELD_IDENTIFY)->notEquals($object->getId());
+
+        if ($slugConflict->getTotal()) {
             throw new RuntimeException($this->translate(
-                'Cannot change object slug. Not all objects are persisted. Commit transaction first.'
+                'Cannot change slug for object with id "{id}". Slug {slug} is not unique.',
+                ['id' => $object->getId(), 'slug' => $object->getSlug()]
             ));
         }
 
-        $this->persistChangedSlug($object, $slug);
-        $this->resetObjects();
+        $object->getProperty(IHierarchicObject::FIELD_SLUG)->setValue($slug);
+
+        /**
+         * @var ICalculableProperty $uriProperty
+         */
+        $uriProperty = $object->getProperty(IHierarchicObject::FIELD_URI);
+        $uriProperty->recalculate();
+
+        foreach ($this->selectDescendants($object) as $descendant) {
+            $uriProperty = $descendant->getProperty(IHierarchicObject::FIELD_URI);
+            $uriProperty->recalculate();
+        }
 
         return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function selectAncestry(IHierarchicObject $object)
-    {
-
-        $mpath = substr($object->getMaterializedPath(), strlen(MaterializedPathField::MPATH_START_SYMBOL));
-
-        $ids = explode(MaterializedPathField::MPATH_SEPARATOR, $mpath);
-        if (count($ids) < 2) {
-            return $this->emptySelect();
-        }
-        array_pop($ids);
-
-        $selector = $this->select();
-        $selector
-            ->where(IHierarchicObject::FIELD_IDENTIFY)
-            ->in($ids);
-
-        return $selector;
-    }
-
-    /**
-     * Сбрасывает состояние объектов коллекции для повторной загрузки актуальной информации.
-     * Используется при модификации данных прямыми запросами.
-     */
-    protected function resetObjects()
-    {
-        $objects = $this
-            ->getObjectManager()
-            ->getObjects();
-        foreach ($objects as $object) {
-            if ($this->contains($object)) {
-                $object->reset();
-            }
-        }
     }
 
     /**
@@ -276,551 +333,51 @@ abstract class BaseHierarchicCollection extends BaseCollection implements IHiera
      * @param IHierarchicObject|null $previousSibling объект, предшествующий перемещаемому
      * @throws RuntimeException если не удалось переместить объекты
      */
-    protected function persistMovedObjects(
+    protected function modifyMovedObjects(
         IHierarchicObject $object,
         IHierarchicObject $branch = null,
         IHierarchicObject $previousSibling = null
     )
     {
-        $affectedDriver = $this
-            ->getMetadata()
-            ->getCollectionDataSource()
-            ->getMasterServer()
-            ->getConnection();
 
-        $this
-            ->getObjectPersister()
-            ->executeTransaction(
-                function () use ($object, $branch, $previousSibling) {
+        $order = $previousSibling ? $previousSibling->getOrder() + 1 : 1;
+        $object->getProperty(IHierarchicObject::FIELD_ORDER)->setValue($order);
 
-                    $this->checkIfMovePossible($object, $this, $branch);
-
-                    $order = $previousSibling ? $previousSibling->getOrder() + 1 : 1;
-
-                    /**
-                     * @var IUpdateBuilder[] $builders
-                     */
-                    $builders = [
-                        $this->buildUpdateOrderQueryForMovedObject($object, $this, $order),
-                        $this->buildUpdateOrderQueryForSiblings($object, $this, $order, $branch)
-                    ];
-
-                    if ($object->getParent() !== $branch) {
-                        $builders[] = $this->buildUpdateHierarchicPropertiesQueryForMovedObject(
-                            $object,
-                            $this,
-                            $branch
-                        );
-                        $builders[] = $this->buildUpdateHierarchicPropertiesQueryForMovedObjectChildren(
-                            $object,
-                            $this,
-                            $branch
-                        );
-                    }
-
-                    foreach ($builders as $builder) {
-                        $builder->execute();
-                    }
-
-                },
-                [$affectedDriver]
-            );
-    }
-
-    /**
-     * Запускает транзакцию по изменению последней части ЧПУ объекта.
-     * @param IHierarchicObject $object изменяемый объект
-     * @param $newSlug $slug последняя часть ЧПУ
-     * @throws RuntimeException если невозможно изменить объект
-     */
-    protected function persistChangedSlug(IHierarchicObject $object, $newSlug)
-    {
-
-        $affectedDriver = $this
-            ->getMetadata()
-            ->getCollectionDataSource()
-            ->getMasterServer()
-            ->getConnection();
-
-        $this
-            ->getObjectPersister()
-            ->executeTransaction(
-                function () use ($object, $newSlug) {
-
-                    $this->checkIfChangeSlugPossible($object, $this, $newSlug);
-                    $this
-                        ->buildUpdateUrlQuery($object, $this, $newSlug)
-                        ->execute();
-
-                },
-                [$affectedDriver]
-            );
-    }
-
-    /**
-     * Возвращает запрос на изменения родителя, mpath, url и уровня вложенности перемещаемого объекта.
-     * @param IHierarchicObject $object объект-инициатор перемещения
-     * @param IHierarchicCollection $collection коллекция, для которой формируется запрос
-     * @param IHierarchicObject|null $newParent новый родитель
-     * @return IUpdateBuilder
-     */
-    protected function buildUpdateHierarchicPropertiesQueryForMovedObject(
-        IHierarchicObject $object,
-        IHierarchicCollection $collection,
-        IHierarchicObject $newParent = null
-    )
-    {
-
-        $dataSource = $collection
-            ->getMetadata()
-            ->getCollectionDataSource();
-        $idField = $collection->getIdentifyField();
-        $parentField = $collection->getParentField();
-        $versionField = $collection->getVersionField();
-        $mpathField = $collection->getMPathField();
-        $levelField = $collection->getHierarchyLevelField();
-        $urlField = $collection->getURIField();
-
+        $children = $this->selectChildren($branch)
+            ->where(IHierarchicObject::FIELD_ORDER)->equalsOrMore($order)
+            ->where(IHierarchicObject::FIELD_IDENTIFY)->notEquals($object->getId());
         /**
-         * @var $update IUpdateBuilder
+         * @var IHierarchicObject $child
          */
-        $update = $dataSource->update();
-
-        $newParentUrl = $newParent ? $newParent->getURI() . '/' : '//';
-        $update
-            ->set($urlField->getColumnName())
-            ->bindValue(':' . $urlField->getColumnName(), $newParentUrl . $object->getSlug(), $urlField->getDataType());
-
-        $newMpathStart = $newParent ? $newParent->getMaterializedPath()
-            . MaterializedPathField::MPATH_SEPARATOR : MaterializedPathField::MPATH_START_SYMBOL;
-        $update
-            ->set($mpathField->getColumnName())
-            ->bindValue(
-                ':' . $mpathField->getColumnName(),
-                $newMpathStart . $object->getId(),
-                $mpathField->getDataType()
-            );
-
-        if ($newParent) {
-            $update
-                ->set($parentField->getColumnName())
-                ->bindValue(':' . $parentField->getColumnName(), $newParent->getId(), $parentField->getDataType());
-        } else {
-            $update
-                ->set($parentField->getColumnName())
-                ->bindNull(':' . $parentField->getColumnName());
+        foreach ($children as $child) {
+            $child->getProperty(IHierarchicObject::FIELD_ORDER)->setValue($child->getOrder() + 1);
         }
 
-        $branchLevel = $newParent ? $newParent->getLevel() : -1;
-        $levelDelta = $branchLevel - $object->getLevel() + 1;
-        if ($levelDelta) {
-            $changingLevelExpression = $update
-                    ->getConnection()
-                    ->quoteIdentifier($levelField->getColumnName()) . ' + (' . $levelDelta . ')';
-            $update
-                ->set($levelField->getColumnName())
-                ->bindExpression(':' . $levelField->getColumnName(), $changingLevelExpression);
-        }
+        if ($branch !== $object->getParent()) {
+            $object->getProperty(IHierarchicObject::FIELD_PARENT)->setValue($branch);
 
-        $incrementVersionExpression = $update
-                ->getConnection()
-                ->quoteIdentifier($versionField->getColumnName()) . ' + 1';
-        $update
-            ->set($versionField->getColumnName())
-            ->bindExpression(':' . $versionField->getColumnName(), $incrementVersionExpression);
+            /**
+             * @var ICalculableProperty $mpathProperty
+             * @var ICalculableProperty $levelProperty
+             * @var ICalculableProperty $uriProperty
+             */
+            $mpathProperty = $object->getProperty(IHierarchicObject::FIELD_MPATH);
+            $levelProperty = $object->getProperty(IHierarchicObject::FIELD_HIERARCHY_LEVEL);
+            $uriProperty = $object->getProperty(IHierarchicObject::FIELD_URI);
 
-        $update
-            ->where()
-            ->expr($idField->getColumnName(), '=', ':' . $idField->getName())
-            ->bindValue(':' . $idField->getName(), $object->getId(), $idField->getDataType());
+            $mpathProperty->recalculate();
+            $levelProperty->recalculate();
+            $uriProperty->recalculate();
 
-        return $update;
-    }
+            foreach ($this->selectDescendants($object) as $descendant) {
+                $mpathProperty = $descendant->getProperty(IHierarchicObject::FIELD_MPATH);
+                $levelProperty = $descendant->getProperty(IHierarchicObject::FIELD_HIERARCHY_LEVEL);
+                $uriProperty = $descendant->getProperty(IHierarchicObject::FIELD_URI);
 
-    /**
-     * Возвращает запрос на изменения материализованного пути и уровня вложенности.
-     * @param IHierarchicObject $object объект-инициатор перемещения
-     * @param IHierarchicCollection $collection коллекция, в которой происходит перемещение
-     * @param IHierarchicObject|null $branch ветка, в которую происходит перемещение, null,
-     * если перемещение происходит в корень
-     * @return IUpdateBuilder
-     */
-    protected function buildUpdateHierarchicPropertiesQueryForMovedObjectChildren(
-        IHierarchicObject $object,
-        IHierarchicCollection $collection,
-        IHierarchicObject $branch = null
-    )
-    {
-
-        $parent = $object->getParent();
-
-        $versionField = $collection->getVersionField();
-        $mpathField = $collection->getMPathField();
-        $levelField = $collection->getHierarchyLevelField();
-        $urlField = $collection->getURIField();
-
-        $dataSource = $collection
-            ->getMetadata()
-            ->getCollectionDataSource();
-
-        /**
-         * @var $update IUpdateBuilder
-         */
-        $update = $dataSource->update();
-        $driver = $update->getConnection();
-
-        $branchLevel = $branch ? $branch->getLevel() : -1;
-        $levelDelta = $branchLevel - $object->getLevel() + 1;
-        if ($levelDelta) {
-            $changingLevelExpression = $driver->quoteIdentifier($levelField->getColumnName())
-                . ' + (' . $levelDelta . ')';
-            $update
-                ->set($levelField->getColumnName())
-                ->bindExpression(':' . $levelField->getColumnName(), $changingLevelExpression);
-        }
-
-        $incrementVersionExpression = $driver->quoteIdentifier($versionField->getColumnName()) . ' + 1';
-        $update
-            ->set($versionField->getColumnName())
-            ->bindExpression(':' . $versionField->getColumnName(), $incrementVersionExpression);
-
-        $branchMpath = $branch ? $branch->getMaterializedPath()
-            . MaterializedPathField::MPATH_SEPARATOR : MaterializedPathField::MPATH_START_SYMBOL;
-        $objectParentMpath = $parent ? $parent->getMaterializedPath()
-            . MaterializedPathField::MPATH_SEPARATOR : MaterializedPathField::MPATH_START_SYMBOL;
-        $changingMpathExpression = 'REPLACE(' . $driver->quoteIdentifier($mpathField->getColumnName())
-            . ', ' . $driver->quote($objectParentMpath) . ', ' . $driver->quote($branchMpath) . ')';
-        $update
-            ->set($mpathField->getColumnName())
-            ->bindExpression(':' . $mpathField->getColumnName(), $changingMpathExpression);
-
-        $objectParentUrl = $parent ? $parent->getURI() . '/' : '//';
-        $branchUrl = $branch ? $branch->getURI() . '/' : '//';
-        $changingUrlExpression = 'REPLACE(' . $driver->quoteIdentifier($urlField->getColumnName())
-            . ', ' . $driver->quote($objectParentUrl) . ', ' . $driver->quote($branchUrl) . ')';
-        $update
-            ->set($urlField->getColumnName())
-            ->bindExpression(':' . $urlField->getColumnName(), $changingUrlExpression);
-
-        $update
-            ->where()
-            ->expr($mpathField->getColumnName(), 'like', ':m_path')
-            ->bindValue(
-                ':m_path',
-                $object->getMaterializedPath() . MaterializedPathField::MPATH_SEPARATOR . '%',
-                $mpathField->getDataType()
-            );
-
-        return $update;
-
-    }
-
-    /**
-     * Возвращает запрос на изменение порядка в иерархии перемещаемого объекта
-     * @param IHierarchicObject $object перемещаемый объект
-     * @param IHierarchicCollection $collection коллекция, для которой строится запрос
-     * @param int $order новый порядок объекта
-     * @return IUpdateBuilder
-     */
-    protected function buildUpdateOrderQueryForMovedObject(
-        IHierarchicObject $object,
-        IHierarchicCollection $collection,
-        $order
-    )
-    {
-
-        $orderField = $collection->getHierarchyOrderField();
-        $idField = $collection->getIdentifyField();
-        $versionField = $collection->getVersionField();
-        $dataSource = $collection
-            ->getMetadata()
-            ->getCollectionDataSource();
-
-        /**
-         * @var $update IUpdateBuilder
-         */
-        $update = $dataSource->update();
-
-        $incrementVersionExpression = $update
-                ->getConnection()
-                ->quoteIdentifier($versionField->getColumnName()) . ' + 1';
-
-        $update
-            ->set($orderField->getColumnName())
-            ->bindValue(':' . $orderField->getColumnName(), $order, $orderField->getDataType());
-
-        $update
-            ->set($versionField->getColumnName())
-            ->bindExpression(':' . $versionField->getColumnName(), $incrementVersionExpression);
-
-        $update
-            ->where()
-            ->expr($idField->getColumnName(), '=', ':' . $idField->getName())
-            ->bindValue(':' . $idField->getName(), $object->getId(), $idField->getDataType());
-
-        return $update;
-    }
-
-    /**
-     * Возвращает список запросов на изменения порядка в структуре при перемещении объекта.
-     * @param IHierarchicObject $object объект-инициатор перемещения
-     * @param IHierarchicCollection $collection коллекция, для которой изменяется порядок
-     * @param int $order новая позиция объекта в иерархии
-     * @param IHierarchicObject|null $branch ветка в которой происходит перемещение
-     * @return IUpdateBuilder
-     */
-    protected function buildUpdateOrderQueryForSiblings(
-        IHierarchicObject $object,
-        IHierarchicCollection $collection,
-        $order,
-        IHierarchicObject $branch = null
-    )
-    {
-        $orderField = $collection->getHierarchyOrderField();
-        $idField = $collection->getIdentifyField();
-        $parentField = $collection->getParentField();
-        $versionField = $collection->getVersionField();
-
-        $dataSource = $collection
-            ->getMetadata()
-            ->getCollectionDataSource();
-
-        /**
-         * @var $update IUpdateBuilder
-         */
-        $update = $dataSource->update();
-
-        $incrementOrderExpression = $update
-                ->getConnection()
-                ->quoteIdentifier($orderField->getColumnName()) . ' + 1';
-        $incrementVersionExpression = $update
-                ->getConnection()
-                ->quoteIdentifier($versionField->getColumnName()) . ' + 1';
-
-        $update
-            ->set($orderField->getColumnName())
-            ->bindExpression(':' . $orderField->getColumnName(), $incrementOrderExpression);
-
-        $update
-            ->set($versionField->getColumnName())
-            ->bindExpression(':' . $versionField->getColumnName(), $incrementVersionExpression);
-
-        $update
-            ->where()
-            ->expr($idField->getColumnName(), '!=', ':' . $idField->getName())
-            ->bindValue(':' . $idField->getName(), $object->getId(), $idField->getDataType());
-
-        if ($branch) {
-            $update
-                ->where()
-                ->expr($parentField->getColumnName(), '=', ':' . $parentField->getName())
-                ->bindValue(':' . $parentField->getName(), $branch->getId(), $parentField->getDataType());
-        } else {
-            $update
-                ->where()
-                ->expr($parentField->getColumnName(), 'IS', ':' . $parentField->getName())
-                ->bindNull(':' . $parentField->getName());
-        }
-
-        $update
-            ->where()
-            ->expr($orderField->getColumnName(), '>=', ':max' . $orderField->getName())
-            ->bindValue(':max' . $orderField->getName(), $order, $orderField->getDataType());
-
-        return $update;
-    }
-
-    /**
-     * Возвращает запрос на изменения url.
-     * @param IHierarchicObject $object объект-инициатор изменения url'ов
-     * @param IHierarchicCollection $collection коллекция, для которой строится запрос
-     * @param string $newSlug новая последняя часть ЧПУ изменяемого объекта
-     * @return IUpdateBuilder
-     */
-    protected function buildUpdateUrlQuery(IHierarchicObject $object, IHierarchicCollection $collection, $newSlug)
-    {
-
-        $objectUrl = $object->getURI();
-        $parent = $object->getParent();
-        $newUrl = $parent ? $parent->getURI() . '/' . $newSlug : '//' . $newSlug;
-
-        $versionField = $collection->getVersionField();
-        $urlField = $collection->getURIField();
-        $dataSource = $collection
-            ->getMetadata()
-            ->getCollectionDataSource();
-
-        /**
-         * @var $update IUpdateBuilder
-         */
-        $update = $dataSource->update();
-
-        $driver = $update->getConnection();
-
-        $changingUrlExpression = 'REPLACE(' . $driver->quoteIdentifier($urlField->getColumnName()) . ', '
-            . $driver->quote($objectUrl) . ', ' . $driver->quote($newUrl) . ')';
-        $incrementVersionExpression = $driver->quoteIdentifier($versionField->getColumnName()) . ' + 1';
-
-        $update
-            ->set($versionField->getColumnName())
-            ->bindExpression(':' . $versionField->getColumnName(), $incrementVersionExpression);
-
-        $update
-            ->set($urlField->getColumnName())
-            ->bindExpression(':' . $urlField->getColumnName(), $changingUrlExpression);
-
-        $childConditionPlaceholder = ':child_' . $urlField->getName();
-        $sameObjectConditionPlaceholder = ':same_' . $urlField->getName();
-
-        $update
-            ->where(IExpressionGroup::MODE_OR)
-            ->expr($urlField->getColumnName(), 'like', $childConditionPlaceholder)
-            ->expr($urlField->getColumnName(), '=', $sameObjectConditionPlaceholder)
-            ->bindValue($childConditionPlaceholder, $objectUrl . '/%', $urlField->getDataType())
-            ->bindValue($sameObjectConditionPlaceholder, $objectUrl, $urlField->getDataType());
-
-        return $update;
-
-    }
-
-    /**
-     * Проверяет, возможно ли перемещение объекта.
-     * @param IHierarchicObject $object перемещаемый объект
-     * @param IHierarchicCollection $collection коллекция в которой происходит перемещение
-     * @param IHierarchicObject|null $branch ветка, в которую пермещается объект
-     * @throws RuntimeException если перемещение не возможно
-     * @return $this
-     */
-    protected function checkIfMovePossible(
-        IHierarchicObject $object,
-        IHierarchicCollection $collection,
-        IHierarchicObject $branch = null
-    )
-    {
-
-        $versionField = $collection->getVersionField();
-        $idField = $collection->getIdentifyField();
-        $urlField = $collection->getURIField();
-
-        $dataSource = $collection
-            ->getMetadata()
-            ->getCollectionDataSource();
-
-        $selectBuilder = $dataSource
-            ->select($idField->getColumnName())
-            ->where()
-            ->expr($idField->getColumnName(), '=', ':' . $idField->getName())
-            ->expr($versionField->getColumnName(), '=', ':' . $versionField->getName());
-
-        $selectBuilder
-            ->bindValue(':' . $idField->getName(), $object->getId(), $idField->getDataType())
-            ->bindValue(':' . $versionField->getName(), $object->getVersion(), $versionField->getDataType())
-            ->execute();
-
-        $objectFound = $selectBuilder->getTotal();
-
-        if ($objectFound != 1) {
-            throw new RuntimeException($this->translate(
-                'Cannot move object with id "{id}". Object is out of date.',
-                ['id' => $object->getId()]
-            ));
-        }
-
-        if ($branch) {
-             $selectBuilder
-                ->bindValue(':' . $idField->getName(), $branch->getId(), $idField->getDataType())
-                ->bindValue(':' . $versionField->getName(), $branch->getVersion(), $versionField->getDataType())
-                ->execute();
-            $branchFound = $selectBuilder->getTotal();
-
-            if ($branchFound != 1) {
-                throw new RuntimeException($this->translate(
-                    'Cannot move object with id "{id}" to branch with id "{branchId}". Branch is out of date.',
-                    ['id' => $object->getId(), 'branchId' => $branch->getId()]
-                ));
+                $mpathProperty->recalculate();
+                $levelProperty->recalculate();
+                $uriProperty->recalculate();
             }
         }
-        if ($object->getParent() !== $branch) {
-
-            $selectBuilder = $dataSource
-                ->select($idField->getColumnName())
-                ->where()
-                ->expr($urlField->getColumnName(), '=', ':' . $urlField->getName());
-
-            $baseUrl = $branch ? $branch->getURI() . '/' : '//';
-            $selectBuilder
-                ->bindValue(':' . $idField->getName(), $object->getId(), $idField->getDataType())
-                ->bindValue(':' . $urlField->getName(), $baseUrl . $object->getSlug(), $urlField->getDataType())
-                ->execute();
-            $slugConflict = $selectBuilder->getTotal();
-            if ($slugConflict) {
-                throw new RuntimeException($this->translate(
-                    'Cannot move object with id "{id}". Slug {slug} is not unique.',
-                    ['id' => $object->getId(), 'slug' => $object->getSlug()]
-                ));
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * Проверяет, возможно ли изменение последней части ЧПУ у объекта
-     * @param IHierarchicObject $object изменяемый объект
-     * @param IHierarchicCollection $collection коллекция, для которой выстраена иерархия урлов
-     * @param string $newSlug новая последняя часть ЧПУ
-     * @throws RuntimeException если при изменении возможны конфликты
-     * @return $this
-     */
-    protected function checkIfChangeSlugPossible(IHierarchicObject $object, IHierarchicCollection $collection, $newSlug)
-    {
-
-        $versionField = $collection->getVersionField();
-        $idField = $collection->getIdentifyField();
-        $urlField = $collection->getURIField();
-
-        /** @var $selectBuilder SelectBuilder */
-        $selectBuilder = $collection
-            ->getMetadata()
-            ->getCollectionDataSource()
-            ->select($idField->getColumnName())
-            ->where()
-            ->expr($idField->getColumnName(), '=', ':' . $idField->getName())
-            ->expr($versionField->getColumnName(), '=', ':' . $versionField->getName())
-            ->bindValue(':' . $idField->getName(), $object->getId(), $idField->getDataType())
-            ->bindValue(':' . $versionField->getName(), $object->getVersion(), $versionField->getDataType());
-
-        $objectFound = $selectBuilder->getTotal();
-
-        if ($objectFound != 1) {
-            throw new RuntimeException($this->translate(
-                'Cannot change slug for object with id "{id}". Object is out of date.',
-                ['id' => $object->getId()]
-            ));
-        }
-
-        $parent = $object->getParent();
-        $newUrl = $parent ? $parent->getURI() . '/' . $newSlug : '//' . $newSlug;
-
-        $selectBuilder = $collection
-            ->getMetadata()
-            ->getCollectionDataSource()
-            ->select($idField->getColumnName())
-            ->where()
-            ->expr($urlField->getColumnName(), '=', ':' . $urlField->getName())
-            ->expr($idField->getColumnName(), '!=', ':' . $idField->getName())
-            ->bindValue(':' . $idField->getName(), $object->getId(), $idField->getDataType())
-            ->bindValue(':' . $urlField->getName(), $newUrl, $urlField->getDataType());
-
-        $selectBuilder->execute();
-        $slugConflict = $selectBuilder->getTotal();
-
-        if ($slugConflict) {
-            throw new RuntimeException($this->translate(
-                'Cannot change slug for object with id "{id}". Slug {slug} is not unique.',
-                ['id' => $object->getId(), 'slug' => $newSlug]
-            ));
-        }
-        return $this;
     }
 }
