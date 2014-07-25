@@ -86,6 +86,21 @@ class LinkedHierarchicCollection extends SimpleHierarchicCollection implements I
     /**
      * {@inheritdoc}
      */
+    public function persistRecalculatedObject(IObject $object, array $formulaProperties)
+    {
+        if (!$this->contains($object)) {
+            throw new NotAllowedOperationException($this->translate(
+                'Cannot persist recalculated object. Object from another collection given.'
+            ));
+        }
+        $this->getCommonHierarchy()
+            ->persistRecalculatedObject($object, $formulaProperties);
+        parent::persistRecalculatedObject($object, $formulaProperties);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function persistDeletedObject(IObject $object)
     {
         if (!$this->contains($object)) {

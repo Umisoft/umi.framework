@@ -22,6 +22,7 @@ use umi\orm\metadata\IMetadata;
 use umi\orm\metadata\IObjectType;
 use umi\orm\object\IHierarchicObject;
 use umi\orm\object\IObject;
+use umi\orm\object\property\IProperty;
 use umi\orm\selector\ISelector;
 
 /**
@@ -186,6 +187,16 @@ interface ICollection
      * @param IObject $object
      */
     public function persistModifiedObject(IObject $object);
+
+    /**
+     * Запускает запросы на вычисление и изменение свойст объекта коллекции,
+     * которые должны быть вычислены после сохранения всех объектов.
+     * @internal
+     * @param IObject $object
+     * @param IProperty[] $formulaProperties
+     * @return
+     */
+    public function persistRecalculatedObject(IObject $object, array $formulaProperties);
 
     /**
      * Запускает запросы на удаление объекта коллекции.

@@ -15,6 +15,7 @@ use umi\orm\exception\NotAllowedOperationException;
 use umi\orm\exception\RuntimeException;
 use umi\orm\metadata\field\relation\BelongsToRelationField;
 use umi\orm\object\IObject;
+use umi\orm\object\property\IProperty;
 
 /**
  * Синхронизатор объектов бизнес-транзакций с базой данных (Unit Of Work).
@@ -122,6 +123,14 @@ interface IObjectPersister extends IEventObservant
         IObject $object,
         IObject $relatedObject
     );
+
+    /**
+     * Помечает объект для пересчета свойств после сохранения всех объектов
+     * @internal
+     * @param IObject $object
+     * @param IProperty[] $properties свойства, которые необходимо пересчитать
+     */
+    public function storeRecalculatedObject(IObject $object, array $properties);
 
     /**
      * Очищает списки добавленных, модифицированных, перемещенныз и удаленных объектов.
