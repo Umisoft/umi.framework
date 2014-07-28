@@ -42,34 +42,42 @@ class PhpFileReader implements IReader, ILocalizable, IConfigAliasResolverAware,
         $masterFilename = isset($files[0]) ? $files[0] : null;
         $localFilename = isset($files[1]) ? $files[1] : null;
 
-        if (!is_readable($masterFilename) || !is_file($masterFilename)) {
-            throw new RuntimeException($this->translate(
-                'Master configuration file "{file}" not found.',
-                [
-                    'file' => $masterFilename
-                ]
-            ));
-        }
+        $masterConfigExists = file_exists($masterFilename);
 
-        /** @noinspection PhpIncludeInspection */
-        $config = require $masterFilename;
+        if ($masterConfigExists) {
 
-        if (!is_array($config)) {
-            throw new UnexpectedValueException(
-                $this->translate(
-                    'Configuration file "{file}" should return an array.',
-                    ['file' => $masterFilename]
-                )
-            );
-        }
-
-        array_walk_recursive(
-            $config,
-            function (&$v) {
-                $value = $this->createEntity($v);
-                $v = $value;
+            if (!is_readable($masterFilename) || !is_file($masterFilename)) {
+                throw new RuntimeException($this->translate(
+                    'Cannot read configuration from "{file}".',
+                    [
+                        'file' => $masterFilename
+                    ]
+                ));
             }
-        );
+
+            /** @noinspection PhpIncludeInspection */
+            $config = require $masterFilename;
+
+            if (!is_array($config)) {
+                throw new UnexpectedValueException(
+                    $this->translate(
+                        'Configuration file "{file}" should return an array.',
+                        ['file' => $masterFilename]
+                    )
+                );
+            }
+
+            array_walk_recursive(
+                $config,
+                function (&$v) {
+                    $value = $this->createMasterEntity($v);
+                    $v = $value;
+                }
+            );
+
+        } else {
+            $config = [];
+        }
 
         if (is_readable($localFilename) && is_file($localFilename)) {
             /** @noinspection PhpIncludeInspection */
@@ -84,7 +92,22 @@ class PhpFileReader implements IReader, ILocalizable, IConfigAliasResolverAware,
                 );
             }
 
+            array_walk_recursive(
+                $localSource,
+                function (&$v) {
+                    $value = $this->createLocalEntity($v);
+                    $v = $value;
+                }
+            );
+
             $this->mergeConfig($config, $localSource);
+        } elseif (!$masterConfigExists) {
+            throw new RuntimeException($this->translate(
+                'Master configuration file "{file}" not found.',
+                [
+                    'file' => $masterFilename
+                ]
+            ));
         }
 
         return $this->createConfigSource($configAlias, $config);
@@ -102,9 +125,12 @@ class PhpFileReader implements IReader, ILocalizable, IConfigAliasResolverAware,
             if (isset($master[$key])) {
                 $masterValue = & $master[$key];
 
-                //TODO: refactoring
                 if ($masterValue instanceof IConfigSource) {
                     $masterValue = $masterValue->getSource();
+                }
+
+                if ($localValue instanceof IConfigSource) {
+                    $localValue = $localValue->getSource();
                 }
 
                 if (is_array($masterValue)) {
@@ -119,6 +145,10 @@ class PhpFileReader implements IReader, ILocalizable, IConfigAliasResolverAware,
 
                     $this->mergeConfig($masterValue, $localValue);
                 } elseif ($masterValue instanceof IConfigValue) {
+
+                    if ($localValue instanceof IConfigValue) {
+                        $localValue = $localValue->get();
+                    }
                     try {
                         $masterValue->set($localValue, IConfigValue::KEY_LOCAL)
                             ->save();
@@ -141,7 +171,9 @@ class PhpFileReader implements IReader, ILocalizable, IConfigAliasResolverAware,
                     ));
                 }
             } else {
-                if (is_array($localValue)) {
+                if ($localValue instanceof IConfigSource || $localValue instanceof IConfigValue) {
+                    $master[$key] = $localValue;
+                } elseif (is_array($localValue)) {
                     array_walk_recursive(
                         $localValue,
                         function (&$v) {
@@ -167,23 +199,22 @@ class PhpFileReader implements IReader, ILocalizable, IConfigAliasResolverAware,
 
     /**
      * Создает сущности на основе конфигурации.
-     * @param string $masterValue значение
+     * @param string $value значение
      * @throws UnexpectedValueException если значение не скалярное
      * @return IConfigSource|ISeparateConfigSource|IConfigValue
      */
-    protected function createEntity($masterValue)
+    protected function createMasterEntity($value)
     {
-        if (!is_scalar($masterValue) && !is_null($masterValue)) {
+        if (!is_scalar($value) && !is_null($value)) {
             throw new UnexpectedValueException($this->translate(
                 'Unexpected configuration value. Configuration can contain only scalar values.'
             ));
         }
-        if (preg_match('/^{#(\S+):(.+)}$/', $masterValue, $matches)) {
+        if (preg_match('/^{#(\S+):(.+)}$/', $value, $matches)) {
             list(, $command, $value) = $matches;
 
             switch ($command) {
                 case self::COMMAND_PART:
-                    // TODO: подумать, мб через config factory?
                     return $this->read($value);
                 case self::COMMAND_LAZY:
                     return $this->createSeparateConfigSource('lazy', $value);
@@ -208,9 +239,53 @@ class PhpFileReader implements IReader, ILocalizable, IConfigAliasResolverAware,
 
         return $this->createConfigValue(
             [
-                IConfigValue::KEY_MASTER => $masterValue
+                IConfigValue::KEY_MASTER => $value
             ]
         );
+    }
+
+    /**
+     * Создает сущности на основе конфигурации.
+     * @param string $value значение
+     * @throws UnexpectedValueException если значение не скалярное
+     * @return IConfigSource|ISeparateConfigSource|IConfigValue
+     */
+    protected function createLocalEntity($value)
+    {
+        if (!is_scalar($value) && !is_null($value)) {
+            throw new UnexpectedValueException($this->translate(
+                'Unexpected configuration value. Configuration can contain only scalar values.'
+            ));
+        }
+        if (preg_match('/^{#(\S+):(.+)}$/', $value, $matches)) {
+            list(, $command, $value) = $matches;
+
+            switch ($command) {
+                case self::COMMAND_PART:
+                    return $this->read($value);
+                case self::COMMAND_LAZY:
+                    return $this->createSeparateConfigSource('lazy', $value);
+                case self::LOCAL_DIR: {
+                    $files = $this->getFilesByAlias($value);
+                    return $this->createConfigValue(
+                        [
+                            IConfigValue::KEY_LOCAL => $files[IConfigValue::KEY_LOCAL]
+                        ]
+                    );
+                }
+                case self::MASTER_DIR: {
+                    $files = $this->getFilesByAlias($value);
+                    return $this->createConfigValue(
+                        [
+                            IConfigValue::KEY_MASTER => $files[IConfigValue::KEY_MASTER]
+                        ]
+                    );
+                }
+            }
+        }
+
+        return $value;
+
     }
 
     /**

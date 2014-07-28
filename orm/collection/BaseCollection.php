@@ -23,6 +23,7 @@ use umi\orm\manager\IObjectManagerAware;
 use umi\orm\manager\TObjectManagerAware;
 use umi\orm\metadata\field\IField;
 use umi\orm\metadata\field\relation\ManyToManyRelationField;
+use umi\orm\metadata\field\special\FormulaField;
 use umi\orm\metadata\IMetadata;
 use umi\orm\metadata\IObjectType;
 use umi\orm\object\IObject;
@@ -414,6 +415,21 @@ abstract class BaseCollection
     /**
      * {@inheritdoc}
      */
+    public function persistRecalculatedObject(IObject $object, array $formulaProperties)
+    {
+        if (!$this->contains($object)) {
+            throw new NotAllowedOperationException($this->translate(
+                'Cannot persist modified object. Object from another collection given.'
+            ));
+        }
+        if (count($formulaProperties)) {
+            $this->executeUpdate($object, $formulaProperties);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function persistModifiedObject(IObject $object)
     {
         if (!$this->contains($object)) {
@@ -422,86 +438,24 @@ abstract class BaseCollection
             ));
         }
 
-        $modifiedProperties = $object->getModifiedProperties();
-        if (!count($modifiedProperties)) {
-            return;
-        }
+        $modifiedProperties = [];
+        $formulaProperties = [];
 
-        $dataSource = $this->getMetadata()->getCollectionDataSource();
-        $identifyColumnName = $this->getIdentifyField()->getColumnName();
-
-        $updateBuilder = $dataSource->update();
-
-        $calculableProperties = [];
-        foreach ($object->getModifiedProperties() as $property) {
-            if ($this->getMetadata()->getFieldExists($property->getName())) {
-                if ($property instanceof ICalculableProperty) {
-                    $calculableProperties[] = $property;
-                } else {
-                    $field = $this->getMetadata()->getField($property->getName());
-                    $field->persistProperty($object, $property, $updateBuilder);
-                }
+        foreach ($object->getModifiedProperties()as $property) {
+            if ($property->getField() instanceof FormulaField) {
+                $formulaProperties[] = $property;
+            } else {
+                $modifiedProperties[] = $property;
             }
         }
 
-        if ($updateBuilder->getUpdatePossible()) {
-
-            $versionProperty = $object->getProperty(IObject::FIELD_VERSION);
-            $version = (int) ($versionProperty->getPersistedDbValue() ? : $versionProperty->getDbValue());
-            $newVersion = $version + 1;
-            $versionProperty->setValue($newVersion);
-
-            $versionColumnName = $this->getVersionField()->getColumnName();
-
-            $this->getVersionField()->persistProperty($object, $versionProperty, $updateBuilder);
-
-            $updateBuilder->where()
-                ->expr($identifyColumnName, '=', ':objectId');
-            $updateBuilder->bindValue(
-                ':objectId',
-                $object->getId(),
-                $this->getIdentifyField()->getDataType()
-            );
-
-            $updateBuilder->where()
-                ->expr($versionColumnName, '=', ':' . $versionColumnName);
-            $updateBuilder->bindValue(
-                ':' . $versionColumnName,
-                $version,
-                $this->getVersionField()->getDataType()
-            );
-
-            $result = $updateBuilder->execute();
-
-            if ($result->rowCount() != 1) {
-
-                $selectBuilder = $dataSource->select($versionColumnName);
-                $selectBuilder->where()
-                    ->expr($identifyColumnName, '=', ':objectId');
-                $selectBuilder->bindValue(
-                    ':objectId',
-                    $object->getId(),
-                    $this->getIdentifyField()->getDataType()
-                );
-
-                $selectResult = $selectBuilder->execute();
-                $selectResultRow = $selectResult->fetch();
-
-                if (is_array($selectResultRow) && $selectResultRow[$versionColumnName] != $version) {
-                    throw new RuntimeException($this->translate(
-                        'Cannot modify object with id "{id}" and type "{type}". Object is out of date.',
-                        ['id' => $object->getId(), 'type' => $object->getTypePath()]
-                    ));
-                }
-
-                throw new RuntimeException($this->translate(
-                    'Cannot modify object with id "{id}" and type "{type}". Database row is not modified.',
-                    ['id' => $object->getId(), 'type' => $object->getTypePath()]
-                ));
-            }
+        if ($formulaProperties) {
+            $this->getObjectPersister()->storeRecalculatedObject($object, $formulaProperties);
         }
 
-        $this->persistCalculableProperties($object, $calculableProperties);
+        if (count($modifiedProperties)) {
+            $this->executeUpdate($object, $modifiedProperties);
+        }
     }
 
     /**
@@ -538,54 +492,6 @@ abstract class BaseCollection
     }
 
     /**
-     * Запускает запросы на сохранение вычисляемых свойств объекта.
-     * @param IObject $object объект, для которого сохраняются значения
-     * @param IProperty[] $calculableProperties список свойств, которые должны быть вычислены
-     * @throws RuntimeException если не удалось сохранить свойства
-     */
-    protected function persistCalculableProperties(IObject $object, array $calculableProperties)
-    {
-
-        $updateBuilder = $this->getMetadata()->getCollectionDataSource()->update();
-
-        $updateBuilder
-            ->where()
-            ->expr(
-                $this
-                    ->getIdentifyField()
-                    ->getColumnName(),
-                '=',
-                ':objectId'
-            );
-        $updateBuilder->bindValue(
-            ':objectId',
-            $object->getId(),
-            $this->getIdentifyField()
-                ->getDataType()
-        );
-
-        foreach ($calculableProperties as $property) {
-            if ($this->getMetadata()->getFieldExists($property->getName())) {
-                $field = $this->getMetadata()->getField($property->getName());
-                $field->persistProperty($object, $property, $updateBuilder);
-            }
-        }
-
-        if (!$updateBuilder->getUpdatePossible()) {
-            return;
-        }
-        $result = $updateBuilder->execute();
-
-        if ($result->rowCount() != 1) {
-            throw new RuntimeException($this->translate(
-                'Cannot set calculable properties for object with id "{id}" and type "{type}".'
-                . ' Database row is not modified.',
-                ['id' => $object->getId(), 'type' => $object->getTypePath()]
-            ));
-        }
-    }
-
-    /**
      * Возвращает обязательное поле коллекции.
      * @param $fieldName
      * @throws NonexistentEntityException если поле не существует
@@ -601,5 +507,87 @@ abstract class BaseCollection
         }
 
         return $this->metadata->getField($fieldName);
+    }
+
+    /**
+     * Запускает обновление объекта по указанным свойствам
+     * @param IObject $object
+     * @param IProperty[] $properties
+     * @throws RuntimeException если обновление не прошло
+     */
+    protected function executeUpdate(IObject $object, array $properties)
+    {
+        $dataSource = $this->getMetadata()->getCollectionDataSource();
+        $identifyColumnName = $this->getIdentifyField()->getColumnName();
+        $updateBuilder = $dataSource->update();
+
+        foreach ($properties as $property) {
+            if ($this->getMetadata()->getFieldExists($property->getName())) {
+                $field = $this->getMetadata()->getField($property->getName());
+                $field->persistProperty($object, $property, $updateBuilder);
+            }
+        }
+
+        if ($updateBuilder->getUpdatePossible()) {
+
+            $versionProperty = $object->getProperty(IObject::FIELD_VERSION);
+            $version = (int) ($versionProperty->getPersistedDbValue() ? : $versionProperty->getDbValue());
+            $newVersion = $version + 1;
+            $versionProperty->setValue($newVersion);
+
+            $versionColumnName = $this->getVersionField()
+                ->getColumnName();
+
+            $this->getVersionField()
+                ->persistProperty($object, $versionProperty, $updateBuilder);
+
+            $updateBuilder->where()
+                ->expr($identifyColumnName, '=', ':objectId');
+            $updateBuilder->bindValue(
+                ':objectId',
+                $object->getId(),
+                $this->getIdentifyField()
+                    ->getDataType()
+            );
+
+            $updateBuilder->where()
+                ->expr($versionColumnName, '=', ':' . $versionColumnName);
+            $updateBuilder->bindValue(
+                ':' . $versionColumnName,
+                $version,
+                $this->getVersionField()
+                    ->getDataType()
+            );
+
+            $result = $updateBuilder->execute();
+
+            if ($result->rowCount() != 1) {
+
+                $selectBuilder = $dataSource->select($versionColumnName);
+                $selectBuilder->where()
+                    ->expr($identifyColumnName, '=', ':objectId');
+                $selectBuilder->bindValue(
+                    ':objectId',
+                    $object->getId(),
+                    $this->getIdentifyField()
+                        ->getDataType()
+                );
+
+                $selectResult = $selectBuilder->execute();
+                $selectResultRow = $selectResult->fetch();
+
+                if (is_array($selectResultRow) && $selectResultRow[$versionColumnName] != $version) {
+                    throw new RuntimeException($this->translate(
+                        'Cannot modify object with id "{id}" and type "{type}". Object is out of date.',
+                        ['id' => $object->getId(), 'type' => $object->getTypePath()]
+                    ));
+                }
+
+                throw new RuntimeException($this->translate(
+                    'Cannot modify object with id "{id}" and type "{type}". Database row is not modified.',
+                    ['id' => $object->getId(), 'type' => $object->getTypePath()]
+                ));
+            }
+        }
     }
 }

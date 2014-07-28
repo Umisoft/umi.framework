@@ -12,7 +12,6 @@ namespace umi\orm\collection;
 use umi\orm\exception\NonexistentEntityException;
 use umi\orm\metadata\IObjectType;
 use umi\orm\object\IHierarchicObject;
-use umi\orm\object\property\calculable\ICounterProperty;
 
 /**
  * Простая коллекция иерархических объектов.
@@ -22,7 +21,7 @@ class SimpleHierarchicCollection extends BaseHierarchicCollection implements ISi
     /**
      * {@inheritdoc}
      */
-    public function add($slug, $typeName = IObjectType::BASE, IHierarchicObject $branch = null)
+    public function add($slug, $typeName = IObjectType::BASE, IHierarchicObject $branch = null, $guid = null)
     {
         if (!$this->metadata->getTypeExists($typeName)) {
             throw new NonexistentEntityException($this->translate(
@@ -35,17 +34,13 @@ class SimpleHierarchicCollection extends BaseHierarchicCollection implements ISi
          * @var IHierarchicObject $object
          */
         $object = $this->getObjectManager()
-            ->registerNewObject($this, $this->metadata->getType($typeName));
+            ->registerNewObject($this, $this->metadata->getType($typeName), $guid);
         $object->getProperty(IHierarchicObject::FIELD_SLUG)
             ->setValue($slug);
+
         if ($branch) {
             $object->getProperty(IHierarchicObject::FIELD_PARENT)
                 ->setValue($branch);
-            /**
-             * @var ICounterProperty $childCountProperty
-             */
-            $childCountProperty = $branch->getProperty(IHierarchicObject::FIELD_CHILD_COUNT);
-            $childCountProperty->increment();
         }
 
         return $object;

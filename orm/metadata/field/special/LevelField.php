@@ -54,11 +54,6 @@ class LevelField extends BaseField implements IScalarField, ICalculableField
                 'Cannot calculate level value for nonhierarchical object.'
             ));
         }
-        if (null != ($level = $object->getProperty($this->getName())
-                ->getDbValue())
-        ) {
-            return $level;
-        }
 
         /**
          * @var MaterializedPathField $mpathField

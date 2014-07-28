@@ -160,8 +160,8 @@ class FieldSet extends BaseFormEntity implements Iterator, IFieldSet
         $messages = [];
 
         foreach ($this->children as $child) {
-            if ($messages = $child->getMessages()) {
-                $messages[$child->getName()] = $messages;
+            if ($childMessages = $child->getMessages()) {
+                $messages[$child->getName()] = $childMessages;
             }
         }
 

@@ -17,7 +17,6 @@ use umi\i18n\TLocalizable;
 use umi\orm\collection\ICollection;
 use umi\orm\exception\InvalidArgumentException;
 use umi\orm\exception\NonexistentEntityException;
-use umi\orm\exception\NotAllowedOperationException;
 use umi\orm\exception\ReadOnlyEntityException;
 use umi\orm\exception\RuntimeException;
 use umi\orm\manager\IObjectManagerAware;
@@ -272,28 +271,6 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
     /**
      * {@inheritdoc}
      */
-    public function setGUID($guid)
-    {
-        if (!$this->getIsNew()) {
-            throw new NotAllowedOperationException(
-                $this->translate(
-                    'Cannot set GUID. GUID can be set only for new objects.'
-                )
-            );
-        }
-
-        $guidProperty = $this->getProperty(self::FIELD_GUID);
-        $oldGuid = $guidProperty->getValue();
-        $guidProperty->setValue($guid);
-
-        $this->getObjectManager()->changeObjectGuid($this, $oldGuid);
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getVersion()
     {
         $versionFieldProperty = $this->getProperty(self::FIELD_VERSION);
@@ -373,8 +350,9 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
             return is_null($localeId);
         } else {
             if (is_null($localeId)) {
-                $localeId = ($this->getLoadLocalization() === ILocalesService::LOCALE_CURRENT) ?
-                    $this->getCurrentDataLocale() : $this->getLoadLocalization();
+                $loadLocalization = $this->getLoadLocalization();
+                $localeId = ($loadLocalization === ILocalesService::LOCALE_CURRENT || $loadLocalization === ILocalesService::LOCALE_ALL) ?
+                    $this->getCurrentDataLocale() : $loadLocalization;
             }
 
             return $field->hasLocale($localeId);
@@ -397,8 +375,9 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
         $field = $this->type->getField($propName);
 
         if (!$localeId && $field->getIsLocalized()) {
-            $localeId = ($this->getLoadLocalization() === ILocalesService::LOCALE_CURRENT) ?
-                $this->getCurrentDataLocale() : $this->getLoadLocalization();
+            $loadLocalization = $this->getLoadLocalization();
+            $localeId = ($loadLocalization === ILocalesService::LOCALE_CURRENT || $loadLocalization === ILocalesService::LOCALE_ALL) ?
+                $this->getCurrentDataLocale() : $loadLocalization;
         }
         if ($localeId) {
             $fullPropName .= IProperty::LOCALE_SEPARATOR . $localeId;

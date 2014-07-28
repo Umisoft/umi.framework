@@ -64,13 +64,7 @@ class MaterializedPathField extends BaseField implements IScalarField, ICalculab
             ));
         }
 
-        if (null != ($mpath = $object->getProperty($this->getName())
-                ->getDbValue())
-        ) {
-            return $mpath;
-        }
-
-        if (($parent = $object->getParent()) && $parent->getMaterializedPath()) {
+        if ($parent = $object->getParent()) {
             return $parent->getMaterializedPath() . self::MPATH_SEPARATOR . $object->getId();
         } else {
             return self::MPATH_START_SYMBOL . $object->getId();

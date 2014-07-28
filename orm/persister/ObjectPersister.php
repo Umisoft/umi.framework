@@ -51,6 +51,11 @@ class ObjectPersister implements IObjectPersister, ILocalizable, ILocalesAware, 
      * @var SplObjectStorage|IObject[] $relatedObjects список зависимостей объектов
      */
     protected $relatedObjects;
+    /**
+     * @var SplObjectStorage|IObject[] $needToBeRecalculatedObjects список объектов,
+     * значения для которых должны быть высчитаны после сохранения всех других
+     */
+    protected $needToBeRecalculatedObjects;
 
     /**
      * Конструктор.
@@ -61,6 +66,7 @@ class ObjectPersister implements IObjectPersister, ILocalizable, ILocalesAware, 
         $this->deletedObjects = new SplObjectStorage();
         $this->modifiedObjects = new SplObjectStorage();
         $this->relatedObjects = new SplObjectStorage();
+        $this->needToBeRecalculatedObjects = new SplObjectStorage();
     }
 
     /**
@@ -194,12 +200,21 @@ class ObjectPersister implements IObjectPersister, ILocalizable, ILocalesAware, 
     /**
      * {@inheritdoc}
      */
+    public function storeRecalculatedObject(IObject $object, array $properties)
+    {
+        $this->needToBeRecalculatedObjects->offsetSet($object, $properties);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function clearObjectsState()
     {
         $this->newObjects->removeAll($this->newObjects);
         $this->relatedObjects->removeAll($this->relatedObjects);
         $this->modifiedObjects->removeAll($this->modifiedObjects);
         $this->deletedObjects->removeAll($this->deletedObjects);
+        $this->needToBeRecalculatedObjects->removeAll($this->needToBeRecalculatedObjects);
 
         return $this;
     }
@@ -213,6 +228,7 @@ class ObjectPersister implements IObjectPersister, ILocalizable, ILocalesAware, 
         $this->modifiedObjects->detach($object);
         $this->deletedObjects->detach($object);
         $this->relatedObjects->detach($object);
+        $this->needToBeRecalculatedObjects->detach($object);
     }
 
     /**
@@ -254,6 +270,7 @@ class ObjectPersister implements IObjectPersister, ILocalizable, ILocalesAware, 
         $this->unloadStorageObjects($this->newObjects);
         $this->unloadStorageObjects($this->modifiedObjects);
         $this->unloadStorageObjects($this->deletedObjects);
+        $this->unloadStorageObjects($this->needToBeRecalculatedObjects);
         $this->clearObjectsState();
 
         return $this;
@@ -340,7 +357,7 @@ class ObjectPersister implements IObjectPersister, ILocalizable, ILocalesAware, 
              */
             $calculableProperties = [];
             foreach ($object->getAllProperties() as $property) {
-                if (!$property->getIsModified() && $property instanceof ICalculableProperty) {
+                if ($property instanceof ICalculableProperty) {
                     $calculableProperties[] = $property;
                 }
             }
@@ -368,6 +385,15 @@ class ObjectPersister implements IObjectPersister, ILocalizable, ILocalesAware, 
         }
 
         foreach ($this->modifiedObjects as $object) {
+            $object->setIsConsistent();
+        }
+
+        foreach ($this->needToBeRecalculatedObjects as $object) {
+            $object->getCollection()
+                ->persistRecalculatedObject($object, $this->needToBeRecalculatedObjects->getInfo());
+        }
+
+        foreach ($this->needToBeRecalculatedObjects as $object) {
             $object->setIsConsistent();
         }
 

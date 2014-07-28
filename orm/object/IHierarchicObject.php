@@ -32,10 +32,6 @@ interface IHierarchicObject extends IObject
      */
     const FIELD_ORDER = 'order';
     /**
-     * Имя поля, используемого для хранения количества непосредственных детей иерархических объектов
-     */
-    const FIELD_CHILD_COUNT = 'childCount';
-    /**
      * Имя поля, используемого для хранения последней части ЧПУ
      */
     const FIELD_SLUG = 'slug';
@@ -67,12 +63,6 @@ interface IHierarchicObject extends IObject
      * @return int
      */
     public function getLevel();
-
-    /**
-     * Возвращает количество непостредственных детей
-     * @return int
-     */
-    public function getChildCount();
 
     /**
      * Возвращает URI

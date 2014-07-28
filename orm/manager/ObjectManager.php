@@ -81,20 +81,7 @@ class ObjectManager implements IObjectManager, ILocalizable, IObjectPersisterAwa
     /**
      * {@inheritdoc}
      */
-    public function changeObjectGuid(IObject $object, $oldGuid)
-    {
-        if (isset($this->objectsByGuid[$oldGuid])) {
-            unset($this->objectsByGuid[$oldGuid]);
-        }
-        $this->objectsByGuid[$object->getGUID()] = $object;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function registerNewObject(ICollection $collection, IObjectType $objectType)
+    public function registerNewObject(ICollection $collection, IObjectType $objectType, $guid = null)
     {
         $object = $this->objectFactory->createObject($collection, $objectType);
         $object->setIsNew(true);
@@ -104,10 +91,13 @@ class ObjectManager implements IObjectManager, ILocalizable, IObjectPersisterAwa
             $property->setInitialValue($field->getDefaultValue($property->getLocaleId()));
         }
 
-        $guidField = $collection->getGUIDField();
-        $object->getProperty(IObject::FIELD_GUID)
-            ->setValue($guidField->generateGUID());
-        $this->objectsByGuid[$object->getGUID()] = $object;
+        if (!$guid) {
+            $guidField = $collection->getGUIDField();
+            $guid = $guidField->generateGUID();
+        }
+        $object->getProperty(IObject::FIELD_GUID)->setValue($guid);
+
+        $this->objectsByGuid[$guid] = $object;
 
         $this->getObjectPersister()
             ->markAsNew($object);

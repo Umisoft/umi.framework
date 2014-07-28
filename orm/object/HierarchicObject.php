@@ -64,15 +64,6 @@ class HierarchicObject extends Object implements IHierarchicObject
     /**
      * {@inheritdoc}
      */
-    public function getChildCount()
-    {
-        return $this->getProperty(self::FIELD_CHILD_COUNT)
-            ->getValue();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getURI()
     {
         return $this->getProperty(self::FIELD_URI)

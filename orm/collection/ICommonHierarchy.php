@@ -35,7 +35,7 @@ interface ICommonHierarchy extends IHierarchicCollection
      * @param string $slug последняя часть ЧПУ
      * @param string $typeName имя типа
      * @param IHierarchicObject|null $branch ветка, в которую добавляется объект
-     *
+     * @param string|null $guid глобальный уникальный идентификатор объекта
      * @throws NonexistentEntityException если тип не существует
      * @return IHierarchicObject
      */
@@ -43,6 +43,7 @@ interface ICommonHierarchy extends IHierarchicCollection
         ILinkedHierarchicCollection $linkedCollection,
         $slug,
         $typeName = IObjectType::BASE,
-        IHierarchicObject $branch = null
+        IHierarchicObject $branch = null,
+        $guid = null
     );
 }
