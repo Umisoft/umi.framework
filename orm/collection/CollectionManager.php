@@ -101,7 +101,7 @@ class CollectionManager implements ICollectionManager, ILocalizable, IMetadataMa
         $config = $this->collections[$collectionName];
 
         try {
-            $config = $this->configToArray($config, true);
+            $config = $this->configToArray($config);
         } catch (\InvalidArgumentException $e) {
             throw new UnexpectedValueException($this->translate(
                 'Configuration for collection "{collection}" is not valid.',
