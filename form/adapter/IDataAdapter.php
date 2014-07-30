@@ -35,9 +35,10 @@ interface IDataAdapter
     /**
      * Валидирует значение провайдера данных.
      * @param IFormElement $element элемент формы, для которого формируется значение
+     * @param mixed $value значение
      * @return bool
      */
-    public function validate(IFormElement $element);
+    public function validate(IFormElement $element, $value);
 
     /**
      * Возвращает ошибки валидации провайдера данных.
