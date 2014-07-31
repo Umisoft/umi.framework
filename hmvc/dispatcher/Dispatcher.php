@@ -284,7 +284,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
             $errorWidget->setContext($context);
 
             try {
-                return (string) $this->invokeWidget($errorWidget);
+                return $this->invokeWidget($errorWidget);
             } catch (Exception $e) { }
         }
 
