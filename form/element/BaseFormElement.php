@@ -202,7 +202,7 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
     {
         $isValid =
             $this->getValidators()->isValid($value) &&
-            $this->getDataAdapter()->validate($this);
+            $this->getDataAdapter()->validate($this, $value);
 
         $this->messages = array_merge(
             $this->getValidators()->getMessages(),

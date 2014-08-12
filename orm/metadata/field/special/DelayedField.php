@@ -21,9 +21,9 @@ use umi\orm\metadata\field\TScalarField;
 use umi\orm\object\IObject;
 
 /**
- * Класс поля, значение которого вычисляется по формуле
+ * Класс поля, значение которого вычисляется заданным методом после сохранения всех объектов.
  */
-class FormulaField extends BaseField implements IScalarField, ICalculableField
+class DelayedField extends BaseField implements IScalarField, ICalculableField
 {
     use TScalarField;
     use TCalculableField;
@@ -99,20 +99,20 @@ class FormulaField extends BaseField implements IScalarField, ICalculableField
     {
         if (!isset($config['dataType']) || !is_string($config['dataType'])) {
             throw new UnexpectedValueException($this->translate(
-                'Formula field configuration should contain data type and it should be a string.'
+                'Delayed field configuration should contain data type and it should be a string.'
             ));
         }
 
         if (!in_array($config['dataType'], $this->allowedDataTypes)) {
             throw new OutOfBoundsException($this->translate(
-                'Data type "{type}" is not supported for formula field.',
+                'Data type "{type}" is not supported for delayed field.',
                 ['type' => $config['dataType']]
             ));
         }
 
         if (!isset($config['formula']) || !is_string($config['formula'])) {
             throw new UnexpectedValueException($this->translate(
-                'Formula field configuration should contain formula and it should be a string.'
+                'Delayed field configuration should contain option "formula" and it should be a string.'
             ));
         }
 

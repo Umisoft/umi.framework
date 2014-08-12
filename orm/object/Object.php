@@ -647,7 +647,7 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
         $result = true;
 
         foreach ($this->getAllProperties() as $property) {
-            if (!$property->validate()) {
+            if (!$property->validate($property->getValue())) {
                 $this->validationErrors[$property->getFullName()] = $property->getValidationErrors();
                 $result = false;
             }

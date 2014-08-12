@@ -128,10 +128,11 @@ interface IProperty
     public function rollback();
 
     /**
-     * Производит валидацию
+     * Производит валидацию.
+     * @param mixed $value значение
      * @return bool результат валидации
      */
-    public function validate();
+    public function validate($value);
 
     /**
      * Возвращает список ошибок валидации

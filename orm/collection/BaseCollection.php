@@ -23,7 +23,7 @@ use umi\orm\manager\IObjectManagerAware;
 use umi\orm\manager\TObjectManagerAware;
 use umi\orm\metadata\field\IField;
 use umi\orm\metadata\field\relation\ManyToManyRelationField;
-use umi\orm\metadata\field\special\FormulaField;
+use umi\orm\metadata\field\special\DelayedField;
 use umi\orm\metadata\IMetadata;
 use umi\orm\metadata\IObjectType;
 use umi\orm\object\IObject;
@@ -415,15 +415,15 @@ abstract class BaseCollection
     /**
      * {@inheritdoc}
      */
-    public function persistRecalculatedObject(IObject $object, array $formulaProperties)
+    public function persistRecalculatedObject(IObject $object, array $delayedProperties)
     {
         if (!$this->contains($object)) {
             throw new NotAllowedOperationException($this->translate(
                 'Cannot persist modified object. Object from another collection given.'
             ));
         }
-        if (count($formulaProperties)) {
-            $this->executeUpdate($object, $formulaProperties);
+        if (count($delayedProperties)) {
+            $this->executeUpdate($object, $delayedProperties);
         }
     }
 
@@ -439,18 +439,18 @@ abstract class BaseCollection
         }
 
         $modifiedProperties = [];
-        $formulaProperties = [];
+        $delayedProperties = [];
 
         foreach ($object->getModifiedProperties()as $property) {
-            if ($property->getField() instanceof FormulaField) {
-                $formulaProperties[] = $property;
+            if ($property->getField() instanceof DelayedField) {
+                $delayedProperties[] = $property;
             } else {
                 $modifiedProperties[] = $property;
             }
         }
 
-        if ($formulaProperties) {
-            $this->getObjectPersister()->storeRecalculatedObject($object, $formulaProperties);
+        if ($delayedProperties) {
+            $this->getObjectPersister()->storeRecalculatedObject($object, $delayedProperties);
         }
 
         if (count($modifiedProperties)) {

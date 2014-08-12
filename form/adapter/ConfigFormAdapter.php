@@ -61,7 +61,7 @@ class ConfigFormAdapter implements IDataAdapter
     /**
      * {@inheritdoc}
      */
-    public function validate(IFormElement $element)
+    public function validate(IFormElement $element, $value)
     {
         return true;
     }

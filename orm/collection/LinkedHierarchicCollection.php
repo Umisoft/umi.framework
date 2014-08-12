@@ -86,7 +86,7 @@ class LinkedHierarchicCollection extends SimpleHierarchicCollection implements I
     /**
      * {@inheritdoc}
      */
-    public function persistRecalculatedObject(IObject $object, array $formulaProperties)
+    public function persistRecalculatedObject(IObject $object, array $delayedProperties)
     {
         if (!$this->contains($object)) {
             throw new NotAllowedOperationException($this->translate(
@@ -94,8 +94,8 @@ class LinkedHierarchicCollection extends SimpleHierarchicCollection implements I
             ));
         }
         $this->getCommonHierarchy()
-            ->persistRecalculatedObject($object, $formulaProperties);
-        parent::persistRecalculatedObject($object, $formulaProperties);
+            ->persistRecalculatedObject($object, $delayedProperties);
+        parent::persistRecalculatedObject($object, $delayedProperties);
     }
 
     /**

@@ -193,10 +193,10 @@ interface ICollection
      * которые должны быть вычислены после сохранения всех объектов.
      * @internal
      * @param IObject $object
-     * @param IProperty[] $formulaProperties
+     * @param IProperty[] $delayedProperties
      * @return
      */
-    public function persistRecalculatedObject(IObject $object, array $formulaProperties);
+    public function persistRecalculatedObject(IObject $object, array $delayedProperties);
 
     /**
      * Запускает запросы на удаление объекта коллекции.

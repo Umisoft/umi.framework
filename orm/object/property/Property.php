@@ -335,7 +335,7 @@ class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware, 
     /**
      * {@inheritdoc}
      */
-    public function validate()
+    public function validate($value)
     {
         $result = true;
         $this->validationErrors = [];
@@ -350,7 +350,7 @@ class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware, 
         if ($validators = $this->getField()->getValidatorsConfig($this->getLocaleId())) {
 
             $validatorCollection = $this->createValidatorCollection($validators);
-            if (!$validatorCollection->isValid($this->getValue())) {
+            if (!$validatorCollection->isValid($value)) {
                 $this->addValidationErrors($validatorCollection->getMessages());
                 $result = false;
             }

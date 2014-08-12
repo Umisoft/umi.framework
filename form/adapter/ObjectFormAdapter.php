@@ -113,10 +113,10 @@ class ObjectFormAdapter implements IDataAdapter, ICollectionManagerAware
     /**
      * {@inheritdoc}
      */
-    public function validate(IFormElement $element)
+    public function validate(IFormElement $element, $value)
     {
         if ($dataSource = $element->getDataSource()) {
-            return $this->data->getPropertyByPath($dataSource)->validate();
+            return $this->data->getPropertyByPath($dataSource)->validate($value);
         }
 
         return true;
