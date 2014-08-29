@@ -35,6 +35,15 @@ class StringToLower implements IFilter
     /**
      * {@inheritdoc}
      */
+    public function setOptions(array $options)
+    {
+        $this->options = $options;
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function filter($var)
     {
         $encoding = isset($this->options['encoding']) ? $this->options['encoding'] : mb_internal_encoding();

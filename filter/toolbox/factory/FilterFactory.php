@@ -10,6 +10,7 @@
 namespace umi\filter\toolbox\factory;
 
 use umi\filter\exception\OutOfBoundsException;
+use umi\filter\IFilter;
 use umi\filter\IFilterFactory;
 use umi\toolkit\factory\IFactory;
 use umi\toolkit\factory\TFactory;
@@ -26,6 +27,12 @@ class FilterFactory implements IFilterFactory, IFactory
      * @var string $filterCollectionClass класс коллекции фильтров
      */
     public $filterCollectionClass = 'umi\filter\FilterCollection';
+
+    /**
+     * @var array $defaultOptions опции для фильтров по умолчанию
+     */
+    public $defaultOptions = [];
+
     /**
      * @var array $types поддерживаемые фильтры
      */
@@ -72,10 +79,22 @@ class FilterFactory implements IFilterFactory, IFactory
             ));
         }
 
-        return $this->getPrototype(
-                $this->types[$type],
-                ['umi\filter\IFilter']
-            )
+        $options = $this->configToArray($options, true);
+
+        if (isset($this->defaultOptions[$type])) {
+            $defaultOptions = $this->configToArray($this->defaultOptions[$type], true);
+            $options = $this->mergeConfigOptions($options, $defaultOptions);
+        }
+
+        /** @var IFilter $filter */
+        $filter = $this->getPrototype(
+            $this->types[$type],
+            ['umi\filter\IFilter']
+        )
             ->createInstance([$options]);
+
+        $filter->setOptions($options);
+
+        return $filter;
     }
 }

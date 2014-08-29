@@ -36,6 +36,15 @@ class HtmlEntities implements IFilter
     /**
      * {@inheritdoc}
      */
+    public function setOptions(array $options)
+    {
+        $this->options = $options;
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function filter($var)
     {
         $flags = isset($this->options['flags']) ? $this->options['flags'] : null;

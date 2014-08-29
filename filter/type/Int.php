@@ -35,6 +35,15 @@ class Int implements IFilter
     /**
      * {@inheritdoc}
      */
+    public function setOptions(array $options)
+    {
+        $this->options = $options;
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function filter($var)
     {
         $base = isset($this->options['base']) ? $this->options['base'] : 10;

@@ -36,6 +36,15 @@ class Null implements IFilter
     /**
      * {@inheritdoc}
      */
+    public function setOptions(array $options)
+    {
+        $this->options = $options;
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function filter($var)
     {
         $optional = isset($this->options['optional_values']) ? $this->options['optional_values'] : [];

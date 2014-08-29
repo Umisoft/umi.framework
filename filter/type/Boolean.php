@@ -36,6 +36,15 @@ class Boolean implements IFilter
     /**
      * {@inheritdoc}
      */
+    public function setOptions(array $options)
+    {
+        $this->options = $options;
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function filter($var)
     {
         if (isset($this->options['optional_values'][$var])) {
