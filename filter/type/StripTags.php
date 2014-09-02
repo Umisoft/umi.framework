@@ -36,6 +36,15 @@ class StripTags implements IFilter
     /**
      * {@inheritdoc}
      */
+    public function setOptions(array $options)
+    {
+        $this->options = $options;
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function filter($var)
     {
         $allowedTags = !empty($this->options['allowed']) ? '<' . implode('><', $this->options['allowed']) . '>' : null;

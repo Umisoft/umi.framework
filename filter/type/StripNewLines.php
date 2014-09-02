@@ -17,6 +17,13 @@ use umi\filter\IFilter;
  */
 class StripNewLines implements IFilter
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function setOptions(array $options)
+    {
+        return $this;
+    }
 
     /**
      * {@inheritdoc}

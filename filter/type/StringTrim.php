@@ -35,6 +35,15 @@ class StringTrim implements IFilter
     /**
      * {@inheritdoc}
      */
+    public function setOptions(array $options)
+    {
+        $this->options = $options;
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function filter($var)
     {
         $charlist = isset($this->options['charlist']) ? $this->options['charlist'] : " \t\n\r\0\x0B";

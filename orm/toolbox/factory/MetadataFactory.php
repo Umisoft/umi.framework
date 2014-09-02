@@ -154,15 +154,16 @@ class MetadataFactory implements IMetadataFactory, IFactory
     {
         if (!isset($config['type'])) {
             throw new UnexpectedValueException($this->translate(
-                'Field configuration should contain type info.'
+                'Cannot create field "{name}". Field configuration should contain type info.',
+                ['name' => $fieldName]
             ));
         }
         $fieldType = $config['type'];
 
         if (!isset($this->fieldTypes[$fieldType])) {
             throw new UnexpectedValueException($this->translate(
-                'Cannot create field. Class for field type "{type}" is not defined.',
-                ['type' => $fieldType]
+                'Cannot create field "{name}". Class for field type "{type}" is not defined.',
+                ['name' => $fieldName, 'type' => $fieldType]
             ));
         }
 
