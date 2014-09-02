@@ -566,8 +566,8 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
 
             throw new HttpNotFound(
                 $this->translate(
-                    'Child component "{name}" not found.',
-                    ['name' => $routeMatches[IComponent::MATCH_COMPONENT]]
+                    'Child component "{name}" not found in component "{componentPath}".',
+                    ['name' => $routeMatches[IComponent::MATCH_COMPONENT], 'componentPath' => $component->getPath()]
                 )
             );
         }
