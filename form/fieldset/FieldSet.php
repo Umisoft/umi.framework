@@ -180,7 +180,8 @@ class FieldSet extends BaseFormEntity implements Iterator, IFieldSet
         }
 
         foreach ($this->children as $child) {
-            $isValid = $isValid && $child->isValid();
+            $childIsValid = $child->isValid();
+            $isValid = $isValid && $childIsValid;
         }
 
         return $isValid;
