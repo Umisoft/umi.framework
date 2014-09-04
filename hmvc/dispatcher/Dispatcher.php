@@ -178,7 +178,7 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
             if ($viewOwner->getName() === IComponent::ERROR_WIDGET) {
                 return $e->getMessage();
             }
-            return $this->processWidgetError($e, $failureContext);
+            return (string) $this->processWidgetError($e, $failureContext);
         }
 
         $this->controllerViewRenderErrorInfo = [$e, $failureContext];
