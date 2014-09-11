@@ -22,7 +22,7 @@ use umi\orm\selector\condition\IFieldConditionGroup;
  * Инструмент для формирования выборок объектов из коллекции,
  * а так же связанных объектов.
  */
-interface ISelector extends \IteratorAggregate
+interface ISelector extends \IteratorAggregate, \ArrayAccess
 {
     /**
      * Сортировка по возрастанию

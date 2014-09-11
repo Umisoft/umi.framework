@@ -9,8 +9,6 @@
 
 namespace umi\orm\objectset;
 
-use Countable;
-use Iterator;
 use umi\orm\exception\RuntimeException;
 use umi\orm\object\IObject;
 use umi\orm\selector\ISelector;
@@ -22,7 +20,7 @@ use umi\orm\selector\ISelector;
  * Наборы объектов могут быть использованы для доступа к результатам селектора,
  * для доступа к некоторым типам связей объекта.<br />
  */
-interface IObjectSet extends Iterator, Countable
+interface IObjectSet extends \Iterator, \Countable, \ArrayAccess
 {
     /**
      * Устанавливает Selector для набора объектов.

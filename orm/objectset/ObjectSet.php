@@ -200,6 +200,36 @@ class ObjectSet implements IObjectSet, ILocalizable, ICollectionManagerAware
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function offsetExists($offset)
+    {
+        return isset($this->fetchAll()[$offset]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetGet($offset)
+    {
+        return $this->fetchAll()[$offset];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetSet($offset, $value)
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetUnset($offset)
+    {
+    }
+
+    /**
      * Запускает селектор и возвращает результат
      * @return Statement
      */
