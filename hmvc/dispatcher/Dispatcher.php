@@ -389,6 +389,11 @@ class Dispatcher implements IDispatcher, ILocalizable, IMvcEntityFactoryAware, I
 
         $response = $component->onDispatchRequest($context, $this->getCurrentRequest());
         if ($response instanceof Response) {
+            if ($response->isRedirect()) {
+
+                return $response;
+            }
+
             return $this->processResponse($response, $callStack);
         }
 
