@@ -503,6 +503,38 @@ class Selector implements ISelector, ILocalizable, ILocalesAware, IMetadataManag
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function offsetExists($offset)
+    {
+        return isset($this->objectSet[$offset]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetGet($offset)
+    {
+        return $this->objectSet[$offset];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetSet($offset, $value)
+    {
+        $this->objectSet[$offset] = $value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetUnset($offset)
+    {
+        unset($this->objectSet[$offset]);
+    }
+
+    /**
      * Возвращает группу ограничений по значениям полей.
      * @return IFieldConditionGroup
      */
@@ -1009,4 +1041,5 @@ class Selector implements ISelector, ILocalizable, ILocalesAware, IMetadataManag
 
         return array_merge($collection->getForcedFieldsToLoad(), $fields);
     }
+
 }
