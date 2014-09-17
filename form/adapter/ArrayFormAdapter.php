@@ -77,6 +77,14 @@ class ArrayFormAdapter implements IDataAdapter
     /**
      * {@inheritdoc}
      */
+    public function getValidatorsConfig(IFormElement $element)
+    {
+        return [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getChoices(IChoiceFormElement $element)
     {
         return [];

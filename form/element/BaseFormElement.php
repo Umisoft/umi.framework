@@ -16,6 +16,7 @@ use umi\form\BaseFormEntity;
 use umi\form\FormEntityView;
 use umi\orm\exception\RuntimeException;
 use umi\validation\IValidationAware;
+use umi\validation\IValidator;
 use umi\validation\IValidatorCollection;
 use umi\validation\TValidationAware;
 
@@ -108,7 +109,7 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
                 }
                 $config[$type] = $options;
             }
-            $this->validators = $this->createValidatorCollection($this->getValidatorsConfig());
+            $this->validators = $this->createValidatorCollection($config);
         }
 
         return $this->validators;
@@ -245,9 +246,18 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
         $view->dataSource = $this->getDataSource();
         $view->value = $this->getValue();
 
+        $elementValidators = iterator_to_array($this->getValidators(), true);
+
+        $dataSourceValidatorsConfig = $this->getDataAdapter()->getValidatorsConfig($this);
+        $dataSourceValidators = iterator_to_array($this->createValidatorCollection($dataSourceValidatorsConfig), true);
+
+        $validators = array_merge($elementValidators, $dataSourceValidators);
         $view->validators = [];
 
-        foreach ($this->getValidators() as $validator) {
+        /**
+         * @var IValidator $validator
+         */
+        foreach ($validators as $validator) {
             $view->validators[] = [
                 'type' => $validator->getType(),
                 'message' => $this->translate($validator->getErrorLabel()),

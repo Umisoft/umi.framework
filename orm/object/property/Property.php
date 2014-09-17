@@ -346,7 +346,7 @@ class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware, 
                 $result = false;
             }
         }
-        
+
         if ($validators = $this->getField()->getValidatorsConfig($this->getLocaleId())) {
 
             $validatorCollection = $this->createValidatorCollection($validators);
@@ -360,8 +360,7 @@ class Property implements IProperty, ILocalizable, ILocalesAware, IFilterAware, 
     }
 
     /**
-     * Возвращает список ошибок валидации
-     * @return array
+     * {@inheritdoc}
      */
     public function getValidationErrors()
     {

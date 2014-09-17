@@ -137,6 +137,20 @@ class ObjectFormAdapter implements IDataAdapter, ICollectionManagerAware
     /**
      * {@inheritdoc}
      */
+    public function getValidatorsConfig(IFormElement $element)
+    {
+        if ($dataSource = $element->getDataSource()) {
+            $property = $this->data->getPropertyByPath($dataSource);
+
+            return $property->getField()->getValidatorsConfig($property->getLocaleId());
+        }
+
+        return [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getChoices(IChoiceFormElement $element)
     {
         $choices = [];
