@@ -48,6 +48,13 @@ interface IDataAdapter
     public function getValidationErrors(IFormElement $element);
 
     /**
+     * Возвращает конфигурацию валидаторов провайдера данных.
+     * @param IFormElement $element элемент формы, для которого формируется значение
+     * @return array в формате [$validatorType => [$optionName => $value, ...], ...]
+     */
+    public function getValidatorsConfig(IFormElement $element);
+
+    /**
      * Возвращает список вариантов значений на выбор.
      * @param IChoiceFormElement $element элемент формы с выбором значений
      * @return array в формате [$value => $label, ...]
