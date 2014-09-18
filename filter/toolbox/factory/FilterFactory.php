@@ -93,8 +93,6 @@ class FilterFactory implements IFilterFactory, IFactory
         )
             ->createInstance([$options]);
 
-        $filter->setOptions($options);
-
         return $filter;
     }
 }

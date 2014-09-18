@@ -12,15 +12,8 @@ namespace umi\filter;
 /**
  * Интерфейс фильтрации.
  */
-interface IFilterCollection
+interface IFilterCollection extends IFilter
 {
-    /**
-     * Фильтрует значение
-     * @param mixed $var фильтруемое значение
-     * @return mixed
-     */
-    public function filter($var);
-
     /**
      * Добавляет фильтр в конец цепочки фильтров.
      * @param IFilter $filter фильтр

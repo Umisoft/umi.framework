@@ -15,13 +15,6 @@ namespace umi\filter;
 interface IFilter
 {
     /**
-     * Устанавливает опции фильтра.
-     * @param array $options опции
-     * @return self
-     */
-    public function setOptions(array $options);
-
-    /**
      * Фильтрует значение
      * @param mixed $var фильтруемое значение
      * @return mixed
