@@ -554,7 +554,7 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
             );
         }
 
-        return $object->setValue($value, $localeId);
+        return $object->setValue($propName, $value, $localeId);
     }
 
     /**
