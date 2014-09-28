@@ -27,5 +27,5 @@ interface ISimpleHierarchicCollection extends IHierarchicCollection
      * @throws NonexistentEntityException если тип не существует
      * @return IHierarchicObject
      */
-    public function add($slug, $typeName = IObjectType::BASE, IHierarchicObject $branch = null, $guid = null);
+    public function add($slug = null, $typeName = IObjectType::BASE, IHierarchicObject $branch = null, $guid = null);
 }

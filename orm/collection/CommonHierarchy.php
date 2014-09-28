@@ -43,7 +43,7 @@ class CommonHierarchy extends BaseHierarchicCollection implements ICommonHierarc
      */
     public function add(
         ILinkedHierarchicCollection $linkedCollection,
-        $slug,
+        $slug = null,
         $typeName = IObjectType::BASE,
         IHierarchicObject $branch = null,
         $guid = null

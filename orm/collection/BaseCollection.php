@@ -27,7 +27,6 @@ use umi\orm\metadata\field\special\DelayedField;
 use umi\orm\metadata\IMetadata;
 use umi\orm\metadata\IObjectType;
 use umi\orm\object\IObject;
-use umi\orm\object\property\calculable\ICalculableProperty;
 use umi\orm\object\property\IProperty;
 use umi\orm\persister\IObjectPersisterAware;
 use umi\orm\persister\TObjectPersisterAware;

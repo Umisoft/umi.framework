@@ -21,7 +21,7 @@ class SimpleHierarchicCollection extends BaseHierarchicCollection implements ISi
     /**
      * {@inheritdoc}
      */
-    public function add($slug, $typeName = IObjectType::BASE, IHierarchicObject $branch = null, $guid = null)
+    public function add($slug = null, $typeName = IObjectType::BASE, IHierarchicObject $branch = null, $guid = null)
     {
         if (!$this->metadata->getTypeExists($typeName)) {
             throw new NonexistentEntityException($this->translate(
@@ -35,8 +35,10 @@ class SimpleHierarchicCollection extends BaseHierarchicCollection implements ISi
          */
         $object = $this->getObjectManager()
             ->registerNewObject($this, $this->metadata->getType($typeName), $guid);
-        $object->getProperty(IHierarchicObject::FIELD_SLUG)
-            ->setValue($slug);
+        if ($slug) {
+            $object->getProperty(IHierarchicObject::FIELD_SLUG)
+                ->setValue($slug);
+        }
 
         if ($branch) {
             $object->getProperty(IHierarchicObject::FIELD_PARENT)
