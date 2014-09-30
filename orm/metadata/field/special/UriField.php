@@ -59,10 +59,17 @@ class UriField extends BaseField implements IScalarField, ICalculableField
             ));
         }
 
+        /**
+         * @var SlugField $slugField
+         */
+        $slugField = $object->getProperty(IHierarchicObject::FIELD_SLUG)
+            ->getField();
+        $slug = $slugField->calculateDBValue($object, $localeId);
+
         if ($parent = $object->getParent()) {
-            return $parent->getURI() . '/' . $object->getSlug();
+            return $parent->getURI() . '/' . $slug;
         } else {
-            return  self::URI_START_SYMBOL . '/' . $object->getSlug();
+            return  self::URI_START_SYMBOL . '/' . $slug;
         }
     }
 }

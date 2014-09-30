@@ -9,16 +9,21 @@
 
 namespace umi\orm\metadata\field\special;
 
+use umi\dbal\builder\IInsertBuilder;
+use umi\dbal\builder\IQueryBuilder;
+use umi\dbal\builder\IUpdateBuilder;
 use umi\orm\metadata\field\BaseField;
+use umi\orm\metadata\field\ICalculableField;
 use umi\orm\metadata\field\IScalarField;
 use umi\orm\metadata\field\TScalarField;
+use umi\orm\object\IObject;
+use umi\orm\object\property\IProperty;
 
 /**
  * Slug для ЧПУ.
  */
-class SlugField extends BaseField implements IScalarField
+class SlugField extends BaseField implements IScalarField, ICalculableField
 {
-
     use TScalarField;
 
     /**
@@ -34,6 +39,41 @@ class SlugField extends BaseField implements IScalarField
      */
     public function validateInputPropertyValue($propertyValue)
     {
-        return is_string($propertyValue); // TODO: check slug format
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function calculateDBValue(IObject $object, $localeId = null)
+    {
+        $setValue = $object->getValue($this->getName(), $localeId);
+
+        return $setValue ?: $object->getId();
+    }
+
+    public function persistProperty(IObject $object, IProperty $property, IQueryBuilder $builder)
+    {
+        /**
+         * @var IUpdateBuilder $builder
+         */
+        if ($builder instanceof IInsertBuilder || $builder instanceof IUpdateBuilder) {
+
+            $localeId = $property->getLocaleId();
+
+            if ($localeId && !$this->hasLocale($localeId)) {
+                return $this;
+            }
+            $value = $this->calculateDBValue($object, $localeId);
+            if ($property->getPersistedValue() == $value) {
+                return $this;
+            }
+
+            $builder->set($this->getColumnName($localeId));
+            $builder->bindValue(':' . $this->getColumnName($localeId), $value, $this->getDataType());
+            $property->setValue($value);
+        }
+
+        return $this;
     }
 }

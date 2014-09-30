@@ -41,7 +41,7 @@ interface ICommonHierarchy extends IHierarchicCollection
      */
     public function add(
         ILinkedHierarchicCollection $linkedCollection,
-        $slug,
+        $slug = null,
         $typeName = IObjectType::BASE,
         IHierarchicObject $branch = null,
         $guid = null

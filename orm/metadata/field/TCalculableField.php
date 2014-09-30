@@ -55,7 +55,7 @@ trait TCalculableField
             }
 
             $builder->set($this->getColumnName($localeId));
-            $value = $this->calculateDBValue($object);
+            $value = $this->calculateDBValue($object, $localeId);
             $builder->bindValue(':' . $this->getColumnName($localeId), $value, $this->getDataType());
             $property->setValue($value);
         }
