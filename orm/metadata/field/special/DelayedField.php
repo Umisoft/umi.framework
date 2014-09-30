@@ -65,7 +65,7 @@ class DelayedField extends BaseField implements IScalarField, ICalculableField
                 return is_int($propertyValue);
             }
             case $this->dataType === 'float': {
-                return is_float($propertyValue);
+                return is_numeric($propertyValue);
             }
             default: {
                 return false;
