@@ -16,7 +16,7 @@
         "symfony/http-foundation": "2.4.*",
         "psr/log": "1.*",
         "doctrine/dbal": "2.4.*",
-        "swiftmailer/swiftmailer": "5.0.*"
+        "swiftmailer/swiftmailer": "5.*"
     },
 
     "suggest": {
