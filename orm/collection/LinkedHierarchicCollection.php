@@ -13,6 +13,7 @@ use umi\orm\exception\NotAllowedOperationException;
 use umi\orm\exception\RuntimeException;
 use umi\orm\object\IHierarchicObject;
 use umi\orm\object\IObject;
+use umi\orm\selector\ISelector;
 
 /**
  * Коллекция связанных иерархических объектов.
@@ -138,19 +139,28 @@ class LinkedHierarchicCollection extends SimpleHierarchicCollection implements I
     /**
      * {@inheritdoc}
      */
-    public function selectChildren(IHierarchicObject $object = null)
+    public function selectChildren(
+        IHierarchicObject $object = null,
+        $orderBy = IHierarchicObject::FIELD_ORDER,
+        $direction = ISelector::ORDER_ASC
+    )
     {
         return $this->getCommonHierarchy()
-            ->selectChildren($object);
+            ->selectChildren($object, $orderBy, $direction);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function selectDescendants(IHierarchicObject $object = null, $depth = null)
+    public function selectDescendants(
+        IHierarchicObject $object = null,
+        $depth = null,
+        $orderBy = IHierarchicObject::FIELD_ORDER,
+        $direction = ISelector::ORDER_ASC
+    )
     {
         return $this->getCommonHierarchy()
-            ->selectChildren($object, $depth);
+            ->selectChildren($object, $depth, $orderBy, $direction);
     }
 
     /**

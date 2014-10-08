@@ -34,18 +34,32 @@ interface IHierarchicCollection extends ICollection
     /**
      * Возвращает селектор для выбора дочерних объектов для указанного.
      * @param IHierarchicObject|null $object объект, либо null, если нужна выборка от корня
+     * @param string $orderBy имя поля, по которому происходит сортировка дочерних объектов
+     * @param string $direction направление сортировки
      * @return ISelector|IHierarchicObject[]
      */
-    public function selectChildren(IHierarchicObject $object = null);
+    public function selectChildren(
+        IHierarchicObject $object = null,
+        $orderBy = IHierarchicObject::FIELD_ORDER,
+        $direction = ISelector::ORDER_ASC
+    );
 
     /**
      * Возвращает селектор для выбора потомков указанного объекта, либо от корня.
+     * Объекты осортированны по уровню вложенности в иерархии.
      * @param IHierarchicObject|null $object объект, либо null, если нужна выборка от корня
      * @param int|null $depth глубина выбора потомков, по умолчанию выбираются на всю глубину
+     * @param string $orderBy имя поля, по которому происходит сортировка потомков одного уровня
+     * @param string $direction направление сортировки
      * @throws InvalidArgumentException если глубина указана не верно
      * @return ISelector|IHierarchicObject[]
      */
-    public function selectDescendants(IHierarchicObject $object = null, $depth = null);
+    public function selectDescendants(
+        IHierarchicObject $object = null,
+        $depth = null,
+        $orderBy = IHierarchicObject::FIELD_ORDER,
+        $direction = ISelector::ORDER_ASC
+    );
 
     /**
      * Возвращает селектор для выбора родителей страницы

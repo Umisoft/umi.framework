@@ -136,18 +136,27 @@ abstract class BaseHierarchicCollection extends BaseCollection implements IHiera
     /**
      * {@inheritdoc}
      */
-    public function selectChildren(IHierarchicObject $object = null)
+    public function selectChildren(
+        IHierarchicObject $object = null,
+        $orderBy = IHierarchicObject::FIELD_ORDER,
+        $direction = ISelector::ORDER_ASC
+    )
     {
         return $this->select()
             ->where(IHierarchicObject::FIELD_PARENT)->equals($object)
-            ->orderBy(IHierarchicObject::FIELD_HIERARCHY_LEVEL, ISelector::ORDER_ASC)
-            ->orderBy(IHierarchicObject::FIELD_ORDER);
+            ->orderBy(IHierarchicObject::FIELD_HIERARCHY_LEVEL)
+            ->orderBy($orderBy, $direction);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function selectDescendants(IHierarchicObject $object = null, $depth = null)
+    public function selectDescendants(
+        IHierarchicObject $object = null,
+        $depth = null,
+        $orderBy = IHierarchicObject::FIELD_ORDER,
+        $direction = ISelector::ORDER_ASC
+    )
     {
         if (!is_null($depth) && !is_int($depth) && $depth < 0) {
             throw new InvalidArgumentException($this->translate(
@@ -180,7 +189,7 @@ abstract class BaseHierarchicCollection extends BaseCollection implements IHiera
         }
 
         $selector->orderBy(IHierarchicObject::FIELD_HIERARCHY_LEVEL);
-        $selector->orderBy(IHierarchicObject::FIELD_ORDER);
+        $selector->orderBy($orderBy, $direction);
 
         return $selector;
     }
