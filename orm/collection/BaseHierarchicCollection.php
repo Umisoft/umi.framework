@@ -158,7 +158,11 @@ abstract class BaseHierarchicCollection extends BaseCollection implements IHiera
         $direction = ISelector::ORDER_ASC
     )
     {
-        if (!is_null($depth) && !is_int($depth) && $depth < 0) {
+        if (!is_null($depth)) {
+            $depth = (int) $depth;
+        }
+
+        if (!is_null($depth) && $depth <= 0) {
             throw new InvalidArgumentException($this->translate(
                 'Cannot select descendants. Invalid argument "depth" value.'
             ));
