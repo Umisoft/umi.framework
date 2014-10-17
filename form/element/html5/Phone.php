@@ -29,5 +29,5 @@ class Phone extends BaseFormInput
     /**
      * {@inheritdoc}
      */
-    protected $inputType = 'phone';
+    protected $inputType = 'tel';
 }
