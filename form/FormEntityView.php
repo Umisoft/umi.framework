@@ -15,6 +15,7 @@ namespace umi\form;
  * @property string $type тип сущности
  * @property string $tag имя тега
  * @property string $label лейбл
+ * @property string $id уникальный идентификатор формы
  * @property bool $valid признак валидности
  * @property array $errors список ошибок валидации
  * @property EntityAttributesView $attributes представление атрибутов сущности

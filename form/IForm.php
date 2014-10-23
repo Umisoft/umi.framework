@@ -50,4 +50,17 @@ interface IForm extends IFieldSet
      */
     public function setDataAdapter(IDataAdapter $dataAdapter);
 
+    /**
+     * Возвращает уникальный идентифкатор формы
+     * @return string
+     */
+    public function getId();
+
+    /**
+     * Устанавливает уникальный идентифкатор формы
+     * @param string $id
+     * @return self
+     */
+    public function setId($id);
+
 }

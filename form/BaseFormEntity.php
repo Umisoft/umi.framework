@@ -38,6 +38,10 @@ abstract class BaseFormEntity implements IFormEntity
      */
     protected $label;
     /**
+     * @var string $id
+     */
+    protected $id;
+    /**
      * @var IFieldSet $parent родительская сущность
      */
     protected $parent;
@@ -77,6 +81,23 @@ abstract class BaseFormEntity implements IFormEntity
     public function getLabel()
     {
         return $this->label;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+        return $this;
     }
 
     /**
@@ -151,7 +172,7 @@ abstract class BaseFormEntity implements IFormEntity
         $view = new FormEntityView([
             'type' => $this->type,
             'tag' => $this->tagName,
-            'id' => $this->getName(),
+            'id' => $this->getId(),
             'label' => $this->translate($this->getLabel()),
             'attributes' => new EntityAttributesView($this->getAttributes()),
             'valid' => $this->isValid(),

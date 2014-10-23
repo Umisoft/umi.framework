@@ -39,6 +39,19 @@ interface IFormEntity extends ILocalizable
     public function setLabel($label);
 
     /**
+     * Возвращает id для сущности.
+     * @return string
+     */
+    public function getId();
+
+    /**
+     * Устанавливает id для сущности.
+     * @param string $id
+     * @return self
+     */
+    public function setId($id);
+
+    /**
      * Устанавливает значение html-атрибута.
      * @param string $attributeName имя атрибута
      * @param mixed $value
