@@ -152,6 +152,26 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
     /**
      * {@inheritdoc}
      */
+    public function getId()
+    {
+        if (!$this->getParent()) {
+            throw new RuntimeException('Cannot get id. Parent form is unknown.');
+        }
+
+        $ids = [$this->getName()];
+
+        $element = $this->getParent();
+        while ($parent = $element->getParent()) {
+            array_unshift($ids, $element->getName());
+            $element = $parent;
+        }
+
+        return implode('_', $ids);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getDataSource()
     {
         return isset($this->options['dataSource']) ? $this->options['dataSource'] : null;
