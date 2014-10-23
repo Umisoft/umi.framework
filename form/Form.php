@@ -35,10 +35,6 @@ class Form extends FieldSet implements IForm
      * @var IDataAdapter $dataAdapter адаптер данных формы
      */
     protected $dataAdapter;
-    /**
-     * @var string уникальный идентификатор формы
-     */
-    protected $id;
 
     /**
      * {@inheritdoc}
@@ -96,24 +92,6 @@ class Form extends FieldSet implements IForm
         }
 
         return $this->dataAdapter;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

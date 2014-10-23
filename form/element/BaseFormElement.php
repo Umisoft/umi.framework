@@ -135,7 +135,7 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
         $names = [$this->getName()];
 
         $element = $this->getParent();
-        while(!is_null($parent = $element->getParent())) {
+        while ($parent = $element->getParent()) {
             array_unshift($names, $element->getName());
             $element = $parent;
         }
@@ -155,15 +155,17 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
     public function getId()
     {
         if (!$this->getParent()) {
-            throw new RuntimeException('Cannot get id. Parent form is unknown.');
+            throw new RuntimeException('Cannot get element id. Parent form is unknown.');
         }
 
         $ids = [$this->getName()];
 
-        $element = $this->getParent();
-        while ($parent = $element->getParent()) {
-            array_unshift($ids, $element->getName());
-            $element = $parent;
+        $element = $this;
+        while ($element = $element->getParent()) {
+            $parentId = $element->getId();
+            if ($parentId) {
+                array_unshift($ids, $parentId);
+            }
         }
 
         return implode('_', $ids);
@@ -262,7 +264,10 @@ abstract class BaseFormElement extends BaseFormEntity implements IFormElement, I
      */
     protected function extendView(FormEntityView $view)
     {
-        $view->attributes['name'] = $this->getElementName();
+        if (!isset($view->attributes['name'])) {
+            $view->attributes['name'] = $this->getElementName();
+        }
+
         $view->dataSource = $this->getDataSource();
         $view->value = $this->getValue();
 

@@ -97,6 +97,7 @@ abstract class BaseFormEntity implements IFormEntity
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -172,14 +173,18 @@ abstract class BaseFormEntity implements IFormEntity
         $view = new FormEntityView([
             'type' => $this->type,
             'tag' => $this->tagName,
-            'id' => $this->getId(),
             'label' => $this->translate($this->getLabel()),
             'attributes' => new EntityAttributesView($this->getAttributes()),
             'valid' => $this->isValid(),
             'errors' => $this->getMessages()
         ]);
 
+
         $this->extendView($view);
+
+        if (!isset($view->attributes['id'])) {
+            $view->attributes['id'] = $this->getId();
+        }
 
         return $view;
     }
