@@ -65,6 +65,15 @@ class SessionTools implements IToolbox
     }
 
     /**
+     * Устанавливает сервис сессии
+     * @param ISession $session
+     */
+    public function setSession(ISession $session)
+    {
+        $this->session = $session;
+    }
+
+    /**
      * Возвращает сервис сессии.
      * @return ISession
      */
