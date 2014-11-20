@@ -264,9 +264,7 @@ class ObjectPersister implements IObjectPersister, ILocalizable, ILocalesAware, 
      */
     protected function rollback(array $connections)
     {
-        foreach ($connections as $connection) {
-            $connection->rollback();
-        }
+        $this->rollbackTransaction($connections);
         $this->unloadStorageObjects($this->newObjects);
         $this->unloadStorageObjects($this->modifiedObjects);
         $this->unloadStorageObjects($this->deletedObjects);
@@ -285,6 +283,20 @@ class ObjectPersister implements IObjectPersister, ILocalizable, ILocalesAware, 
     {
         foreach ($connections as $connection) {
             $connection->beginTransaction();
+        }
+
+        return $this;
+    }
+
+    /**
+     * Откатывает транзакцию для указанных соединений с БД
+     * @param Connection[] $connections
+     * @return $this
+     */
+    protected function rollbackTransaction(array $connections)
+    {
+        foreach ($connections as $connection) {
+            $connection->rollBack();
         }
 
         return $this;
