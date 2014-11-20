@@ -1,7 +1,6 @@
 <?php
 /**
  * UMI.Framework (http://umi-framework.ru/)
- *
  * @link      http://github.com/Umisoft/framework for the canonical source repository
  * @copyright Copyright (c) 2007-2013 Umisoft ltd. (http://umisoft.ru/)
  * @license   http://umi-framework.ru/license/bsd-3 BSD-3 License
@@ -85,7 +84,6 @@ class DbalTools implements IToolbox
         DbalTools::CONNECTION_TYPE_PDOMYSQL  => 'umi\dbal\driver\dialect\MySqlDialect',
         DbalTools::CONNECTION_TYPE_PDOSQLITE => 'umi\dbal\driver\dialect\SqliteDialect',
     ];
-
     /**
      * @var array $supportedConnectionTypes поддерживаемые типы соединений с БД
      */
@@ -93,6 +91,10 @@ class DbalTools implements IToolbox
         DbalTools::CONNECTION_TYPE_PDOMYSQL,
         DbalTools::CONNECTION_TYPE_PDOSQLITE,
     ];
+    /**
+     * @var IDbCluster $dbCluster
+     */
+    protected $dbCluster;
 
     /**
      * Конструктор.
@@ -137,23 +139,33 @@ class DbalTools implements IToolbox
     }
 
     /**
+     * Устанавливает кластер БД
+     * @param IDbCluster $cluster
+     * @return $this
+     */
+    public function setCluster(IDbCluster $cluster)
+    {
+        $this->dbCluster = $cluster;
+
+        return $this;
+    }
+
+    /**
      * Возвращает кластер БД
      * @return IDbCluster
      */
     protected function getCluster()
     {
-
-        $prototype = $this->getPrototype($this->dbClusterClass, ['umi\dbal\cluster\IDbCluster']);
-        return $prototype->createSingleInstance(
-            [],
-            [],
-            function (IDbCluster $dbCluster) {
-                $this->servers = $this->configToArray($this->servers, true);
-                foreach ($this->servers as $serverConfig) {
-                    $dbCluster->addServer($this->configureServer($serverConfig));
-                }
+        if (!$this->dbCluster) {
+            $this->dbCluster = $this->getPrototype($this->dbClusterClass, ['umi\dbal\cluster\IDbCluster'])
+                ->createSingleInstance();
+            $this->servers = $this->configToArray($this->servers, true);
+            foreach ($this->servers as $serverConfig) {
+                $this->dbCluster->addServer($this->configureServer($serverConfig));
             }
-        );
+        }
+
+        return $this->dbCluster;
     }
 
     /**
