@@ -9,7 +9,6 @@
 
 namespace umi\orm\toolbox;
 
-use umi\dbal\cluster\IDbCluster;
 use umi\orm\collection\ICollectionFactory;
 use umi\orm\collection\ICollectionManager;
 use umi\orm\collection\ICollectionManagerAware;
@@ -91,17 +90,10 @@ class ORMTools implements IToolbox
     public $metadata = [];
 
     /**
-     * @var IDbCluster $dbCluster сервис для работы c БД
-     */
-    protected $dbCluster;
-
-    /**
      * Конструктор
      */
-    public function __construct(IDbCluster $dbCluster)
+    public function __construct()
     {
-        $this->dbCluster = $dbCluster;
-
         $this->registerFactory(
             'objectCollection',
             $this->collectionFactoryClass,
@@ -259,7 +251,7 @@ class ORMTools implements IToolbox
      */
     protected function getMetadataFactory()
     {
-        return $this->getFactory('metadata', [$this->dbCluster]);
+        return $this->getFactory('metadata');
     }
 
     /**
