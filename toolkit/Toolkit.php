@@ -114,6 +114,13 @@ class Toolkit implements IToolkit, ILoggerAware, ILocalizable
             return $this->toolboxes[$toolboxName];
         }
 
+        if (!$this->hasToolbox($toolboxName)) {
+            throw new RuntimeException($this->translate(
+                'Toolbox "{name}" is not registered.',
+                ['name' => $toolboxName]
+            ));
+        }
+
         $options = $this->getToolboxSettings($toolboxName);
         $toolboxClass = $this->registeredToolboxes[$toolboxName];
 
