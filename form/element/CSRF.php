@@ -48,7 +48,7 @@ class CSRF extends Hidden implements ISessionAware
         $isValid = $value && ($value === $this->getValidToken());
 
         if (!$isValid) {
-            $this->messages = ['Invalid csrf token.'];
+            $this->messages = [$this->translate('Invalid csrf token.')];
         }
 
         return $isValid;
