@@ -103,9 +103,10 @@ class PhpFileReader implements IReader, ILocalizable, IConfigAliasResolverAware,
             $this->mergeConfig($config, $localSource);
         } elseif (!$masterConfigExists) {
             throw new RuntimeException($this->translate(
-                'Master configuration file "{file}" not found.',
+                'Master configuration file "{master}" or local configuration file "{local}" is not found.',
                 [
-                    'file' => $masterFilename
+                    'master' => $masterFilename,
+                    'local' => $localFilename
                 ]
             ));
         }
