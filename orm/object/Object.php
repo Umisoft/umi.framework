@@ -389,7 +389,7 @@ class Object implements IObject, ILocalizable, ILocalesAware, IObjectManagerAwar
 
         if (!$this->hasProperty($propName, $localeId)) {
             throw new NonexistentEntityException($this->translate(
-                'Property "{name}" does not exist in "type".',
+                'Property "{name}" does not exist in "{type}".',
                 ['name' => $fullPropName, 'type' => $this->getTypePath()]
             ));
         }
